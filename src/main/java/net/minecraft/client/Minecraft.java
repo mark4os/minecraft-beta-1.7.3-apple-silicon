@@ -570,10 +570,8 @@ public abstract class Minecraft implements Runnable {
 
 					if (this.gameSettings != null) {
 						if (this.gameSettings.limitFramerate == 2) {
-							// Power Saver: 30 FPS hardware VSync (every 2nd refresh)
 							Display.setSwapInterval(2);
 						} else {
-							// Max FPS / Balanced: Hardware VSync at native screen refresh (60/120 Hz)
 							Display.setSwapInterval(1);
 						}
 					}

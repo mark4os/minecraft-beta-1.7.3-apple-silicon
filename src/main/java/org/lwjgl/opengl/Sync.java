@@ -33,11 +33,6 @@ package org.lwjgl.opengl;
 
 import java.util.concurrent.locks.LockSupport;
 
-/**
- * High-precision hybrid frame pacer for macOS Apple Silicon (ARM64).
- * Combines kernel timer sleep (LockSupport.parkNanos) with a sub-millisecond
- * CPU spin-wait using Thread.onSpinWait() for sub-microsecond frame pacing stability.
- */
 public class Sync {
 
 	private static final long NANOS_IN_SECOND = 1_000_000_000L;
@@ -58,19 +53,15 @@ public class Sync {
 
 		long remaining = nextFrameTime - now;
 
-		// If behind by more than 1 full frame (e.g. world load / window drag), resync to current time
 		if (remaining < -frameDuration) {
 			nextFrameTime = now + frameDuration;
 			return;
 		}
 
-		// Stage 1: Low-power kernel sleep via parkNanos until ~1.2 ms before deadline
 		if (remaining > 1_500_000L) {
 			LockSupport.parkNanos(remaining - 1_200_000L);
 		}
 
-		// Stage 2: Sub-millisecond spin-wait using ARM64 yield instruction (Thread.onSpinWait)
-		// Hits the target nanosecond with sub-microsecond precision and zero timer drift
 		while (System.nanoTime() < nextFrameTime) {
 			Thread.onSpinWait();
 		}

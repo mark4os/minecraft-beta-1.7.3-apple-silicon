@@ -39,8 +39,10 @@ public class Mouse {
 	private static Cursor currentCursor = null;
 
 	public static void addMoveEvent(double mouseX, double mouseY) {
-		latestX = (int) mouseX;
-		latestY = Display.getHeight() - (int) mouseY;
+		double scaleX = (double) Display.getWidth() / (double) Math.max(1, Display.getWindowWidth());
+		double scaleY = (double) Display.getHeight() / (double) Math.max(1, Display.getWindowHeight());
+		latestX = (int) Math.round(mouseX * scaleX);
+		latestY = Display.getHeight() - (int) Math.round(mouseY * scaleY);
 
 		lastxEvents[queue.getNextPos()] = xEvents[queue.getNextPos()];
 		lastyEvents[queue.getNextPos()] = yEvents[queue.getNextPos()];
@@ -209,7 +211,9 @@ public class Mouse {
 	}
 
 	public static void setCursorPosition(int new_x, int new_y) {
-		GLFW.glfwSetCursorPos(Display.getWindow(), new_x, new_y);
+		double scaleX = (double) Math.max(1, Display.getWindowWidth()) / (double) Math.max(1, Display.getWidth());
+		double scaleY = (double) Math.max(1, Display.getWindowHeight()) / (double) Math.max(1, Display.getHeight());
+		GLFW.glfwSetCursorPos(Display.getWindow(), new_x * scaleX, (Display.getHeight() - new_y) * scaleY);
 	}
 
 	public static Cursor setNativeCursor(Cursor cursor) throws LWJGLException {

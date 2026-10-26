@@ -233,6 +233,8 @@ public abstract class Minecraft implements Runnable {
 			Display.create();
 		}
 
+		this.displayWidth = Display.getWidth();
+		this.displayHeight = Display.getHeight();
 		this.mcDataDir = getMinecraftDir();
 		this.saveLoader = new SaveConverterMcRegion(new File(this.mcDataDir, "saves"));
 		this.gameSettings = new GameSettings(this, this.mcDataDir);
@@ -555,7 +557,7 @@ public abstract class Minecraft implements Runnable {
 						} else if (this.gameSettings.limitFramerate == 2) {
 							Display.sync(40);
 						} else if (this.gameSettings.limitFramerate == 0) {
-							Display.sync(120);
+							Display.sync(Math.max(120, Display.getDesktopDisplayMode().getFrequency()));
 						}
 					}
 
@@ -594,6 +596,18 @@ public abstract class Minecraft implements Runnable {
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
 						this.displayWidth = this.mcCanvas.getWidth();
 						this.displayHeight = this.mcCanvas.getHeight();
+						if(this.displayWidth <= 0) {
+							this.displayWidth = 1;
+						}
+
+						if(this.displayHeight <= 0) {
+							this.displayHeight = 1;
+						}
+
+						this.resize(this.displayWidth, this.displayHeight);
+					} else if(this.mcCanvas == null && (Display.wasResized() || Display.getWidth() != this.displayWidth || Display.getHeight() != this.displayHeight)) {
+						this.displayWidth = Display.getWidth();
+						this.displayHeight = Display.getHeight();
 						if(this.displayWidth <= 0) {
 							this.displayWidth = 1;
 						}
@@ -856,40 +870,29 @@ public abstract class Minecraft implements Runnable {
 	public void toggleFullscreen() {
 		try {
 			this.fullscreen = !this.fullscreen;
-			if(this.fullscreen) {
-				Display.setDisplayMode(Display.getDesktopDisplayMode());
-				this.displayWidth = Display.getDisplayMode().getWidth();
-				this.displayHeight = Display.getDisplayMode().getHeight();
-				if(this.displayWidth <= 0) {
-					this.displayWidth = 1;
-				}
-
-				if(this.displayHeight <= 0) {
-					this.displayHeight = 1;
-				}
-			} else {
+			if(!this.fullscreen) {
 				if(this.mcCanvas != null) {
-					this.displayWidth = this.mcCanvas.getWidth();
-					this.displayHeight = this.mcCanvas.getHeight();
+					Display.setDisplayMode(new DisplayMode(this.mcCanvas.getWidth(), this.mcCanvas.getHeight()));
 				} else {
-					this.displayWidth = this.tempDisplayWidth;
-					this.displayHeight = this.tempDisplayHeight;
+					Display.setDisplayMode(new DisplayMode(this.tempDisplayWidth, this.tempDisplayHeight));
 				}
+			}
 
-				if(this.displayWidth <= 0) {
-					this.displayWidth = 1;
-				}
+			Display.setFullscreen(this.fullscreen);
+			this.displayWidth = Display.getWidth();
+			this.displayHeight = Display.getHeight();
+			if(this.displayWidth <= 0) {
+				this.displayWidth = 1;
+			}
 
-				if(this.displayHeight <= 0) {
-					this.displayHeight = 1;
-				}
+			if(this.displayHeight <= 0) {
+				this.displayHeight = 1;
 			}
 
 			if(this.currentScreen != null) {
 				this.resize(this.displayWidth, this.displayHeight);
 			}
 
-			Display.setFullscreen(this.fullscreen);
 			Display.update();
 		} catch (Exception var2) {
 			var2.printStackTrace();

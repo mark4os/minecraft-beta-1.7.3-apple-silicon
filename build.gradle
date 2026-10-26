@@ -182,6 +182,15 @@ exec "\$JAVA_BIN" \\
 """
         launcherScript.setExecutable(true, false)
 
-        println "Successfully created macOS App: ${appDir.absolutePath}"
+        new ProcessBuilder("xattr", "-cr", appDir.absolutePath).start().waitFor()
+        def signProc = new ProcessBuilder("codesign", "--force", "--deep", "--sign", "-", appDir.absolutePath)
+            .redirectErrorStream(true)
+            .start()
+        def signOut = signProc.inputStream.text
+        if (signProc.waitFor() != 0) {
+            throw new GradleException("codesign failed: ${signOut}")
+        }
+
+        println "Successfully created and signed macOS App: ${appDir.absolutePath}"
     }
 }

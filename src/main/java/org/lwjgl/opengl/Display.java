@@ -33,7 +33,7 @@ public class Display {
     private static boolean displayFocused = true;
     private static boolean displayVisible = true;
     private static boolean displayDirty = false;
-    private static boolean displayResizable = false;
+    private static boolean displayResizable = true;
 
     private static DisplayMode mode, desktopDisplayMode;
 
@@ -53,7 +53,7 @@ public class Display {
     private static int latestHeight = 0;
 
     private static boolean vsyncEnabled = false;
-    private static boolean displayFullscreen = true;
+    private static boolean displayFullscreen = false;
     private static float fps;
     
     private static boolean window_created;
@@ -283,7 +283,7 @@ public class Display {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, displayResizable ? GL_TRUE : GL_FALSE);
-        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
+        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_FALSE);
 
         Window.handle = glfwCreateWindow(mode.getWidth(), mode.getHeight(), windowTitle, NULL, NULL);
@@ -375,6 +375,7 @@ public class Display {
             public void invoke(long window, int width, int height) {
                 displayFramebufferWidth = width;
                 displayFramebufferHeight = height;
+                latestResized = true;
             }
         };
 
@@ -799,8 +800,17 @@ public class Display {
         if (latestResized) {
             latestResized = false;
             displayResized = true;
-            displayWidth = latestWidth;
-            displayHeight = latestHeight;
+            if (latestWidth > 0 && latestHeight > 0) {
+                displayWidth = latestWidth;
+                displayHeight = latestHeight;
+            }
+            IntBuffer fbw = BufferUtils.createIntBuffer(1);
+            IntBuffer fbh = BufferUtils.createIntBuffer(1);
+            glfwGetFramebufferSize(Window.handle, fbw, fbh);
+            if (fbw.get(0) > 0 && fbh.get(0) > 0) {
+                displayFramebufferWidth = fbw.get(0);
+                displayFramebufferHeight = fbh.get(0);
+            }
         } else {
             displayResized = false;
         }
@@ -916,10 +926,18 @@ public class Display {
     }
 
     public static int getWidth() {
-        return displayWidth;
+        return displayFramebufferWidth > 0 ? displayFramebufferWidth : displayWidth;
     }
 
     public static int getHeight() {
+        return displayFramebufferHeight > 0 ? displayFramebufferHeight : displayHeight;
+    }
+
+    public static int getWindowWidth() {
+        return displayWidth;
+    }
+
+    public static int getWindowHeight() {
         return displayHeight;
     }
 
@@ -929,6 +947,13 @@ public class Display {
 
     public static int getFramebufferHeight() {
         return displayFramebufferHeight;
+    }
+
+    public static int getScaleFactor() {
+        if (displayWidth <= 0 || displayFramebufferWidth <= 0) {
+            return 1;
+        }
+        return Math.max(1, Math.round((float) displayFramebufferWidth / (float) displayWidth));
     }
 
     public static void setTitle(String title) {
@@ -1002,25 +1027,34 @@ public class Display {
     public static void setFullscreen(boolean fullscreen) throws LWJGLException {
         System.out.println("LWJGLX: switch fullscreen to " + fullscreen);
         if (isFullscreen() ^ fullscreen) {
-            if (fullscreen && (!mode.isFullscreenCapable()))
-                throw new LWJGLException("Display mode is not fullscreen capable");
             if (Window.handle != 0) {
-                IntBuffer width = BufferUtils.createIntBuffer(1);
-                IntBuffer height = BufferUtils.createIntBuffer(1);
-                glfwGetWindowSize(Window.handle, width, height);
-                width.rewind();
-                height.rewind();
-
-                glfwDefaultWindowHints();
-                glfwWindowHint(GLFW_VISIBLE, displayVisible ? GL_TRUE : GL_FALSE);
-                glfwWindowHint(GLFW_RESIZABLE, displayResizable ? GL_TRUE : GL_FALSE);
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_FALSE);
-
-                if (fullscreen)
-                    newCurrentWindow(glfwCreateWindow(width.get(), height.get(), windowTitle,
-                                                      glfwGetPrimaryMonitor(), NULL));
-                else
-                    newCurrentWindow(glfwCreateWindow(width.get(), height.get(), windowTitle, NULL, NULL));
+                long monitor = glfwGetPrimaryMonitor();
+                GLFWVidMode vidmode = glfwGetVideoMode(monitor);
+                if (fullscreen) {
+                    glfwSetWindowMonitor(Window.handle, monitor, 0, 0, vidmode.width(), vidmode.height(), vidmode.refreshRate());
+                } else {
+                    int w = mode != null ? mode.getWidth() : 854;
+                    int h = mode != null ? mode.getHeight() : 480;
+                    int x = (vidmode.width() - w) / 2;
+                    int y = (vidmode.height() - h) / 2;
+                    glfwSetWindowMonitor(Window.handle, NULL, x, y, w, h, GLFW_DONT_CARE);
+                }
+                IntBuffer ww = BufferUtils.createIntBuffer(1);
+                IntBuffer wh = BufferUtils.createIntBuffer(1);
+                glfwGetWindowSize(Window.handle, ww, wh);
+                if (ww.get(0) > 0 && wh.get(0) > 0) {
+                    displayWidth = ww.get(0);
+                    displayHeight = wh.get(0);
+                }
+                IntBuffer fbw = BufferUtils.createIntBuffer(1);
+                IntBuffer fbh = BufferUtils.createIntBuffer(1);
+                glfwGetFramebufferSize(Window.handle, fbw, fbh);
+                if (fbw.get(0) > 0 && fbh.get(0) > 0) {
+                    displayFramebufferWidth = fbw.get(0);
+                    displayFramebufferHeight = fbh.get(0);
+                }
+                glfwSwapInterval(vsyncEnabled ? 1 : 0);
+                latestResized = true;
             }
         }
         displayFullscreen = fullscreen;
@@ -1087,7 +1121,22 @@ public class Display {
         GLFW.glfwSetWindowTitle(newWindow, windowTitle);
         Window.setCallbacks();
 
-        // glfwMakeContextCurrent(Window.handle);
+        IntBuffer ww = BufferUtils.createIntBuffer(1);
+        IntBuffer wh = BufferUtils.createIntBuffer(1);
+        glfwGetWindowSize(Window.handle, ww, wh);
+        if (ww.get(0) > 0 && wh.get(0) > 0) {
+            displayWidth = ww.get(0);
+            displayHeight = wh.get(0);
+        }
+        IntBuffer fbw = BufferUtils.createIntBuffer(1);
+        IntBuffer fbh = BufferUtils.createIntBuffer(1);
+        glfwGetFramebufferSize(Window.handle, fbw, fbh);
+        if (fbw.get(0) > 0 && fbh.get(0) > 0) {
+            displayFramebufferWidth = fbw.get(0);
+            displayFramebufferHeight = fbh.get(0);
+        }
+
+        glfwMakeContextCurrent(Window.handle);
         context = org.lwjgl.opengl.GLContext.createFromCurrent();
 
         vsyncEnabled = true;

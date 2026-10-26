@@ -10,10 +10,13 @@ public class ScaledResolution {
 	public ScaledResolution(GameSettings var1, int var2, int var3) {
 		this.scaledWidth = var2;
 		this.scaledHeight = var3;
+		int retinaScale = org.lwjgl.opengl.Display.getScaleFactor();
 		this.scaleFactor = 1;
 		int var4 = var1.guiScale;
 		if(var4 == 0) {
 			var4 = 1000;
+		} else {
+			var4 *= retinaScale;
 		}
 
 		while(this.scaleFactor < var4 && this.scaledWidth / (this.scaleFactor + 1) >= 320 && this.scaledHeight / (this.scaleFactor + 1) >= 240) {

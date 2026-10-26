@@ -49,6 +49,19 @@ public class SoundManager {
 		}
 
 		loaded = true;
+		this.preloadInstalledSounds();
+	}
+
+	private void preloadInstalledSounds() {
+		if(loaded && sndSystem != null) {
+			java.util.List entries = this.soundPoolSounds.getAllEntries();
+			for(int i = 0; i < entries.size(); ++i) {
+				SoundPoolEntry entry = (SoundPoolEntry)entries.get(i);
+				if(entry != null) {
+					sndSystem.loadSound(entry.soundUrl, entry.soundName);
+				}
+			}
+		}
 	}
 
 	public void onSoundOptionsChanged() {
@@ -74,7 +87,10 @@ public class SoundManager {
 	}
 
 	public void addSound(String var1, File var2) {
-		this.soundPoolSounds.addSound(var1, var2);
+		SoundPoolEntry var3 = this.soundPoolSounds.addSound(var1, var2);
+		if(loaded && sndSystem != null && var3 != null) {
+			sndSystem.loadSound(var3.soundUrl, var3.soundName);
+		}
 	}
 
 	public void addStreaming(String var1, File var2) {
@@ -87,12 +103,12 @@ public class SoundManager {
 
 	public void playRandomMusicIfReady() {
 		if(loaded && this.options.musicVolume != 0.0F) {
-			if(!sndSystem.playing("BgMusic") && !sndSystem.playing("streaming")) {
-				if(this.ticksBeforeMusic > 0) {
-					--this.ticksBeforeMusic;
-					return;
-				}
+			if(this.ticksBeforeMusic > 0) {
+				--this.ticksBeforeMusic;
+				return;
+			}
 
+			if(!sndSystem.playing("BgMusic") && !sndSystem.playing("streaming")) {
 				SoundPoolEntry var1 = this.soundPoolMusic.getRandomSound();
 				if(var1 != null) {
 					this.ticksBeforeMusic = this.rand.nextInt(12000) + 12000;
@@ -100,6 +116,8 @@ public class SoundManager {
 					sndSystem.setVolume("BgMusic", this.options.musicVolume);
 					sndSystem.play("BgMusic");
 				}
+			} else {
+				this.ticksBeforeMusic = 200;
 			}
 
 		}
@@ -109,9 +127,9 @@ public class SoundManager {
 		if(loaded && this.options.soundVolume != 0.0F) {
 			if(var1 != null) {
 				float var3 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
-				double var4 = var1.prevPosX + (var1.posX - var1.prevPosX) * (double)var2;
-				double var6 = var1.prevPosY + (var1.posY - var1.prevPosY) * (double)var2;
-				double var8 = var1.prevPosZ + (var1.posZ - var1.prevPosZ) * (double)var2;
+				double var4 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
+				double var6 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
+				double var8 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
 				float var10 = MathHelper.cos(-var3 * ((float)Math.PI / 180.0F) - (float)Math.PI);
 				float var11 = MathHelper.sin(-var3 * ((float)Math.PI / 180.0F) - (float)Math.PI);
 				float var12 = -var11;

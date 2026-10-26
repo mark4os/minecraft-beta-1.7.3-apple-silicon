@@ -49,4 +49,8 @@ public class SoundPool {
 	public SoundPoolEntry getRandomSound() {
 		return this.allSoundPoolEntries.size() == 0 ? null : (SoundPoolEntry)this.allSoundPoolEntries.get(this.rand.nextInt(this.allSoundPoolEntries.size()));
 	}
+
+	public List getAllEntries() {
+		return this.allSoundPoolEntries;
+	}
 }

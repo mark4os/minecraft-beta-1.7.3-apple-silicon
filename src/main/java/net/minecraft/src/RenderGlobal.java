@@ -943,46 +943,83 @@ public class RenderGlobal implements IWorldAccess {
 			return true;
 		}
 
-		int bestIdx = -1;
-		WorldRenderer best = null;
-		float bestDist = Float.MAX_VALUE;
-		boolean bestInFrustum = false;
+		long startNano = System.nanoTime();
+		int geometryUpdated = 0;
 
-		for(int i = 0; i < size; ++i) {
-			WorldRenderer wr = (WorldRenderer)this.worldRenderersToUpdate.get(i);
-			if(wr == null || !wr.needsUpdate) {
-				int lastIdx = size - 1;
-				if(i != lastIdx) {
-					this.worldRenderersToUpdate.set(i, this.worldRenderersToUpdate.get(lastIdx));
+		while(geometryUpdated < 1 && !this.worldRenderersToUpdate.isEmpty()) {
+			size = this.worldRenderersToUpdate.size();
+			int bestIdx = -1;
+			WorldRenderer best = null;
+			float bestDist = Float.MAX_VALUE;
+			boolean bestInFrustum = false;
+
+			int bestOutIdx = -1;
+			WorldRenderer bestOut = null;
+			float bestOutDist = Float.MAX_VALUE;
+
+			for(int i = 0; i < size; ++i) {
+				WorldRenderer wr = (WorldRenderer)this.worldRenderersToUpdate.get(i);
+				if(wr == null || !wr.needsUpdate) {
+					int lastIdx = size - 1;
+					if(i != lastIdx) {
+						this.worldRenderersToUpdate.set(i, this.worldRenderersToUpdate.get(lastIdx));
+					}
+					this.worldRenderersToUpdate.remove(lastIdx);
+					--size;
+					--i;
+					continue;
 				}
-				this.worldRenderersToUpdate.remove(lastIdx);
-				--size;
-				--i;
-				continue;
+
+				boolean inFrustum = wr.isInFrustum;
+				float dist = wr.distanceToEntitySquared(var1);
+				if(inFrustum) {
+					if(!bestInFrustum || dist < bestDist) {
+						best = wr;
+						bestIdx = i;
+						bestDist = dist;
+						bestInFrustum = true;
+					}
+				} else if(!var2) {
+					if(dist < bestOutDist) {
+						bestOut = wr;
+						bestOutIdx = i;
+						bestOutDist = dist;
+					}
+				}
 			}
 
-			boolean inFrustum = wr.isInFrustum;
-			if(var2 && !inFrustum) {
-				continue;
+			WorldRenderer target = best != null ? best : bestOut;
+			int targetIdx = best != null ? bestIdx : bestOutIdx;
+			if(target == null) {
+				break;
 			}
 
-			float dist = wr.distanceToEntitySquared(var1);
-			if(best == null || (inFrustum && !bestInFrustum) || (inFrustum == bestInFrustum && dist < bestDist)) {
-				best = wr;
-				bestIdx = i;
-				bestDist = dist;
-				bestInFrustum = inFrustum;
-			}
-		}
-
-		if(best != null) {
 			int lastIdx = size - 1;
-			if(bestIdx != lastIdx) {
-				this.worldRenderersToUpdate.set(bestIdx, this.worldRenderersToUpdate.get(lastIdx));
+			if(targetIdx != lastIdx) {
+				this.worldRenderersToUpdate.set(targetIdx, this.worldRenderersToUpdate.get(lastIdx));
 			}
 			this.worldRenderersToUpdate.remove(lastIdx);
-			best.updateRenderer();
-			best.needsUpdate = false;
+			target.updateRenderer();
+			target.needsUpdate = false;
+
+			if(!target.skipAllRenderPasses()) {
+				++geometryUpdated;
+				if(best != null && bestOut != null && !var2 && bestOut.needsUpdate && (System.nanoTime() - startNano) < 700000L) {
+					int newSize = this.worldRenderersToUpdate.size();
+					int outIdx = this.worldRenderersToUpdate.indexOf(bestOut);
+					if(outIdx >= 0) {
+						int last = newSize - 1;
+						if(outIdx != last) {
+							this.worldRenderersToUpdate.set(outIdx, this.worldRenderersToUpdate.get(last));
+						}
+						this.worldRenderersToUpdate.remove(last);
+						bestOut.updateRenderer();
+						bestOut.needsUpdate = false;
+					}
+				}
+			} else if((System.nanoTime() - startNano) > 1000000L) {
+				break;
+			}
 		}
 
 		return this.worldRenderersToUpdate.isEmpty();
@@ -1093,21 +1130,25 @@ public class RenderGlobal implements IWorldAccess {
 
 	private void drawOutlinedBoundingBox(AxisAlignedBB var1) {
 		Tessellator var2 = Tessellator.instance;
-		var2.startDrawing(3);
+		var2.startDrawing(1);
 		var2.addVertex(var1.minX, var1.minY, var1.minZ);
 		var2.addVertex(var1.maxX, var1.minY, var1.minZ);
+		var2.addVertex(var1.maxX, var1.minY, var1.minZ);
+		var2.addVertex(var1.maxX, var1.minY, var1.maxZ);
 		var2.addVertex(var1.maxX, var1.minY, var1.maxZ);
 		var2.addVertex(var1.minX, var1.minY, var1.maxZ);
+		var2.addVertex(var1.minX, var1.minY, var1.maxZ);
 		var2.addVertex(var1.minX, var1.minY, var1.minZ);
-		var2.draw();
-		var2.startDrawing(3);
+
 		var2.addVertex(var1.minX, var1.maxY, var1.minZ);
 		var2.addVertex(var1.maxX, var1.maxY, var1.minZ);
+		var2.addVertex(var1.maxX, var1.maxY, var1.minZ);
+		var2.addVertex(var1.maxX, var1.maxY, var1.maxZ);
 		var2.addVertex(var1.maxX, var1.maxY, var1.maxZ);
 		var2.addVertex(var1.minX, var1.maxY, var1.maxZ);
+		var2.addVertex(var1.minX, var1.maxY, var1.maxZ);
 		var2.addVertex(var1.minX, var1.maxY, var1.minZ);
-		var2.draw();
-		var2.startDrawing(1);
+
 		var2.addVertex(var1.minX, var1.minY, var1.minZ);
 		var2.addVertex(var1.minX, var1.maxY, var1.minZ);
 		var2.addVertex(var1.maxX, var1.minY, var1.minZ);
@@ -1167,8 +1208,9 @@ public class RenderGlobal implements IWorldAccess {
 
 	public void clipRenderersByFrustrum(ICamera var1, float var2) {
 		for(int var3 = 0; var3 < this.worldRenderers.length; ++var3) {
-			if(!this.worldRenderers[var3].skipAllRenderPasses()) {
-				this.worldRenderers[var3].updateInFrustrum(var1);
+			WorldRenderer wr = this.worldRenderers[var3];
+			if(!wr.skipAllRenderPasses() || wr.needsUpdate) {
+				wr.updateInFrustrum(var1);
 			}
 		}
 

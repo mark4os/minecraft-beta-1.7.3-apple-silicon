@@ -6,10 +6,28 @@ public class ChunkCache implements IBlockAccess {
 	private Chunk[][] chunkArray;
 	private World worldObj;
 	private final int skylightSubtracted;
+	private final float[] lightBrightnessTable;
+	private final boolean useBrightnessCache;
+	private final int cacheId;
+	private static int nextCacheId = 1;
+	private static final float[] brightnessCache = new float[32768];
+	private static final int[] brightnessCacheTag = new int[32768];
 
 	public ChunkCache(World var1, int var2, int var3, int var4, int var5, int var6, int var7) {
 		this.worldObj = var1;
 		this.skylightSubtracted = var1.skylightSubtracted;
+		this.lightBrightnessTable = var1.worldProvider.lightBrightnessTable;
+		this.useBrightnessCache = (var5 - var2 <= 30) && (var6 - var3 <= 30) && (var7 - var4 <= 30);
+		if(this.useBrightnessCache) {
+			int id = ++nextCacheId;
+			if(id == 0) {
+				java.util.Arrays.fill(brightnessCacheTag, 0);
+				id = ++nextCacheId;
+			}
+			this.cacheId = id;
+		} else {
+			this.cacheId = 0;
+		}
 		this.chunkX = var2 >> 4;
 		this.chunkZ = var4 >> 4;
 		int var8 = var5 >> 4;
@@ -51,11 +69,21 @@ public class ChunkCache implements IBlockAccess {
 			var5 = var4;
 		}
 
-		return this.worldObj.worldProvider.lightBrightnessTable[var5];
+		return this.lightBrightnessTable[var5];
 	}
 
 	public float getLightBrightness(int var1, int var2, int var3) {
-		return this.worldObj.worldProvider.lightBrightnessTable[this.getLightValue(var1, var2, var3)];
+		if(this.useBrightnessCache) {
+			int idx = ((var1 & 31) << 10) | ((var3 & 31) << 5) | (var2 & 31);
+			if(brightnessCacheTag[idx] == this.cacheId) {
+				return brightnessCache[idx];
+			}
+			float val = this.lightBrightnessTable[this.getLightValueExt(var1, var2, var3, true)];
+			brightnessCacheTag[idx] = this.cacheId;
+			brightnessCache[idx] = val;
+			return val;
+		}
+		return this.lightBrightnessTable[this.getLightValue(var1, var2, var3)];
 	}
 
 	public int getLightValue(int var1, int var2, int var3) {

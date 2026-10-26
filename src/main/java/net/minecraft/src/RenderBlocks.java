@@ -1704,6 +1704,9 @@ public class RenderBlocks {
 	}
 
 	public boolean renderStandardBlock(Block var1, int var2, int var3, int var4) {
+		if(!this.renderAllFaces && !var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0) && !var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1) && !var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2) && !var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3) && !var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4) && !var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
+			return false;
+		}
 		int var5 = var1.colorMultiplier(this.blockAccess, var2, var3, var4);
 		float var6 = (float)(var5 >> 16 & 255) / 255.0F;
 		float var7 = (float)(var5 >> 8 & 255) / 255.0F;

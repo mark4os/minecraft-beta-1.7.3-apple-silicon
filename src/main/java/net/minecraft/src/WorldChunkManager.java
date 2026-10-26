@@ -10,6 +10,12 @@ public class WorldChunkManager {
 	public double[] humidity;
 	public double[] field_4196_c;
 	public BiomeGenBase[] field_4195_d;
+	private final int[] cacheX = new int[1024];
+	private final int[] cacheZ = new int[1024];
+	private final boolean[] cacheValid = new boolean[1024];
+	private final double[] cacheTemp = new double[1024];
+	private final double[] cacheHumid = new double[1024];
+	private final BiomeGenBase[] cacheBiome = new BiomeGenBase[1024];
 
 	protected WorldChunkManager() {
 	}
@@ -34,6 +40,32 @@ public class WorldChunkManager {
 	}
 
 	public BiomeGenBase[] func_4069_a(int var1, int var2, int var3, int var4) {
+		if(var3 == 1 && var4 == 1) {
+			int idx = (var1 & 31) | ((var2 & 31) << 5);
+			if(this.cacheValid[idx] && this.cacheX[idx] == var1 && this.cacheZ[idx] == var2) {
+				if(this.temperature == null || this.temperature.length < 1) {
+					this.temperature = new double[1];
+				}
+				if(this.humidity == null || this.humidity.length < 1) {
+					this.humidity = new double[1];
+				}
+				if(this.field_4195_d == null || this.field_4195_d.length < 1) {
+					this.field_4195_d = new BiomeGenBase[1];
+				}
+				this.temperature[0] = this.cacheTemp[idx];
+				this.humidity[0] = this.cacheHumid[idx];
+				this.field_4195_d[0] = this.cacheBiome[idx];
+				return this.field_4195_d;
+			}
+			this.field_4195_d = this.loadBlockGeneratorData(this.field_4195_d, var1, var2, 1, 1);
+			this.cacheValid[idx] = true;
+			this.cacheX[idx] = var1;
+			this.cacheZ[idx] = var2;
+			this.cacheTemp[idx] = this.temperature[0];
+			this.cacheHumid[idx] = this.humidity[0];
+			this.cacheBiome[idx] = this.field_4195_d[0];
+			return this.field_4195_d;
+		}
 		this.field_4195_d = this.loadBlockGeneratorData(this.field_4195_d, var1, var2, var3, var4);
 		return this.field_4195_d;
 	}

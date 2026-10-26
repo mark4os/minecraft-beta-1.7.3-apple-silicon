@@ -20,6 +20,7 @@ public class Packet51MapChunk extends Packet {
 		this.isChunkDataPacket = true;
 	}
 
+	@SuppressWarnings("resource")
 	public void readPacketData(DataInputStream var1) throws IOException {
 		this.xPosition = var1.readInt();
 		this.yPosition = var1.readShort();

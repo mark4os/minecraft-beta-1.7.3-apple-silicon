@@ -1,0 +1,171 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'net.minecraft'
+version = 'beta-1.7.3-arm64'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+project.ext {
+    lwjglVersion = "3.3.3"
+    lwjglNatives = "natives-macos-arm64"
+}
+
+dependencies {
+    compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation platform("org.lwjgl:lwjgl-bom:${project.lwjglVersion}")
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-openal"
+    implementation "org.lwjgl:lwjgl-stb"
+
+    runtimeOnly "org.lwjgl:lwjgl::${project.lwjglNatives}"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::${project.lwjglNatives}"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::${project.lwjglNatives}"
+    runtimeOnly "org.lwjgl:lwjgl-openal::${project.lwjglNatives}"
+    runtimeOnly "org.lwjgl:lwjgl-stb::${project.lwjglNatives}"
+}
+
+application {
+    mainClass = 'net.minecraft.client.Minecraft'
+    applicationDefaultJvmArgs = [
+        "-XstartOnFirstThread",
+        "-Xmx2G",
+        "-Dminecraft.dir=run",
+        "-Djava.awt.headless=true",
+        "-Dorg.lwjgl.util.Debug=false"
+    ]
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:-options', '-nowarn']
+}
+
+run {
+    workingDir = file("run")
+    jvmArgs = [
+        "-XstartOnFirstThread",
+        "-Xmx2G",
+        "-Dminecraft.dir=" + file("run").absolutePath,
+        "-Dorg.lwjgl.util.Debug=false"
+    ]
+    doFirst {
+        file("run").mkdirs()
+    }
+}
+
+tasks.register('bundleApp') {
+    dependsOn 'installDist'
+    group = 'distribution'
+    description = 'Creates a standalone macOS .app bundle for Apple Silicon'
+
+    doLast {
+        def appDir = file("${project.layout.buildDirectory.get()}/apps/Minecraft Beta 1.7.3.app")
+        def contentsDir = file("$appDir/Contents")
+        def macOsDir = file("$contentsDir/MacOS")
+        def resDir = file("$contentsDir/Resources")
+        def libDir = file("$resDir/lib")
+
+        macOsDir.mkdirs()
+        resDir.mkdirs()
+        libDir.mkdirs()
+
+        copy {
+            from file("${project.layout.buildDirectory.get()}/install/minecraft-b1.7.3-arm64/lib")
+            into libDir
+        }
+
+        copy {
+            from file("src/main/resources/minecraft.icns")
+            into resDir
+        }
+
+        copy {
+            from file("run/resources")
+            into file("$resDir/resources")
+        }
+
+        def plistFile = file("$contentsDir/Info.plist")
+        plistFile.text = """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>Minecraft</string>
+    <key>CFBundleIconFile</key>
+    <string>minecraft.icns</string>
+    <key>CFBundleIdentifier</key>
+    <string>net.minecraft.beta173</string>
+    <key>CFBundleName</key>
+    <string>Minecraft Beta 1.7.3</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>b1.7.3-arm64</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+</dict>
+</plist>"""
+
+        def launcherScript = file("$macOsDir/Minecraft")
+        launcherScript.text = """#!/bin/bash
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )/.." && pwd )"
+RESOURCES="\$DIR/Resources"
+cd "\$RESOURCES"
+
+JAVA_BIN=""
+if [ -x "/opt/homebrew/opt/openjdk@17/bin/java" ]; then
+    JAVA_BIN="/opt/homebrew/opt/openjdk@17/bin/java"
+elif [ -x "/opt/homebrew/bin/java" ]; then
+    JAVA_BIN="/opt/homebrew/bin/java"
+elif [ -n "\$JAVA_HOME" ] && [ -x "\$JAVA_HOME/bin/java" ]; then
+    JAVA_BIN="\$JAVA_HOME/bin/java"
+elif [ -x "/usr/bin/java" ]; then
+    JAVA_BIN="/usr/bin/java"
+else
+    JAVA_BIN="java"
+fi
+
+DATA_DIR="\$HOME/Library/Application Support/minecraft-b1.7.3"
+mkdir -p "\$DATA_DIR"
+if [ ! -d "\$DATA_DIR/resources" ]; then
+    cp -r "\$RESOURCES/resources" "\$DATA_DIR/"
+fi
+
+exec "\$JAVA_BIN" \\
+    -XstartOnFirstThread \\
+    -Xmx2G \\
+    -Dminecraft.dir="\$DATA_DIR" \\
+    -Djava.awt.headless=true \\
+    -Dorg.lwjgl.util.Debug=false \\
+    -cp "\$RESOURCES/lib/*" \\
+    net.minecraft.client.Minecraft "\$@"
+"""
+        launcherScript.setExecutable(true, false)
+
+        println "Successfully created macOS App: ${appDir.absolutePath}"
+    }
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+	<component name="RunManager">
+		<configuration name="Minecraft Server" type="Application" factoryName="Application">
+			<option name="MAIN_CLASS_NAME" value="net.minecraft.server.MinecraftServer" />
+			<module name="minecraft_server" />
+			<option name="PROGRAM_PARAMETERS" value="--username Player --uuid - --session - --version b1.7.3 --gameDir game --assetsDir game/assets --assetIndex b1.7 --accessToken - --userProperties {} --userType legacy --versionType release --skinProxy pre-b1.9-pre4" />
+			<option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/game" />
+			<method v="2">
+				<option name="Make" enabled="true" />
+			</method>
+		</configuration>
+	</component>
+</project>

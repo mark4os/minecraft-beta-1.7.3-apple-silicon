@@ -25,6 +25,7 @@ public class EntityRenderer {
 	private MouseFilter mouseFilterDummy2 = new MouseFilter();
 	private MouseFilter mouseFilterDummy3 = new MouseFilter();
 	private MouseFilter mouseFilterDummy4 = new MouseFilter();
+	private Frustrum frustrum = new Frustrum();
 	private float field_22228_r = 4.0F;
 	private float field_22227_s = 4.0F;
 	private float field_22226_t = 0.0F;
@@ -454,9 +455,8 @@ public class EntityRenderer {
 				GL11.glShadeModel(GL11.GL_SMOOTH);
 			}
 
-			Frustrum var19 = new Frustrum();
-			var19.setPosition(var7, var9, var11);
-			this.mc.renderGlobal.clipRenderersByFrustrum(var19, var1);
+			this.frustrum.setPosition(var7, var9, var11);
+			this.mc.renderGlobal.clipRenderersByFrustrum(this.frustrum, var1);
 			if(var18 == 0) {
 				while(!this.mc.renderGlobal.updateRenderers(var4, false) && var2 != 0L) {
 					long var20 = var2 - System.nanoTime();
@@ -473,7 +473,7 @@ public class EntityRenderer {
 			var5.sortAndRender(var4, 0, (double)var1);
 			GL11.glShadeModel(GL11.GL_FLAT);
 			RenderHelper.enableStandardItemLighting();
-			var5.renderEntities(var4.getPosition(var1), var19, var1);
+			var5.renderEntities(var4.getPosition(var1), this.frustrum, var1);
 			var6.func_1187_b(var4, var1);
 			RenderHelper.disableStandardItemLighting();
 			this.setupFog(0, var1);

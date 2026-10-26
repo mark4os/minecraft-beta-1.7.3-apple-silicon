@@ -1251,7 +1251,7 @@ public class RenderGlobal implements IWorldAccess {
 
 	public void clipRenderersByFrustrum(ICamera var1, float var2) {
 		for(int var3 = 0; var3 < this.worldRenderers.length; ++var3) {
-			if(!this.worldRenderers[var3].skipAllRenderPasses() && (!this.worldRenderers[var3].isInFrustum || (var3 + this.frustrumCheckOffset & 15) == 0)) {
+			if(!this.worldRenderers[var3].skipAllRenderPasses()) {
 				this.worldRenderers[var3].updateInFrustrum(var1);
 			}
 		}

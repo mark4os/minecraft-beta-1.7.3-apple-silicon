@@ -18,6 +18,10 @@ public class RenderList {
 	private boolean field_1235_h = false;
 	private boolean field_1234_i = false;
 
+	private float translateX;
+	private float translateY;
+	private float translateZ;
+
 	public void func_861_a(int var1, int var2, int var3, double var4, double var6, double var8) {
 		this.field_1235_h = true;
 		this.field_1236_g.clear();
@@ -28,6 +32,9 @@ public class RenderList {
 		this.field_1239_d = (float)var4;
 		this.field_1238_e = (float)var6;
 		this.field_1237_f = (float)var8;
+		this.translateX = (float)((double)var1 - var4);
+		this.translateY = (float)((double)var2 - var6);
+		this.translateZ = (float)((double)var3 - var8);
 	}
 
 	public boolean func_862_a(int var1, int var2, int var3) {
@@ -54,7 +61,7 @@ public class RenderList {
 		if(this.field_1235_h) {
 			if(this.vboCount > 0) {
 				GL11.glPushMatrix();
-				GL11.glTranslatef((float)this.field_1242_a - this.field_1239_d, (float)this.field_1241_b - this.field_1238_e, (float)this.field_1240_c - this.field_1237_f);
+				GL11.glTranslatef(this.translateX, this.translateY, this.translateZ);
 				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 				GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);

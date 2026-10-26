@@ -29,7 +29,7 @@ public class Mouse {
 
 	private static int lastDWheel = 0;
 
-	private static EventQueue queue = new EventQueue(32);
+	private static EventQueue queue = new EventQueue(512);
 
 	private static int[] buttonEvents = new int[queue.getMaxEvents()];
 	private static int[] wheelEvents = new int[queue.getMaxEvents()];
@@ -63,6 +63,10 @@ public class Mouse {
 		double scaleY = (double) Display.getHeight() / (double) Math.max(1, Display.getWindowHeight());
 		latestX = (int) Math.round(mouseX * scaleX);
 		latestY = Display.getHeight() - (int) Math.round(mouseY * scaleY);
+
+		if (grabbed) {
+			return;
+		}
 
 		lastxEvents[queue.getNextPos()] = xEvents[queue.getNextPos()];
 		lastyEvents[queue.getNextPos()] = yEvents[queue.getNextPos()];

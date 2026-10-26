@@ -53,15 +53,11 @@ public class ItemRenderer {
 			var3.addVertexWithUV((double)var9, 0.0D, 0.0D, (double)var5, (double)var8);
 			var3.addVertexWithUV((double)var9, 1.0D, 0.0D, (double)var5, (double)var7);
 			var3.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)var6, (double)var7);
-			var3.draw();
-			var3.startDrawingQuads();
 			var3.setNormal(0.0F, 0.0F, -1.0F);
 			var3.addVertexWithUV(0.0D, 1.0D, (double)(0.0F - var13), (double)var6, (double)var7);
 			var3.addVertexWithUV((double)var9, 1.0D, (double)(0.0F - var13), (double)var5, (double)var7);
 			var3.addVertexWithUV((double)var9, 0.0D, (double)(0.0F - var13), (double)var5, (double)var8);
 			var3.addVertexWithUV(0.0D, 0.0D, (double)(0.0F - var13), (double)var6, (double)var8);
-			var3.draw();
-			var3.startDrawingQuads();
 			var3.setNormal(-1.0F, 0.0F, 0.0F);
 
 			int var14;
@@ -78,8 +74,6 @@ public class ItemRenderer {
 				var3.addVertexWithUV((double)var17, 1.0D, (double)(0.0F - var13), (double)var16, (double)var7);
 			}
 
-			var3.draw();
-			var3.startDrawingQuads();
 			var3.setNormal(1.0F, 0.0F, 0.0F);
 
 			for(var14 = 0; var14 < 16; ++var14) {
@@ -92,8 +86,6 @@ public class ItemRenderer {
 				var3.addVertexWithUV((double)var17, 0.0D, (double)(0.0F - var13), (double)var16, (double)var8);
 			}
 
-			var3.draw();
-			var3.startDrawingQuads();
 			var3.setNormal(0.0F, 1.0F, 0.0F);
 
 			for(var14 = 0; var14 < 16; ++var14) {
@@ -106,8 +98,6 @@ public class ItemRenderer {
 				var3.addVertexWithUV(0.0D, (double)var17, (double)(0.0F - var13), (double)var6, (double)var16);
 			}
 
-			var3.draw();
-			var3.startDrawingQuads();
 			var3.setNormal(0.0F, -1.0F, 0.0F);
 
 			for(var14 = 0; var14 < 16; ++var14) {

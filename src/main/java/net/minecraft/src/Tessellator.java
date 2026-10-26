@@ -60,6 +60,89 @@ public class Tessellator {
 		} else {
 			this.isDrawing = false;
 			if(this.vertexCount > 0) {
+				int actualDrawMode = this.drawMode;
+				if(this.drawMode == 7 && (this.vertexCount & 3) == 0) {
+					int numQuads = this.vertexCount >> 2;
+					int[] raw = this.rawBuffer;
+					for(int q = numQuads - 1; q >= 0; --q) {
+						int src = q << 5;
+						int dst = q * 48;
+						raw[dst + 40] = raw[src + 24];
+						raw[dst + 41] = raw[src + 25];
+						raw[dst + 42] = raw[src + 26];
+						raw[dst + 43] = raw[src + 27];
+						raw[dst + 44] = raw[src + 28];
+						raw[dst + 45] = raw[src + 29];
+						raw[dst + 46] = raw[src + 30];
+
+						int v2x = raw[src + 16];
+						int v2y = raw[src + 17];
+						int v2z = raw[src + 18];
+						int v2u = raw[src + 19];
+						int v2v = raw[src + 20];
+						int v2c = raw[src + 21];
+						int v2n = raw[src + 22];
+
+						int v1x = raw[src + 8];
+						int v1y = raw[src + 9];
+						int v1z = raw[src + 10];
+						int v1u = raw[src + 11];
+						int v1v = raw[src + 12];
+						int v1c = raw[src + 13];
+						int v1n = raw[src + 14];
+
+						int v0x = raw[src];
+						int v0y = raw[src + 1];
+						int v0z = raw[src + 2];
+						int v0u = raw[src + 3];
+						int v0v = raw[src + 4];
+						int v0c = raw[src + 5];
+						int v0n = raw[src + 6];
+
+						raw[dst + 32] = v2x;
+						raw[dst + 33] = v2y;
+						raw[dst + 34] = v2z;
+						raw[dst + 35] = v2u;
+						raw[dst + 36] = v2v;
+						raw[dst + 37] = v2c;
+						raw[dst + 38] = v2n;
+
+						raw[dst + 24] = v0x;
+						raw[dst + 25] = v0y;
+						raw[dst + 26] = v0z;
+						raw[dst + 27] = v0u;
+						raw[dst + 28] = v0v;
+						raw[dst + 29] = v0c;
+						raw[dst + 30] = v0n;
+
+						raw[dst + 16] = v2x;
+						raw[dst + 17] = v2y;
+						raw[dst + 18] = v2z;
+						raw[dst + 19] = v2u;
+						raw[dst + 20] = v2v;
+						raw[dst + 21] = v2c;
+						raw[dst + 22] = v2n;
+
+						raw[dst + 8] = v1x;
+						raw[dst + 9] = v1y;
+						raw[dst + 10] = v1z;
+						raw[dst + 11] = v1u;
+						raw[dst + 12] = v1v;
+						raw[dst + 13] = v1c;
+						raw[dst + 14] = v1n;
+
+						raw[dst] = v0x;
+						raw[dst + 1] = v0y;
+						raw[dst + 2] = v0z;
+						raw[dst + 3] = v0u;
+						raw[dst + 4] = v0v;
+						raw[dst + 5] = v0c;
+						raw[dst + 6] = v0n;
+					}
+					this.vertexCount = numQuads * 6;
+					this.rawBufferIndex = numQuads * 48;
+					actualDrawMode = GL11.GL_TRIANGLES;
+				}
 				this.intBuffer.clear();
 				this.intBuffer.put(this.rawBuffer, 0, this.rawBufferIndex);
 				this.byteBuffer.position(0);
@@ -111,11 +194,7 @@ public class Tessellator {
 				}
 
 				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-				if(this.drawMode == 7 && convertQuadsToTriangles) {
-					GL11.glDrawArrays(GL11.GL_TRIANGLES, GL11.GL_POINTS, this.vertexCount);
-				} else {
-					GL11.glDrawArrays(this.drawMode, GL11.GL_POINTS, this.vertexCount);
-				}
+				GL11.glDrawArrays(actualDrawMode, GL11.GL_POINTS, this.vertexCount);
 
 				GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
 				if(this.hasTexture) {

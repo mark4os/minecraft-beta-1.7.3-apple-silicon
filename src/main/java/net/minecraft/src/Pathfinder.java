@@ -10,6 +10,10 @@ public class Pathfinder {
 		this.worldMap = var1;
 	}
 
+	public void setWorldMap(IBlockAccess var1) {
+		this.worldMap = var1;
+	}
+
 	public PathEntity createEntityPathTo(Entity var1, Entity var2, float var3) {
 		return this.createEntityPathTo(var1, var2.posX, var2.boundingBox.minY, var2.posZ, var3);
 	}

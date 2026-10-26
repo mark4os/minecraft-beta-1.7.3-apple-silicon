@@ -181,11 +181,13 @@ public class ModelRenderer {
 		this.displayList = GLAllocation.generateDisplayLists(1);
 		GL11.glNewList(this.displayList, GL11.GL_COMPILE);
 		Tessellator var2 = Tessellator.instance;
+		var2.startDrawingQuads();
 
 		for(int var3 = 0; var3 < this.faces.length; ++var3) {
-			this.faces[var3].draw(var2, var1);
+			this.faces[var3].drawBatched(var2, var1);
 		}
 
+		var2.draw();
 		GL11.glEndList();
 		this.compiled = true;
 	}

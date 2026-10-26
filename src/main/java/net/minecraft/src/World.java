@@ -51,6 +51,11 @@ public class World implements IBlockAccess {
 	private boolean spawnPeacefulMobs;
 	static int lightingUpdatesScheduled = 0;
 	private Set positionsToUpdate;
+	private int lastPlayerChunkX = Integer.MIN_VALUE;
+	private int lastPlayerChunkZ = Integer.MIN_VALUE;
+	private int lastPlayerCount = -1;
+	private final Random displayRand = new Random();
+	private final Pathfinder sharedPathfinder = new Pathfinder((IBlockAccess)null);
 	private int soundCounter;
 	private List field_1012_M;
 	public boolean multiplayerWorld;
@@ -78,7 +83,7 @@ public class World implements IBlockAccess {
 		this.field_27172_i = 0;
 		this.editingBlocks = false;
 		this.lockTimestamp = System.currentTimeMillis();
-		this.autosavePeriod = 40;
+		this.autosavePeriod = 400;
 		this.rand = new Random();
 		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
@@ -119,7 +124,7 @@ public class World implements IBlockAccess {
 		this.field_27172_i = 0;
 		this.editingBlocks = false;
 		this.lockTimestamp = System.currentTimeMillis();
-		this.autosavePeriod = 40;
+		this.autosavePeriod = 400;
 		this.rand = new Random();
 		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
@@ -165,7 +170,7 @@ public class World implements IBlockAccess {
 		this.field_27172_i = 0;
 		this.editingBlocks = false;
 		this.lockTimestamp = System.currentTimeMillis();
-		this.autosavePeriod = 40;
+		this.autosavePeriod = 400;
 		this.rand = new Random();
 		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
@@ -1649,12 +1654,13 @@ public class World implements IBlockAccess {
 			++this.lightingUpdatesCounter;
 
 			try {
-				int var1 = 500;
+				int var1 = 64;
+				long startNano = System.nanoTime();
 
 				boolean var2;
 				while(this.lightingToUpdate.size() > 0) {
 					--var1;
-					if(var1 <= 0) {
+					if(var1 <= 0 || (System.nanoTime() - startNano) > 1500000L) {
 						var2 = true;
 						return var2;
 					}
@@ -1859,21 +1865,40 @@ public class World implements IBlockAccess {
 	}
 
 	protected void updateBlocksAndPlayCaveSounds() {
-		this.positionsToUpdate.clear();
-
 		int var3;
 		int var4;
 		int var6;
 		int var7;
-		for(int var1 = 0; var1 < this.playerEntities.size(); ++var1) {
-			EntityPlayer var2 = (EntityPlayer)this.playerEntities.get(var1);
-			var3 = MathHelper.floor_double(var2.posX / 16.0D);
-			var4 = MathHelper.floor_double(var2.posZ / 16.0D);
-			byte var5 = 9;
+		int playerCount = this.playerEntities.size();
+		boolean rebuildPositions = playerCount != this.lastPlayerCount || this.positionsToUpdate.isEmpty();
+		if(!rebuildPositions && playerCount == 1) {
+			EntityPlayer p0 = (EntityPlayer)this.playerEntities.get(0);
+			int cx = MathHelper.floor_double(p0.posX / 16.0D);
+			int cz = MathHelper.floor_double(p0.posZ / 16.0D);
+			if(cx != this.lastPlayerChunkX || cz != this.lastPlayerChunkZ) {
+				rebuildPositions = true;
+			}
+		} else if(playerCount > 1) {
+			rebuildPositions = true;
+		}
 
-			for(var6 = -var5; var6 <= var5; ++var6) {
-				for(var7 = -var5; var7 <= var5; ++var7) {
-					this.positionsToUpdate.add(new ChunkCoordIntPair(var6 + var3, var7 + var4));
+		if(rebuildPositions) {
+			this.positionsToUpdate.clear();
+			this.lastPlayerCount = playerCount;
+			for(int var1 = 0; var1 < playerCount; ++var1) {
+				EntityPlayer var2 = (EntityPlayer)this.playerEntities.get(var1);
+				var3 = MathHelper.floor_double(var2.posX / 16.0D);
+				var4 = MathHelper.floor_double(var2.posZ / 16.0D);
+				if(var1 == 0) {
+					this.lastPlayerChunkX = var3;
+					this.lastPlayerChunkZ = var4;
+				}
+				byte var5 = 9;
+
+				for(var6 = -var5; var6 <= var5; ++var6) {
+					for(var7 = -var5; var7 <= var5; ++var7) {
+						this.positionsToUpdate.add(new ChunkCoordIntPair(var6 + var3, var7 + var4));
+					}
 				}
 			}
 		}
@@ -1989,7 +2014,7 @@ public class World implements IBlockAccess {
 
 	public void randomDisplayUpdates(int var1, int var2, int var3) {
 		byte var4 = 16;
-		Random var5 = new Random();
+		Random var5 = this.displayRand;
 
 		for(int var6 = 0; var6 < 1000; ++var6) {
 			int var7 = var1 + this.rand.nextInt(var4) - this.rand.nextInt(var4);
@@ -2118,7 +2143,8 @@ public class World implements IBlockAccess {
 		int var12 = var5 + var7;
 		int var13 = var6 + var7;
 		ChunkCache var14 = new ChunkCache(this, var8, var9, var10, var11, var12, var13);
-		return (new Pathfinder(var14)).createEntityPathTo(var1, var2, var3);
+		this.sharedPathfinder.setWorldMap(var14);
+		return this.sharedPathfinder.createEntityPathTo(var1, var2, var3);
 	}
 
 	public PathEntity getEntityPathToXYZ(Entity var1, int var2, int var3, int var4, float var5) {
@@ -2133,7 +2159,8 @@ public class World implements IBlockAccess {
 		int var14 = var7 + var9;
 		int var15 = var8 + var9;
 		ChunkCache var16 = new ChunkCache(this, var10, var11, var12, var13, var14, var15);
-		return (new Pathfinder(var16)).createEntityPathTo(var1, var2, var3, var4, var5);
+		this.sharedPathfinder.setWorldMap(var16);
+		return this.sharedPathfinder.createEntityPathTo(var1, var2, var3, var4, var5);
 	}
 
 	public boolean isBlockProvidingPowerTo(int var1, int var2, int var3, int var4) {

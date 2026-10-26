@@ -157,7 +157,7 @@ public class Keyboard {
 	public static final int KEY_POWER           = 0xDE;
 	public static final int KEY_SLEEP           = 0xDF;
 
-	private static EventQueue queue = new EventQueue(32);
+	private static EventQueue queue = new EventQueue(512);
 	// private static int maxEvents = 32;
 
 	// private static int eventCount = 0;

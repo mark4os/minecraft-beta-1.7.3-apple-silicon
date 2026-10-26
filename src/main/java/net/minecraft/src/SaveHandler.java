@@ -15,6 +15,7 @@ public class SaveHandler implements ISaveHandler {
 	private final File playersDirectory;
 	private final File field_28114_d;
 	private final long now = System.currentTimeMillis();
+	private long lastLockCheckTime = 0L;
 
 	public SaveHandler(File var1, String var2, boolean var3) {
 		this.saveDirectory = new File(var1, var2);
@@ -51,6 +52,11 @@ public class SaveHandler implements ISaveHandler {
 	}
 
 	public void func_22150_b() {
+		long currentTime = System.currentTimeMillis();
+		if(currentTime - this.lastLockCheckTime < 5000L) {
+			return;
+		}
+		this.lastLockCheckTime = currentTime;
 		try {
 			File var1 = new File(this.saveDirectory, "session.lock");
 			DataInputStream var2 = new DataInputStream(new FileInputStream(var1));

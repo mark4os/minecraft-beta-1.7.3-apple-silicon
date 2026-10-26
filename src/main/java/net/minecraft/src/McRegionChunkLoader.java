@@ -15,7 +15,12 @@ public class McRegionChunkLoader implements IChunkLoader {
 	public Chunk loadChunk(World var1, int var2, int var3) throws IOException {
 		DataInputStream var4 = RegionFileCache.getChunkInputStream(this.worldDir, var2, var3);
 		if(var4 != null) {
-			NBTTagCompound var5 = CompressedStreamTools.func_1141_a(var4);
+			NBTTagCompound var5;
+			try {
+				var5 = CompressedStreamTools.func_1141_a(var4);
+			} finally {
+				var4.close();
+			}
 			if(!var5.hasKey("Level")) {
 				System.out.println("Chunk file at " + var2 + "," + var3 + " is missing level data, skipping");
 				return null;

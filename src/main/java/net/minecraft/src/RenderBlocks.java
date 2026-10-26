@@ -3204,30 +3204,20 @@ public class RenderBlocks {
 				var4.startDrawingQuads();
 				var4.setNormal(0.0F, -1.0F, 0.0F);
 				this.renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
-				var4.draw();
-				var4.startDrawingQuads();
 				var4.setNormal(0.0F, 1.0F, 0.0F);
 				this.renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
-				var4.draw();
-				var4.startDrawingQuads();
 				var4.setNormal(0.0F, 0.0F, -1.0F);
 				var4.setTranslationF(0.0F, 0.0F, var6);
 				this.renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
 				var4.setTranslationF(0.0F, 0.0F, -var6);
-				var4.draw();
-				var4.startDrawingQuads();
 				var4.setNormal(0.0F, 0.0F, 1.0F);
 				var4.setTranslationF(0.0F, 0.0F, -var6);
 				this.renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
 				var4.setTranslationF(0.0F, 0.0F, var6);
-				var4.draw();
-				var4.startDrawingQuads();
 				var4.setNormal(-1.0F, 0.0F, 0.0F);
 				var4.setTranslationF(var6, 0.0F, 0.0F);
 				this.renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
 				var4.setTranslationF(-var6, 0.0F, 0.0F);
-				var4.draw();
-				var4.startDrawingQuads();
 				var4.setNormal(1.0F, 0.0F, 0.0F);
 				var4.setTranslationF(-var6, 0.0F, 0.0F);
 				this.renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
@@ -3247,6 +3237,8 @@ public class RenderBlocks {
 			} else {
 				int var9;
 				if(var5 == 10) {
+					GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+					var4.startDrawingQuads();
 					for(var9 = 0; var9 < 2; ++var9) {
 						if(var9 == 0) {
 							var1.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
@@ -3256,34 +3248,24 @@ public class RenderBlocks {
 							var1.setBlockBounds(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
 						}
 
-						GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, -1.0F, 0.0F);
 						this.renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, 1.0F, 0.0F);
 						this.renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, 0.0F, -1.0F);
 						this.renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, 0.0F, 1.0F);
 						this.renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(-1.0F, 0.0F, 0.0F);
 						this.renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(1.0F, 0.0F, 0.0F);
 						this.renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
-						var4.draw();
-						GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 					}
+					var4.draw();
+					GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 				} else if(var5 == 11) {
+					GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+					var4.startDrawingQuads();
 					for(var9 = 0; var9 < 4; ++var9) {
 						var7 = 2.0F / 16.0F;
 						if(var9 == 0) {
@@ -3303,34 +3285,21 @@ public class RenderBlocks {
 							var1.setBlockBounds(0.5F - var7, 0.5F - var7 * 3.0F, -var7 * 2.0F, 0.5F + var7, 0.5F - var7, 1.0F + var7 * 2.0F);
 						}
 
-						GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, -1.0F, 0.0F);
 						this.renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, 1.0F, 0.0F);
 						this.renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, 0.0F, -1.0F);
 						this.renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(0.0F, 0.0F, 1.0F);
 						this.renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(-1.0F, 0.0F, 0.0F);
 						this.renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
-						var4.draw();
-						var4.startDrawingQuads();
 						var4.setNormal(1.0F, 0.0F, 0.0F);
 						this.renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
-						var4.draw();
-						GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 					}
-
+					var4.draw();
+					GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 					var1.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 				}
 			}
@@ -3344,24 +3313,14 @@ public class RenderBlocks {
 			var4.startDrawingQuads();
 			var4.setNormal(0.0F, -1.0F, 0.0F);
 			this.renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(0, var2));
-			var4.draw();
-			var4.startDrawingQuads();
 			var4.setNormal(0.0F, 1.0F, 0.0F);
 			this.renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(1, var2));
-			var4.draw();
-			var4.startDrawingQuads();
 			var4.setNormal(0.0F, 0.0F, -1.0F);
 			this.renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(2, var2));
-			var4.draw();
-			var4.startDrawingQuads();
 			var4.setNormal(0.0F, 0.0F, 1.0F);
 			this.renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(3, var2));
-			var4.draw();
-			var4.startDrawingQuads();
 			var4.setNormal(-1.0F, 0.0F, 0.0F);
 			this.renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(4, var2));
-			var4.draw();
-			var4.startDrawingQuads();
 			var4.setNormal(1.0F, 0.0F, 0.0F);
 			this.renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(5, var2));
 			var4.draw();

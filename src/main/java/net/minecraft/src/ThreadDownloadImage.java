@@ -16,6 +16,9 @@ class ThreadDownloadImage extends Thread {
 	}
 
 	public void run() {
+		if(this.location == null || this.location.startsWith("http://s3.amazonaws.com/Minecraft")) {
+			return;
+		}
 		HttpURLConnection var1 = null;
 
 		try {
@@ -34,10 +37,11 @@ class ThreadDownloadImage extends Thread {
 				return;
 			}
 		} catch (Exception var6) {
-			var6.printStackTrace();
 			return;
 		} finally {
-			var1.disconnect();
+			if(var1 != null) {
+				var1.disconnect();
+			}
 		}
 
 	}

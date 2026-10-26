@@ -547,26 +547,6 @@ public abstract class Minecraft implements Runnable {
 						this.theWorld.updatingLighting();
 					}
 
-					if(!Keyboard.isKeyDown(Keyboard.KEY_F7)) {
-						Display.update();
-					}
-
-					if (this.gameSettings != null) {
-						if (!Display.isActive()) {
-							Display.setSwapInterval(1);
-							Display.sync(20);
-						} else if (this.gameSettings.limitFramerate == 0) {
-							// Max FPS: Hardware VSync at native 60 Hz screen refresh (60 FPS)
-							Display.setSwapInterval(1);
-						} else if (this.gameSettings.limitFramerate == 1) {
-							// Balanced: Rock-solid 60 FPS hardware VSync
-							Display.setSwapInterval(1);
-						} else if (this.gameSettings.limitFramerate == 2) {
-							// Power Saver: 30 FPS hardware VSync (every 2nd refresh)
-							Display.setSwapInterval(2);
-						}
-					}
-
 					if(this.thePlayer != null && this.thePlayer.isEntityInsideOpaqueBlock()) {
 						this.gameSettings.thirdPersonView = false;
 					}
@@ -579,14 +559,6 @@ public abstract class Minecraft implements Runnable {
 						this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
 					}
 
-					if(!Display.isActive()) {
-						if(this.fullscreen) {
-							this.toggleFullscreen();
-						}
-
-						Thread.sleep(30L);
-					}
-
 					if(this.gameSettings.showDebugInfo) {
 						this.displayDebugInfo(var24);
 					} else {
@@ -594,11 +566,31 @@ public abstract class Minecraft implements Runnable {
 					}
 
 					this.guiAchievement.updateAchievementWindow();
-					if(Keyboard.isKeyDown(Keyboard.KEY_F7)) {
-						Display.update();
+					this.screenshotListener();
+
+					if (this.gameSettings != null) {
+						if (!Display.isActive()) {
+							if (this.fullscreen) {
+								this.toggleFullscreen();
+							}
+							Display.setSwapInterval(1);
+						} else if (this.gameSettings.limitFramerate == 0) {
+							// Max FPS: Hardware VSync at native 60 Hz screen refresh (60 FPS)
+							Display.setSwapInterval(1);
+						} else if (this.gameSettings.limitFramerate == 1) {
+							// Balanced: Rock-solid 60 FPS hardware VSync
+							Display.setSwapInterval(1);
+						} else if (this.gameSettings.limitFramerate == 2) {
+							// Power Saver: 30 FPS hardware VSync (every 2nd refresh)
+							Display.setSwapInterval(2);
+						}
 					}
 
-					this.screenshotListener();
+					Display.update();
+
+					if (!Display.isActive()) {
+						Display.sync(20);
+					}
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
 						this.displayWidth = this.mcCanvas.getWidth();
 						this.displayHeight = this.mcCanvas.getHeight();
@@ -947,7 +939,7 @@ public abstract class Minecraft implements Runnable {
 	}
 
 	private void func_28001_B() {
-		(new ThreadCheckHasPaid(this)).start();
+		// Disabled legacy 2011 login.minecraft.net session check
 	}
 
 	public void runTick() {

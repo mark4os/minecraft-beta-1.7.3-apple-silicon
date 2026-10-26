@@ -177,7 +177,7 @@ public class ChunkProvider implements IChunkProvider {
 				this.func_28062_b(var5);
 				var5.isModified = false;
 				++var3;
-				if(var3 == 24 && !var1) {
+				if(var3 == 2 && !var1) {
 					return false;
 				}
 			}

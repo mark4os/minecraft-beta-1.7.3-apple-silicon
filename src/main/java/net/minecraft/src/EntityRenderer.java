@@ -173,7 +173,7 @@ public class EntityRenderer {
 		if(this.mc.renderViewEntity instanceof EntityPlayer) {
 			EntityPlayer var2 = (EntityPlayer)this.mc.renderViewEntity;
 			float var3 = var2.distanceWalkedModified - var2.prevDistanceWalkedModified;
-			float var4 = -(var2.distanceWalkedModified + var3 * var1);
+			float var4 = -(var2.prevDistanceWalkedModified + var3 * var1);
 			float var5 = var2.field_775_e + (var2.field_774_f - var2.field_775_e) * var1;
 			float var6 = var2.cameraPitch + (var2.field_9328_R - var2.cameraPitch) * var1;
 			GL11.glTranslatef(MathHelper.sin(var4 * (float)Math.PI) * var5 * 0.5F, -Math.abs(MathHelper.cos(var4 * (float)Math.PI) * var5), 0.0F);
@@ -186,9 +186,9 @@ public class EntityRenderer {
 	private void orientCamera(float var1) {
 		EntityLiving var2 = this.mc.renderViewEntity;
 		float var3 = var2.yOffset - 1.62F;
-		double var4 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
-		double var6 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1 - (double)var3;
-		double var8 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double)var1;
+		double var4 = var2.lastTickPosX + (var2.posX - var2.lastTickPosX) * (double)var1;
+		double var6 = var2.lastTickPosY + (var2.posY - var2.lastTickPosY) * (double)var1 - (double)var3;
+		double var8 = var2.lastTickPosZ + (var2.posZ - var2.lastTickPosZ) * (double)var1;
 		GL11.glRotatef(this.field_22230_A + (this.field_22220_z - this.field_22230_A) * var1, 0.0F, 0.0F, 1.0F);
 		if(var2.isPlayerSleeping()) {
 			var3 = (float)((double)var3 + 1.0D);
@@ -253,9 +253,9 @@ public class EntityRenderer {
 		}
 
 		GL11.glTranslatef(0.0F, var3, 0.0F);
-		var4 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
-		var6 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1 - (double)var3;
-		var8 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double)var1;
+		var4 = var2.lastTickPosX + (var2.posX - var2.lastTickPosX) * (double)var1;
+		var6 = var2.lastTickPosY + (var2.posY - var2.lastTickPosY) * (double)var1 - (double)var3;
+		var8 = var2.lastTickPosZ + (var2.posZ - var2.lastTickPosZ) * (double)var1;
 		this.cloudFog = this.mc.renderGlobal.func_27307_a(var4, var6, var8, var1);
 	}
 
@@ -639,6 +639,8 @@ public class EntityRenderer {
 			int var23;
 			int var24;
 			float var26;
+			var8.startDrawingQuads();
+			var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
 			for(var19 = var5 - var16; var19 <= var5 + var16; ++var19) {
 				for(var20 = var7 - var16; var20 <= var7 + var16; ++var20) {
 					var21 = var17[var18++];
@@ -673,10 +675,8 @@ public class EntityRenderer {
 							double var31 = (double)((float)var19 + 0.5F) - var3.posX;
 							double var33 = (double)((float)var20 + 0.5F) - var3.posZ;
 							float var35 = MathHelper.sqrt_double(var31 * var31 + var33 * var33) / (float)var16;
-							var8.startDrawingQuads();
 							float var36 = var4.getLightBrightness(var19, var23, var20);
-							GL11.glColor4f(var36, var36, var36, ((1.0F - var35 * var35) * 0.3F + 0.5F) * var2);
-							var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
+							var8.setColorRGBA_F(var36, var36, var36, ((1.0F - var35 * var35) * 0.3F + 0.5F) * var2);
 							var8.addVertexWithUV((double)(var19 + 0), (double)var24, (double)var20 + 0.5D, (double)(0.0F * var26 + var29), (double)((float)var24 * var26 / 4.0F + var28 * var26 + var30));
 							var8.addVertexWithUV((double)(var19 + 1), (double)var24, (double)var20 + 0.5D, (double)(1.0F * var26 + var29), (double)((float)var24 * var26 / 4.0F + var28 * var26 + var30));
 							var8.addVertexWithUV((double)(var19 + 1), (double)var25, (double)var20 + 0.5D, (double)(1.0F * var26 + var29), (double)((float)var25 * var26 / 4.0F + var28 * var26 + var30));
@@ -685,12 +685,12 @@ public class EntityRenderer {
 							var8.addVertexWithUV((double)var19 + 0.5D, (double)var24, (double)(var20 + 1), (double)(1.0F * var26 + var29), (double)((float)var24 * var26 / 4.0F + var28 * var26 + var30));
 							var8.addVertexWithUV((double)var19 + 0.5D, (double)var25, (double)(var20 + 1), (double)(1.0F * var26 + var29), (double)((float)var25 * var26 / 4.0F + var28 * var26 + var30));
 							var8.addVertexWithUV((double)var19 + 0.5D, (double)var25, (double)(var20 + 0), (double)(0.0F * var26 + var29), (double)((float)var25 * var26 / 4.0F + var28 * var26 + var30));
-							var8.setTranslationD(0.0D, 0.0D, 0.0D);
-							var8.draw();
 						}
 					}
 				}
 			}
+			var8.setTranslationD(0.0D, 0.0D, 0.0D);
+			var8.draw();
 
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/environment/rain.png"));
 			if(this.mc.gameSettings.fancyGraphics) {
@@ -699,6 +699,8 @@ public class EntityRenderer {
 
 			var18 = 0;
 
+			var8.startDrawingQuads();
+			var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
 			for(var19 = var5 - var16; var19 <= var5 + var16; ++var19) {
 				for(var20 = var7 - var16; var20 <= var7 + var16; ++var20) {
 					var21 = var17[var18++];
@@ -721,10 +723,8 @@ public class EntityRenderer {
 							double var38 = (double)((float)var19 + 0.5F) - var3.posX;
 							double var39 = (double)((float)var20 + 0.5F) - var3.posZ;
 							float var40 = MathHelper.sqrt_double(var38 * var38 + var39 * var39) / (float)var16;
-							var8.startDrawingQuads();
 							float var32 = var4.getLightBrightness(var19, 128, var20) * 0.85F + 0.15F;
-							GL11.glColor4f(var32, var32, var32, ((1.0F - var40 * var40) * 0.5F + 0.5F) * var2);
-							var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
+							var8.setColorRGBA_F(var32, var32, var32, ((1.0F - var40 * var40) * 0.5F + 0.5F) * var2);
 							var8.addVertexWithUV((double)(var19 + 0), (double)var23, (double)var20 + 0.5D, (double)(0.0F * var37), (double)((float)var23 * var37 / 4.0F + var26 * var37));
 							var8.addVertexWithUV((double)(var19 + 1), (double)var23, (double)var20 + 0.5D, (double)(1.0F * var37), (double)((float)var23 * var37 / 4.0F + var26 * var37));
 							var8.addVertexWithUV((double)(var19 + 1), (double)var24, (double)var20 + 0.5D, (double)(1.0F * var37), (double)((float)var24 * var37 / 4.0F + var26 * var37));
@@ -733,12 +733,13 @@ public class EntityRenderer {
 							var8.addVertexWithUV((double)var19 + 0.5D, (double)var23, (double)(var20 + 1), (double)(1.0F * var37), (double)((float)var23 * var37 / 4.0F + var26 * var37));
 							var8.addVertexWithUV((double)var19 + 0.5D, (double)var24, (double)(var20 + 1), (double)(1.0F * var37), (double)((float)var24 * var37 / 4.0F + var26 * var37));
 							var8.addVertexWithUV((double)var19 + 0.5D, (double)var24, (double)(var20 + 0), (double)(0.0F * var37), (double)((float)var24 * var37 / 4.0F + var26 * var37));
-							var8.setTranslationD(0.0D, 0.0D, 0.0D);
-							var8.draw();
 						}
 					}
 				}
 			}
+			var8.setTranslationD(0.0D, 0.0D, 0.0D);
+			var8.draw();
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);

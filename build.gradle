@@ -177,7 +177,7 @@ exec "\$JAVA_BIN" \\
     -Dminecraft.dir="\$DATA_DIR" \\
     -Djava.awt.headless=true \\
     -Dorg.lwjgl.util.Debug=false \\
-    -cp "\$RESOURCES/lib/*" \\
+    -cp "\$RESOURCES/lib/minecraft-b1.7.3-arm64-beta-1.7.3-arm64.jar:\$RESOURCES/lib/*" \\
     net.minecraft.client.Minecraft "\$@"
 """
         launcherScript.setExecutable(true, false)

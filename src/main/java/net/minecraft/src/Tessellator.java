@@ -75,7 +75,7 @@ public class Tessellator {
 						GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, 12L);
 					} else {
 						this.floatBuffer.position(3);
-						GL11.glTexCoordPointer(2, 32, (FloatBuffer)this.floatBuffer);
+						GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, (FloatBuffer)this.floatBuffer);
 					}
 
 					GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -86,7 +86,7 @@ public class Tessellator {
 						GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 32, 20L);
 					} else {
 						this.byteBuffer.position(20);
-						GL11.glColorPointer(4, true, 32, this.byteBuffer);
+						GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, 32, this.byteBuffer);
 					}
 
 					GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
@@ -97,7 +97,7 @@ public class Tessellator {
 						GL11.glNormalPointer(GL11.GL_BYTE, 32, 24L);
 					} else {
 						this.byteBuffer.position(24);
-						GL11.glNormalPointer(32, (ByteBuffer)this.byteBuffer);
+						GL11.glNormalPointer(GL11.GL_BYTE, 32, (ByteBuffer)this.byteBuffer);
 					}
 
 					GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
@@ -107,7 +107,7 @@ public class Tessellator {
 					GL11.glVertexPointer(3, GL11.GL_FLOAT, 32, 0L);
 				} else {
 					this.floatBuffer.position(0);
-					GL11.glVertexPointer(3, 32, (FloatBuffer)this.floatBuffer);
+					GL11.glVertexPointer(3, GL11.GL_FLOAT, 32, (FloatBuffer)this.floatBuffer);
 				}
 
 				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);

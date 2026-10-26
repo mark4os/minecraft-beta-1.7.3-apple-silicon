@@ -248,8 +248,8 @@ public class EntityRenderer {
 		}
 
 		if(!this.mc.gameSettings.field_22273_E) {
-			GL11.glRotatef(var2.prevRotationPitch + (var2.rotationPitch - var2.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(var2.prevRotationYaw + (var2.rotationYaw - var2.prevRotationYaw) * var1 + 180.0F, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(var2.rotationPitch, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(var2.rotationYaw + 180.0F, 0.0F, 1.0F, 0.0F);
 		}
 
 		GL11.glTranslatef(0.0F, var3, 0.0F);
@@ -353,6 +353,8 @@ public class EntityRenderer {
 			}
 
 			this.mc.thePlayer.func_346_d(var4, var5 * (float)var6);
+			this.mc.thePlayer.prevRotationYaw = this.mc.thePlayer.rotationYaw;
+			this.mc.thePlayer.prevRotationPitch = this.mc.thePlayer.rotationPitch;
 		}
 
 		if(!this.mc.skipRenderWorld) {

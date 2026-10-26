@@ -552,28 +552,18 @@ public abstract class Minecraft implements Runnable {
 					}
 
 					if (this.gameSettings != null) {
-						int freq = Display.getDesktopDisplayMode().getFrequency();
 						if (!Display.isActive()) {
 							Display.setSwapInterval(1);
 							Display.sync(20);
 						} else if (this.gameSettings.limitFramerate == 0) {
-							// Max FPS: Hardware VSync to monitor refresh rate (120Hz ProMotion / 60Hz)
+							// Max FPS: Hardware VSync at native 60 Hz screen refresh (60 FPS)
 							Display.setSwapInterval(1);
 						} else if (this.gameSettings.limitFramerate == 1) {
-							// Balanced: 60 FPS. If 120Hz ProMotion, swap every 2 vblanks (hardware 60 FPS!)
-							if (freq >= 115) {
-								Display.setSwapInterval(2);
-							} else {
-								Display.setSwapInterval(1);
-							}
+							// Balanced: Rock-solid 60 FPS hardware VSync
+							Display.setSwapInterval(1);
 						} else if (this.gameSettings.limitFramerate == 2) {
-							// Power Saver: 40 FPS. On 120Hz, swap every 3 vblanks (hardware 40 FPS!)
-							if (freq >= 115) {
-								Display.setSwapInterval(3);
-							} else {
-								Display.setSwapInterval(1);
-								Display.sync(40);
-							}
+							// Power Saver: 30 FPS hardware VSync (every 2nd refresh)
+							Display.setSwapInterval(2);
 						}
 					}
 

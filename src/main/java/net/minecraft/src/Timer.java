@@ -22,15 +22,19 @@ public class Timer {
 			passedNano = 0L;
 		}
 		if (passedNano > 1000000000L) {
-			passedNano = 1000000000L; // protect against huge time jumps on pause/freeze
+			passedNano = 1000000000L;
 		}
 
-		this.elapsedPartialTicks += (float)((double)passedNano / (1000000000.0D / (double)this.ticksPerSecond) * (double)this.timerSpeed);
+		double deltaTicks = (double)passedNano / (1000000000.0D / (double)this.ticksPerSecond) * (double)this.timerSpeed;
+		this.elapsedPartialTicks += (float)deltaTicks;
+
 		this.elapsedTicks = (int)this.elapsedPartialTicks;
-		this.elapsedPartialTicks -= (float)this.elapsedTicks;
 
 		if (this.elapsedTicks > 10) {
 			this.elapsedTicks = 10;
+			this.elapsedPartialTicks = 0.0F;
+		} else {
+			this.elapsedPartialTicks -= (float)this.elapsedTicks;
 		}
 
 		this.renderPartialTicks = this.elapsedPartialTicks;

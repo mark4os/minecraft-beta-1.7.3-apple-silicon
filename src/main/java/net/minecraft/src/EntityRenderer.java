@@ -378,17 +378,6 @@ public class EntityRenderer {
 					this.renderWorld(var1, this.field_28133_I + (long)(1000000000 / var7));
 				}
 
-				if(this.mc.gameSettings.limitFramerate == 2) {
-					var8 = (this.field_28133_I + (long)(1000000000 / var7) - System.nanoTime()) / 1000000L;
-					if(var8 > 0L && var8 < 500L) {
-						try {
-							Thread.sleep(var8);
-						} catch (InterruptedException var12) {
-							var12.printStackTrace();
-						}
-					}
-				}
-
 				this.field_28133_I = System.nanoTime();
 				if(!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null) {
 					this.mc.ingameGUI.renderGameOverlay(var1, this.mc.currentScreen != null, var16, var17);
@@ -400,20 +389,6 @@ public class EntityRenderer {
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				GL11.glLoadIdentity();
 				this.func_905_b();
-				if(this.mc.gameSettings.limitFramerate == 2) {
-					var8 = (this.field_28133_I + (long)(1000000000 / var7) - System.nanoTime()) / 1000000L;
-					if(var8 < 0L) {
-						var8 += 10L;
-					}
-
-					if(var8 > 0L && var8 < 500L) {
-						try {
-							Thread.sleep(var8);
-						} catch (InterruptedException var11) {
-							var11.printStackTrace();
-						}
-					}
-				}
 
 				this.field_28133_I = System.nanoTime();
 			}

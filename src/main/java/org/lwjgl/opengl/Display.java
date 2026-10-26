@@ -417,7 +417,8 @@ public class Display {
         System.out.println("[Display] GL_APPLE_vertex_array_object: " + GLContext.getCapabilities().GL_APPLE_vertex_array_object);
         System.out.println("[Display] GL_ARB_vertex_buffer_object: " + GLContext.getCapabilities().GL_ARB_vertex_buffer_object);
 
-        glfwSwapInterval(0);
+        vsyncEnabled = true;
+        glfwSwapInterval(1);
         glfwShowWindow(Window.handle);
 
         Mouse.create();
@@ -1061,7 +1062,7 @@ public class Display {
      *            - the desired frame rate, in frames per second
      */
     public static void sync(int fps) {
-        if (vsyncEnabled)
+        if (fps > 0)
             Sync.sync(fps);
     }
 
@@ -1089,7 +1090,8 @@ public class Display {
         // glfwMakeContextCurrent(Window.handle);
         context = org.lwjgl.opengl.GLContext.createFromCurrent();
 
-        glfwSwapInterval(0);
+        vsyncEnabled = true;
+        glfwSwapInterval(1);
         glfwShowWindow(Window.handle);
     }
 

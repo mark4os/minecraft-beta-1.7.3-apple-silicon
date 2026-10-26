@@ -34,7 +34,7 @@ public class Sys {
 	 * @return 1
 	 */
 	public static long getTimerResolution() {
-		return 1000;
+		return GLFW.glfwGetTimerFrequency();
 	}
 
 	/**

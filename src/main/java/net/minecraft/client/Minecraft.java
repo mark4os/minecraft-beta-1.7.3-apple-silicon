@@ -550,6 +550,16 @@ public abstract class Minecraft implements Runnable {
 						Display.update();
 					}
 
+					if (this.gameSettings != null) {
+						if (this.gameSettings.limitFramerate == 1) {
+							Display.sync(60);
+						} else if (this.gameSettings.limitFramerate == 2) {
+							Display.sync(40);
+						} else if (this.gameSettings.limitFramerate == 0) {
+							Display.sync(120);
+						}
+					}
+
 					if(this.thePlayer != null && this.thePlayer.isEntityInsideOpaqueBlock()) {
 						this.gameSettings.thirdPersonView = false;
 					}
@@ -567,7 +577,7 @@ public abstract class Minecraft implements Runnable {
 							this.toggleFullscreen();
 						}
 
-						Thread.sleep(10L);
+						Thread.sleep(30L);
 					}
 
 					if(this.gameSettings.showDebugInfo) {

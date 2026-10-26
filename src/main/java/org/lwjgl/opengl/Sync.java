@@ -140,7 +140,7 @@ class Sync {
 	 * @return will return the current time in nano's
 	 */
 	private static long getTime() {
-		return (Sys.getTime() * NANOS_IN_SECOND) / Sys.getTimerResolution();
+		return System.nanoTime();
 	}
 
 	private static class RunningAvg {

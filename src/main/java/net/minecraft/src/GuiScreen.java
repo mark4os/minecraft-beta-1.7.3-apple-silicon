@@ -115,7 +115,7 @@ public class GuiScreen extends Gui {
 
 	public void handleKeyboardInput() {
 		if(Keyboard.getEventKeyState()) {
-			if(Keyboard.getEventKey() == Keyboard.KEY_F11) {
+			if(Keyboard.getEventKey() == Keyboard.KEY_F11 || (Keyboard.getEventKey() == Keyboard.KEY_F && (Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA)))) {
 				this.mc.toggleFullscreen();
 				return;
 			}

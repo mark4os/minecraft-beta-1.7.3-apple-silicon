@@ -186,9 +186,9 @@ public class EntityRenderer {
 	private void orientCamera(float var1) {
 		EntityLiving var2 = this.mc.renderViewEntity;
 		float var3 = var2.yOffset - 1.62F;
-		double var4 = var2.lastTickPosX + (var2.posX - var2.lastTickPosX) * (double)var1;
-		double var6 = var2.lastTickPosY + (var2.posY - var2.lastTickPosY) * (double)var1 - (double)var3;
-		double var8 = var2.lastTickPosZ + (var2.posZ - var2.lastTickPosZ) * (double)var1;
+		double var4 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
+		double var6 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1 - (double)var3;
+		double var8 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double)var1;
 		GL11.glRotatef(this.field_22230_A + (this.field_22220_z - this.field_22230_A) * var1, 0.0F, 0.0F, 1.0F);
 		if(var2.isPlayerSleeping()) {
 			var3 = (float)((double)var3 + 1.0D);
@@ -253,9 +253,9 @@ public class EntityRenderer {
 		}
 
 		GL11.glTranslatef(0.0F, var3, 0.0F);
-		var4 = var2.lastTickPosX + (var2.posX - var2.lastTickPosX) * (double)var1;
-		var6 = var2.lastTickPosY + (var2.posY - var2.lastTickPosY) * (double)var1 - (double)var3;
-		var8 = var2.lastTickPosZ + (var2.posZ - var2.lastTickPosZ) * (double)var1;
+		var4 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
+		var6 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1 - (double)var3;
+		var8 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double)var1;
 		this.cloudFog = this.mc.renderGlobal.func_27307_a(var4, var6, var8, var1);
 	}
 
@@ -364,23 +364,8 @@ public class EntityRenderer {
 			int var15 = var13.getScaledHeight();
 			int var16 = Mouse.getX() * var14 / this.mc.displayWidth;
 			int var17 = var15 - Mouse.getY() * var15 / this.mc.displayHeight - 1;
-			short var7 = 200;
-			if(this.mc.gameSettings.limitFramerate == 1) {
-				var7 = 120;
-			}
-
-			if(this.mc.gameSettings.limitFramerate == 2) {
-				var7 = 40;
-			}
-
-			long var8;
 			if(this.mc.theWorld != null) {
-				if(this.mc.gameSettings.limitFramerate == 0) {
-					this.renderWorld(var1, 0L);
-				} else {
-					this.renderWorld(var1, this.field_28133_I + (long)(1000000000 / var7));
-				}
-
+				this.renderWorld(var1, 0L);
 				this.field_28133_I = System.nanoTime();
 				if(!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null) {
 					this.mc.ingameGUI.renderGameOverlay(var1, this.mc.currentScreen != null, var16, var17);

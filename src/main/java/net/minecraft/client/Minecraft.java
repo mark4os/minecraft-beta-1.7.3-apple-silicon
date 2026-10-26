@@ -569,26 +569,18 @@ public abstract class Minecraft implements Runnable {
 					this.screenshotListener();
 
 					if (this.gameSettings != null) {
-						if (!Display.isActive()) {
-							if (this.fullscreen) {
-								this.toggleFullscreen();
-							}
-							Display.setSwapInterval(1);
-						} else if (this.gameSettings.limitFramerate == 0) {
-							// Max FPS: Hardware VSync at native 60 Hz screen refresh (60 FPS)
-							Display.setSwapInterval(1);
-						} else if (this.gameSettings.limitFramerate == 1) {
-							// Balanced: Rock-solid 60 FPS hardware VSync
-							Display.setSwapInterval(1);
-						} else if (this.gameSettings.limitFramerate == 2) {
+						if (this.gameSettings.limitFramerate == 2) {
 							// Power Saver: 30 FPS hardware VSync (every 2nd refresh)
 							Display.setSwapInterval(2);
+						} else {
+							// Max FPS / Balanced: Hardware VSync at native screen refresh (60/120 Hz)
+							Display.setSwapInterval(1);
 						}
 					}
 
 					Display.update();
 
-					if (!Display.isActive()) {
+					if (!Display.isVisible()) {
 						Display.sync(20);
 					}
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
@@ -868,6 +860,7 @@ public abstract class Minecraft implements Runnable {
 	public void toggleFullscreen() {
 		try {
 			this.fullscreen = !this.fullscreen;
+			Display.setFullscreen(this.fullscreen);
 			if(!this.fullscreen) {
 				if(this.mcCanvas != null) {
 					Display.setDisplayMode(new DisplayMode(this.mcCanvas.getWidth(), this.mcCanvas.getHeight()));
@@ -876,7 +869,6 @@ public abstract class Minecraft implements Runnable {
 				}
 			}
 
-			Display.setFullscreen(this.fullscreen);
 			this.displayWidth = Display.getWidth();
 			this.displayHeight = Display.getHeight();
 			if(this.displayWidth <= 0) {
@@ -890,8 +882,6 @@ public abstract class Minecraft implements Runnable {
 			if(this.currentScreen != null) {
 				this.resize(this.displayWidth, this.displayHeight);
 			}
-
-			Display.update();
 		} catch (Exception var2) {
 			var2.printStackTrace();
 		}
@@ -1028,7 +1018,7 @@ public abstract class Minecraft implements Runnable {
 											this.thePlayer.handleKeyPress(Keyboard.getEventKey(), Keyboard.getEventKeyState());
 										} while(!Keyboard.getEventKeyState());
 
-										if(Keyboard.getEventKey() == Keyboard.KEY_F11) {
+										if(Keyboard.getEventKey() == Keyboard.KEY_F11 || (Keyboard.getEventKey() == Keyboard.KEY_F && (Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA)))) {
 											this.toggleFullscreen();
 										} else {
 											if(this.currentScreen != null) {

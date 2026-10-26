@@ -799,9 +799,9 @@ public abstract class EntityLiving extends Entity {
 		if(var1 == 1.0F) {
 			return Vec3D.createVector(this.posX, this.posY, this.posZ);
 		} else {
-			double var2 = this.lastTickPosX + (this.posX - this.lastTickPosX) * (double)var1;
-			double var4 = this.lastTickPosY + (this.posY - this.lastTickPosY) * (double)var1;
-			double var6 = this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * (double)var1;
+			double var2 = this.prevPosX + (this.posX - this.prevPosX) * (double)var1;
+			double var4 = this.prevPosY + (this.posY - this.prevPosY) * (double)var1;
+			double var6 = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var1;
 			return Vec3D.createVector(var2, var4, var6);
 		}
 	}

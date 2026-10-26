@@ -1054,7 +1054,10 @@ public class Display {
                     displayFramebufferWidth = fbw.get(0);
                     displayFramebufferHeight = fbh.get(0);
                 }
-                glfwSwapInterval(vsyncEnabled ? 1 : 0);
+                glfwSwapInterval(swap_interval > 0 ? swap_interval : (vsyncEnabled ? 1 : 0));
+                if (Mouse.isGrabbed()) {
+                    Mouse.setGrabbed(true);
+                }
                 latestResized = true;
             }
         }

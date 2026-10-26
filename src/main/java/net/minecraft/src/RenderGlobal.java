@@ -766,8 +766,8 @@ public class RenderGlobal implements IWorldAccess {
 				}
 
 				var10 = 0.5F / 1024.0F;
-				double var22 = this.mc.renderViewEntity.lastTickPosX + (this.mc.renderViewEntity.posX - this.mc.renderViewEntity.lastTickPosX) * (double)var1 + (double)(((float)this.cloudOffsetX + var1) * 0.03F);
-				double var13 = this.mc.renderViewEntity.lastTickPosZ + (this.mc.renderViewEntity.posZ - this.mc.renderViewEntity.lastTickPosZ) * (double)var1;
+				double var22 = this.mc.renderViewEntity.prevPosX + (this.mc.renderViewEntity.posX - this.mc.renderViewEntity.prevPosX) * (double)var1 + (double)(((float)this.cloudOffsetX + var1) * 0.03F);
+				double var13 = this.mc.renderViewEntity.prevPosZ + (this.mc.renderViewEntity.posZ - this.mc.renderViewEntity.prevPosZ) * (double)var1;
 				int var15 = MathHelper.floor_double(var22 / 2048.0D);
 				int var16 = MathHelper.floor_double(var13 / 2048.0D);
 				var22 -= (double)(var15 * 2048);
@@ -805,8 +805,8 @@ public class RenderGlobal implements IWorldAccess {
 		Tessellator var3 = Tessellator.instance;
 		float var4 = 12.0F;
 		float var5 = 4.0F;
-		double var6 = (this.mc.renderViewEntity.lastTickPosX + (this.mc.renderViewEntity.posX - this.mc.renderViewEntity.lastTickPosX) * (double)var1 + (double)(((float)this.cloudOffsetX + var1) * 0.03F)) / (double)var4;
-		double var8 = (this.mc.renderViewEntity.lastTickPosZ + (this.mc.renderViewEntity.posZ - this.mc.renderViewEntity.lastTickPosZ) * (double)var1) / (double)var4 + (double)0.33F;
+		double var6 = (this.mc.renderViewEntity.prevPosX + (this.mc.renderViewEntity.posX - this.mc.renderViewEntity.prevPosX) * (double)var1 + (double)(((float)this.cloudOffsetX + var1) * 0.03F)) / (double)var4;
+		double var8 = (this.mc.renderViewEntity.prevPosZ + (this.mc.renderViewEntity.posZ - this.mc.renderViewEntity.prevPosZ) * (double)var1) / (double)var4 + (double)0.33F;
 		float var10 = this.worldObj.worldProvider.getCloudHeight() - var2 + 0.33F;
 		int var11 = MathHelper.floor_double(var6 / 2048.0D);
 		int var12 = MathHelper.floor_double(var8 / 2048.0D);

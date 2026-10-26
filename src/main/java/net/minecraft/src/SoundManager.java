@@ -127,9 +127,9 @@ public class SoundManager {
 		if(loaded && this.options.soundVolume != 0.0F) {
 			if(var1 != null) {
 				float var3 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
-				double var4 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
-				double var6 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
-				double var8 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
+				double var4 = var1.prevPosX + (var1.posX - var1.prevPosX) * (double)var2;
+				double var6 = var1.prevPosY + (var1.posY - var1.prevPosY) * (double)var2;
+				double var8 = var1.prevPosZ + (var1.posZ - var1.prevPosZ) * (double)var2;
 				float var10 = MathHelper.cos(-var3 * ((float)Math.PI / 180.0F) - (float)Math.PI);
 				float var11 = MathHelper.sin(-var3 * ((float)Math.PI / 180.0F) - (float)Math.PI);
 				float var12 = -var11;

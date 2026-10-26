@@ -194,3 +194,58 @@ exec "\$JAVA_BIN" \\
         println "Successfully created and signed macOS App: ${appDir.absolutePath}"
     }
 }
+
+tasks.register('createDmg') {
+    dependsOn 'bundleApp'
+    group = 'distribution'
+    description = 'Creates a styled drag-and-drop macOS .dmg installer for Apple Silicon'
+
+    doLast {
+        def distDir = file("${project.layout.buildDirectory.get()}/distributions")
+        distDir.mkdirs()
+
+        def dmgFile = file("$distDir/Minecraft-Beta-1.7.3-macOS-arm64.dmg")
+        def appDir = file("${project.layout.buildDirectory.get()}/apps")
+
+        // Ensure background is generated
+        def pyProc = new ProcessBuilder("python3", "tools/generate_dmg_background.py")
+            .redirectErrorStream(true)
+            .directory(projectDir)
+            .start()
+        def pyOut = pyProc.inputStream.text
+        if (pyProc.waitFor() != 0) {
+            throw new GradleException("Failed to generate DMG background: ${pyOut}")
+        }
+
+        // Run create-dmg
+        def cmd = [
+            "create-dmg",
+            "--volname", "Minecraft Beta 1.7.3",
+            "--volicon", "src/main/resources/minecraft.icns",
+            "--background", "build/dmg_assets/background.png",
+            "--window-pos", "200", "120",
+            "--window-size", "660", "420",
+            "--icon-size", "120",
+            "--icon", "Minecraft Beta 1.7.3.app", "170", "210",
+            "--hide-extension", "Minecraft Beta 1.7.3.app",
+            "--app-drop-link", "490", "210",
+            "--format", "UDZO",
+            "--filesystem", "HFS+",
+            "--overwrite",
+            dmgFile.absolutePath,
+            appDir.absolutePath
+        ]
+
+        def proc = new ProcessBuilder(cmd)
+            .redirectErrorStream(true)
+            .directory(projectDir)
+            .start()
+
+        def output = proc.inputStream.text
+        if (proc.waitFor() != 0) {
+            throw new GradleException("create-dmg failed:\n${output}")
+        }
+
+        println "Successfully created DMG installer: ${dmgFile.absolutePath}"
+    }
+}

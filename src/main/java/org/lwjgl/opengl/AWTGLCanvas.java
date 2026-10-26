@@ -107,15 +107,15 @@ public class AWTGLCanvas extends Canvas implements Drawable, ComponentListener, 
 	}
 
 	public void setSwapInterval(int swap_interval) {
-		mContextGL.setSwapInterval(swap_interval);
+		ContextGL.setSwapInterval(swap_interval);
 	}
 
 	public void setVSyncEnabled(boolean enabled) {
-		mContextGL.setSwapInterval(enabled ? 1 : 0);
+		ContextGL.setSwapInterval(enabled ? 1 : 0);
 	}
 
 	public void swapBuffers() throws LWJGLException {
-		mContextGL.swapBuffers();
+		ContextGL.swapBuffers();
 	}
 
 	public boolean isCurrent() throws LWJGLException {

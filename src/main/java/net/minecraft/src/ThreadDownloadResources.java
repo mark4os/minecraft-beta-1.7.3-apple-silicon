@@ -104,6 +104,8 @@ public class ThreadDownloadResources extends Thread {
 			var7.write(var5, 0, var9);
 		} while(!this.closing);
 
+		var6.close();
+		var7.close();
 	}
 
 	public void closeMinecraft() {

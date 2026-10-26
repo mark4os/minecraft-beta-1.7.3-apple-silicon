@@ -68,9 +68,9 @@ public class Cursor {
 		ByteBuffer pixels = convertARGBIntBuffertoRGBAByteBuffer(width, height, flippedImages);
 
 		for (int i = 0; i < numImages; i++) {
-			int size = width * height * 4;
-			ByteBuffer image = BufferUtils.createByteBuffer(size);
-			for (int j = 0; j < size; j++)
+			int byteSize = width * height * 4;
+			ByteBuffer image = BufferUtils.createByteBuffer(byteSize);
+			for (int j = 0; j < byteSize; j++)
 				image.put(pixels.get());
 
 			GLFWImage cursorImage = GLFWImage.malloc();

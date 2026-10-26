@@ -69,13 +69,14 @@ public class RenderLiving extends Render {
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				GL11.glDepthFunc(GL11.GL_EQUAL);
+				GL11.glDepthMask(false);
 				if(var1.hurtTime > 0 || var1.deathTime > 0) {
 					GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
 					this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var19 = 0; var19 < 4; ++var19) {
 						if(this.func_27005_b(var1, var19, var9)) {
+							GL11.glDisable(GL11.GL_TEXTURE_2D);
 							GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
 							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
@@ -92,13 +93,14 @@ public class RenderLiving extends Render {
 
 					for(int var23 = 0; var23 < 4; ++var23) {
 						if(this.func_27005_b(var1, var23, var9)) {
+							GL11.glDisable(GL11.GL_TEXTURE_2D);
 							GL11.glColor4f(var26, var20, var21, var22);
 							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
 					}
 				}
 
-				GL11.glDepthFunc(GL11.GL_LEQUAL);
+				GL11.glDepthMask(true);
 				GL11.glDisable(GL11.GL_BLEND);
 				GL11.glEnable(GL11.GL_ALPHA_TEST);
 				GL11.glEnable(GL11.GL_TEXTURE_2D);

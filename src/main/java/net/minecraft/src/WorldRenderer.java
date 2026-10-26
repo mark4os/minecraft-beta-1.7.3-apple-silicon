@@ -25,6 +25,7 @@ public class WorldRenderer {
 	public boolean isInFrustum = false;
 	public boolean[] skipRenderPass = new boolean[2];
 	public int[] vboVertexCount = new int[2];
+	public float sortDistance;
 	public int posXPlus;
 	public int posYPlus;
 	public int posZPlus;

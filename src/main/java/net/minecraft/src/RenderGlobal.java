@@ -422,6 +422,16 @@ public class RenderGlobal implements IWorldAccess {
 			this.prevSortY = var1.posY;
 			this.prevSortZ = var1.posZ;
 			this.markRenderersForNewPosition(MathHelper.floor_double(var1.posX), MathHelper.floor_double(var1.posY), MathHelper.floor_double(var1.posZ));
+			float px = (float)var1.posX;
+			float py = (float)var1.posY;
+			float pz = (float)var1.posZ;
+			for(int i = 0; i < this.sortedWorldRenderers.length; ++i) {
+				WorldRenderer wr = this.sortedWorldRenderers[i];
+				float dx = (float)wr.posXPlus - px;
+				float dy = (float)wr.posYPlus - py;
+				float dz = (float)wr.posZPlus - pz;
+				wr.sortDistance = dx * dx + dy * dy + dz * dz;
+			}
 			Arrays.sort(this.sortedWorldRenderers, new EntitySorter(var1));
 		}
 

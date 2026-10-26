@@ -34,40 +34,47 @@ package org.lwjgl.opengl;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * Zero-spin, power-efficient frame rate limiter optimized for Apple Silicon (ARM64)
- * using single-shot kernel timer parking (WFI idle state) without busy-waiting.
+ * High-precision hybrid frame pacer for macOS Apple Silicon (ARM64).
+ * Combines kernel timer sleep (LockSupport.parkNanos) with a sub-millisecond
+ * CPU spin-wait using Thread.onSpinWait() for sub-microsecond frame pacing stability.
  */
-class Sync {
+public class Sync {
 
-	/** number of nano seconds in a second */
-	private static final long NANOS_IN_SECOND = 1000L * 1000L * 1000L;
-
-	/** The time to sleep until the next frame */
-	private static long nextFrame = 0;
-
-	/** whether the initialisation code has run */
+	private static final long NANOS_IN_SECOND = 1_000_000_000L;
+	private static long nextFrameTime = 0L;
 	private static boolean initialised = false;
 
 	public static void sync(int fps) {
-		if (fps <= 0)
-			return;
-		if (!initialised) {
-			initialised = true;
-			nextFrame = System.nanoTime();
-		}
+		if (fps <= 0) return;
 
 		long frameDuration = NANOS_IN_SECOND / fps;
 		long now = System.nanoTime();
-		long remaining = nextFrame - now;
 
-		if (remaining > 50_000L) {
-			LockSupport.parkNanos(remaining);
+		if (!initialised) {
+			initialised = true;
+			nextFrameTime = now + frameDuration;
+			return;
 		}
 
-		long afterSleep = System.nanoTime();
-		nextFrame += frameDuration;
-		if (nextFrame < afterSleep - frameDuration) {
-			nextFrame = afterSleep;
+		long remaining = nextFrameTime - now;
+
+		// If behind by more than 1 full frame (e.g. world load / window drag), resync to current time
+		if (remaining < -frameDuration) {
+			nextFrameTime = now + frameDuration;
+			return;
 		}
+
+		// Stage 1: Low-power kernel sleep via parkNanos until ~1.2 ms before deadline
+		if (remaining > 1_500_000L) {
+			LockSupport.parkNanos(remaining - 1_200_000L);
+		}
+
+		// Stage 2: Sub-millisecond spin-wait using ARM64 yield instruction (Thread.onSpinWait)
+		// Hits the target nanosecond with sub-microsecond precision and zero timer drift
+		while (System.nanoTime() < nextFrameTime) {
+			Thread.onSpinWait();
+		}
+
+		nextFrameTime += frameDuration;
 	}
 }

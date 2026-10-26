@@ -94,9 +94,9 @@ public class RenderManager {
 			this.playerViewX = var4.prevRotationPitch + (var4.rotationPitch - var4.prevRotationPitch) * var6;
 		}
 
-		this.field_1222_l = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var6;
-		this.field_1221_m = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var6;
-		this.field_1220_n = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var6;
+		this.field_1222_l = var4.prevPosX + (var4.posX - var4.prevPosX) * (double)var6;
+		this.field_1221_m = var4.prevPosY + (var4.posY - var4.prevPosY) * (double)var6;
+		this.field_1220_n = var4.prevPosZ + (var4.posZ - var4.prevPosZ) * (double)var6;
 	}
 
 	public void renderEntity(Entity var1, float var2) {

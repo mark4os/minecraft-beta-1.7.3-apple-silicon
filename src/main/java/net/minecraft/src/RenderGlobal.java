@@ -411,9 +411,9 @@ public class RenderGlobal implements IWorldAccess {
 			this.renderersSkippingRenderPass = 0;
 		}
 
-		double var33 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * var3;
-		double var7 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * var3;
-		double var9 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * var3;
+		double var33 = var1.prevPosX + (var1.posX - var1.prevPosX) * var3;
+		double var7 = var1.prevPosY + (var1.posY - var1.prevPosY) * var3;
+		double var9 = var1.prevPosZ + (var1.posZ - var1.prevPosZ) * var3;
 		double var11 = var1.posX - this.prevSortX;
 		double var13 = var1.posY - this.prevSortY;
 		double var15 = var1.posZ - this.prevSortZ;
@@ -571,9 +571,9 @@ public class RenderGlobal implements IWorldAccess {
 		}
 
 		EntityLiving var19 = this.mc.renderViewEntity;
-		double var20 = var19.lastTickPosX + (var19.posX - var19.lastTickPosX) * var4;
-		double var10 = var19.lastTickPosY + (var19.posY - var19.lastTickPosY) * var4;
-		double var12 = var19.lastTickPosZ + (var19.posZ - var19.lastTickPosZ) * var4;
+		double var20 = var19.prevPosX + (var19.posX - var19.prevPosX) * var4;
+		double var10 = var19.prevPosY + (var19.posY - var19.prevPosY) * var4;
+		double var12 = var19.prevPosZ + (var19.posZ - var19.prevPosZ) * var4;
 		int var14 = 0;
 
 		int var15;
@@ -801,7 +801,7 @@ public class RenderGlobal implements IWorldAccess {
 
 	public void renderCloudsFancy(float var1) {
 		GL11.glDisable(GL11.GL_CULL_FACE);
-		float var2 = (float)(this.mc.renderViewEntity.lastTickPosY + (this.mc.renderViewEntity.posY - this.mc.renderViewEntity.lastTickPosY) * (double)var1);
+		float var2 = (float)(this.mc.renderViewEntity.prevPosY + (this.mc.renderViewEntity.posY - this.mc.renderViewEntity.prevPosY) * (double)var1);
 		Tessellator var3 = Tessellator.instance;
 		float var4 = 12.0F;
 		float var5 = 4.0F;
@@ -1115,9 +1115,9 @@ public class RenderGlobal implements IWorldAccess {
 			int var7 = this.worldObj.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
 			if(var7 > 0) {
 				Block.blocksList[var7].setBlockBoundsBasedOnState(this.worldObj, var2.blockX, var2.blockY, var2.blockZ);
-				double var8 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var5;
-				double var10 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var5;
-				double var12 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var5;
+				double var8 = var1.prevPosX + (var1.posX - var1.prevPosX) * (double)var5;
+				double var10 = var1.prevPosY + (var1.posY - var1.prevPosY) * (double)var5;
+				double var12 = var1.prevPosZ + (var1.posZ - var1.prevPosZ) * (double)var5;
 				this.drawOutlinedBoundingBox(Block.blocksList[var7].getSelectedBoundingBoxFromPool(this.worldObj, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).getOffsetBoundingBox(-var8, -var10, -var12));
 			}
 

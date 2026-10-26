@@ -52,9 +52,9 @@ public class EffectRenderer {
 		float var5 = -var4 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
 		float var6 = var3 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
 		float var7 = MathHelper.cos(var1.rotationPitch * (float)Math.PI / 180.0F);
-		EntityFX.interpPosX = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
-		EntityFX.interpPosY = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
-		EntityFX.interpPosZ = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
+		EntityFX.interpPosX = var1.prevPosX + (var1.posX - var1.prevPosX) * (double)var2;
+		EntityFX.interpPosY = var1.prevPosY + (var1.posY - var1.prevPosY) * (double)var2;
+		EntityFX.interpPosZ = var1.prevPosZ + (var1.posZ - var1.prevPosZ) * (double)var2;
 
 		for(int var8 = 0; var8 < 3; ++var8) {
 			if(this.fxLayers[var8].size() != 0) {

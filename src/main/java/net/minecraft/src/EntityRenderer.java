@@ -403,9 +403,9 @@ public class EntityRenderer {
 		EntityLiving var4 = this.mc.renderViewEntity;
 		RenderGlobal var5 = this.mc.renderGlobal;
 		EffectRenderer var6 = this.mc.effectRenderer;
-		double var7 = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var1;
-		double var9 = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var1;
-		double var11 = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var1;
+		double var7 = var4.prevPosX + (var4.posX - var4.prevPosX) * (double)var1;
+		double var9 = var4.prevPosY + (var4.posY - var4.prevPosY) * (double)var1;
+		double var11 = var4.prevPosZ + (var4.posZ - var4.prevPosZ) * (double)var1;
 		IChunkProvider var13 = this.mc.theWorld.getIChunkProvider();
 		int var16;
 		if(var13 instanceof ChunkProviderLoadOrGenerate) {

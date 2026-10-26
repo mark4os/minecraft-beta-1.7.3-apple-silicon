@@ -1017,33 +1017,46 @@ public class RenderGlobal implements IWorldAccess {
 				this.worldRenderersToUpdate.set(var10, (Object)null);
 			}
 
+			int totalUpdated = 0;
 			if(var7 != null) {
 				if(var7.size() > 1) {
 					Collections.sort(var7, var5);
 				}
 
-				for(var10 = var7.size() - 1; var10 >= 0; --var10) {
+				int chunksToUpdate = Math.min(1, var7.size());
+				for(var10 = var7.size() - 1; var10 >= var7.size() - chunksToUpdate; --var10) {
 					var11 = (WorldRenderer)var7.get(var10);
 					var11.updateRenderer();
 					var11.needsUpdate = false;
+					++totalUpdated;
+				}
+
+				for(int k = 0; k < var7.size() - chunksToUpdate; ++k) {
+					WorldRenderer unupdated = (WorldRenderer)var7.get(k);
+					if(unupdated != null && unupdated.needsUpdate) {
+						this.worldRenderersToUpdate.add(unupdated);
+					}
 				}
 			}
 
 			var10 = 0;
 
 			int var21;
-			for(var21 = var4 - 1; var21 >= 0; --var21) {
-				WorldRenderer var22 = var6[var21];
-				if(var22 != null) {
-					if(!var22.isInFrustum && var21 != var4 - 1) {
-						var6[var21] = null;
-						var6[0] = null;
+			if(totalUpdated < 1) {
+				for(var21 = var4 - 1; var21 >= 0; --var21) {
+					WorldRenderer var22 = var6[var21];
+					if(var22 != null) {
+						if(!var22.isInFrustum && var21 != var4 - 1) {
+							var6[var21] = null;
+							var6[0] = null;
+							break;
+						}
+
+						var6[var21].updateRenderer();
+						var6[var21].needsUpdate = false;
+						++var10;
 						break;
 					}
-
-					var6[var21].updateRenderer();
-					var6[var21].needsUpdate = false;
-					++var10;
 				}
 			}
 

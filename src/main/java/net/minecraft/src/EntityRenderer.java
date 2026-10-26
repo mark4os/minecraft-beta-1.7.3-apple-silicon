@@ -458,12 +458,7 @@ public class EntityRenderer {
 			this.frustrum.setPosition(var7, var9, var11);
 			this.mc.renderGlobal.clipRenderersByFrustrum(this.frustrum, var1);
 			if(var18 == 0) {
-				while(!this.mc.renderGlobal.updateRenderers(var4, false) && var2 != 0L) {
-					long var20 = var2 - System.nanoTime();
-					if(var20 < 0L || var20 > 1000000000L) {
-						break;
-					}
-				}
+				this.mc.renderGlobal.updateRenderers(var4, false);
 			}
 
 			this.setupFog(0, var1);

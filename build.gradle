@@ -50,7 +50,12 @@ application {
     mainClass = 'net.minecraft.client.Minecraft'
     applicationDefaultJvmArgs = [
         "-XstartOnFirstThread",
-        "-Xmx2G",
+        "-Xms512M",
+        "-Xmx1G",
+        "-XX:+AlwaysPreTouch",
+        "-XX:+UseG1GC",
+        "-XX:MaxGCPauseMillis=5",
+        "-XX:-UsePerfData",
         "-Dminecraft.dir=run",
         "-Djava.awt.headless=true",
         "-Dorg.lwjgl.util.Debug=false"
@@ -66,8 +71,14 @@ run {
     workingDir = file("run")
     jvmArgs = [
         "-XstartOnFirstThread",
-        "-Xmx2G",
+        "-Xms512M",
+        "-Xmx1G",
+        "-XX:+AlwaysPreTouch",
+        "-XX:+UseG1GC",
+        "-XX:MaxGCPauseMillis=5",
+        "-XX:-UsePerfData",
         "-Dminecraft.dir=" + file("run").absolutePath,
+        "-Djava.awt.headless=true",
         "-Dorg.lwjgl.util.Debug=false"
     ]
     doFirst {
@@ -157,7 +168,12 @@ fi
 
 exec "\$JAVA_BIN" \\
     -XstartOnFirstThread \\
-    -Xmx2G \\
+    -Xms512M \\
+    -Xmx1G \\
+    -XX:+AlwaysPreTouch \\
+    -XX:+UseG1GC \\
+    -XX:MaxGCPauseMillis=5 \\
+    -XX:-UsePerfData \\
     -Dminecraft.dir="\$DATA_DIR" \\
     -Djava.awt.headless=true \\
     -Dorg.lwjgl.util.Debug=false \\

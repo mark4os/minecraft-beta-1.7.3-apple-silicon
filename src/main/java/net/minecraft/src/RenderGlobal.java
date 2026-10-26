@@ -62,15 +62,21 @@ public class RenderGlobal implements IWorldAccess {
 	public RenderGlobal(Minecraft var1, RenderEngine var2) {
 		this.mc = var1;
 		this.renderEngine = var2;
-		byte var3 = 64;
-		this.glRenderListBase = GLAllocation.generateDisplayLists(var3 * var3 * var3 * 3);
-		this.occlusionEnabled = var1.getOpenGlCapsChecker().checkARBOcclusion();
+		byte var3 = 32;
+		int maxSubChunks = var3 * var3 * 8 * 2;
+		IntBuffer chunkVbos = GLAllocation.createDirectIntBuffer(maxSubChunks);
+		chunkVbos.clear();
+		chunkVbos.position(0);
+		chunkVbos.limit(maxSubChunks);
+		org.lwjgl.opengl.GL15.glGenBuffers(chunkVbos);
+		this.glRenderListBase = chunkVbos.get(0);
+		this.occlusionEnabled = false;
 		if(this.occlusionEnabled) {
 			this.occlusionResult.clear();
-			this.glOcclusionQueryBase = GLAllocation.createDirectIntBuffer(var3 * var3 * var3);
+			this.glOcclusionQueryBase = GLAllocation.createDirectIntBuffer(var3 * var3 * 8);
 			this.glOcclusionQueryBase.clear();
 			this.glOcclusionQueryBase.position(0);
-			this.glOcclusionQueryBase.limit(var3 * var3 * var3);
+			this.glOcclusionQueryBase.limit(var3 * var3 * 8);
 			ARBOcclusionQuery.glGenQueriesARB(this.glOcclusionQueryBase);
 		}
 
@@ -236,7 +242,7 @@ public class RenderGlobal implements IWorldAccess {
 					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].markDirty();
 					this.sortedWorldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4];
 					this.worldRenderersToUpdate.add(this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4]);
-					var2 += 3;
+					var2 += 2;
 				}
 			}
 		}
@@ -580,7 +586,7 @@ public class RenderGlobal implements IWorldAccess {
 				this.allRenderLists[var17].func_861_a(var16.posXMinus, var16.posYMinus, var16.posZMinus, var20, var10, var12);
 			}
 
-			this.allRenderLists[var17].func_858_a(var16.getGLCallListForPass(var3));
+			this.allRenderLists[var17].addChunkVBO(var16.getGLCallListForPass(var3), var16.vboVertexCount[var3]);
 		}
 
 		this.renderAllRenderLists(var3, var4);
@@ -1353,7 +1359,6 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public void func_28137_f() {
-		GLAllocation.func_28194_b(this.glRenderListBase);
 	}
 
 	public void func_28136_a(EntityPlayer var1, int var2, int var3, int var4, int var5, int var6) {

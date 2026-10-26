@@ -147,7 +147,7 @@ public class FontRenderer {
 			for(var6 = 0; var6 < var1.length(); ++var6) {
 				int var11;
 				for(; var1.length() > var6 + 1 && var1.charAt(var6) == 167; var6 += 2) {
-					var11 = "0123456789abcdef".indexOf(var1.toLowerCase().charAt(var6 + 1));
+					var11 = "0123456789abcdef".indexOf(Character.toLowerCase(var1.charAt(var6 + 1)));
 					if(var11 < 0 || var11 > 15) {
 						var11 = 15;
 					}

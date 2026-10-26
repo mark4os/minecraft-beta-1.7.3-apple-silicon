@@ -13,21 +13,14 @@ public class NibbleArray {
 
 	public int getNibble(int var1, int var2, int var3) {
 		int var4 = var1 << 11 | var3 << 7 | var2;
-		int var5 = var4 >> 1;
-		int var6 = var4 & 1;
-		return var6 == 0 ? this.data[var5] & 15 : this.data[var5] >> 4 & 15;
+		return (this.data[var4 >> 1] >>> ((var2 & 1) << 2)) & 15;
 	}
 
 	public void setNibble(int var1, int var2, int var3, int var4) {
 		int var5 = var1 << 11 | var3 << 7 | var2;
 		int var6 = var5 >> 1;
-		int var7 = var5 & 1;
-		if(var7 == 0) {
-			this.data[var6] = (byte)(this.data[var6] & 240 | var4 & 15);
-		} else {
-			this.data[var6] = (byte)(this.data[var6] & 15 | (var4 & 15) << 4);
-		}
-
+		int shift = (var2 & 1) << 2;
+		this.data[var6] = (byte)(this.data[var6] & ~(15 << shift) | (var4 & 15) << shift);
 	}
 
 	public boolean isValid() {

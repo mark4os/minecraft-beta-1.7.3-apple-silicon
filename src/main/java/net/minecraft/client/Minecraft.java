@@ -538,7 +538,6 @@ public abstract class Minecraft implements Runnable {
 					}
 
 					long var24 = System.nanoTime() - var23;
-					this.checkGLError("Pre render");
 					RenderBlocks.fancyGrass = this.gameSettings.fancyGraphics;
 					this.sndManager.func_338_a(this.thePlayer, this.timer.renderPartialTicks);
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -587,7 +586,6 @@ public abstract class Minecraft implements Runnable {
 					}
 
 					this.guiAchievement.updateAchievementWindow();
-					Thread.yield();
 					if(Keyboard.isKeyDown(Keyboard.KEY_F7)) {
 						Display.update();
 					}
@@ -607,7 +605,6 @@ public abstract class Minecraft implements Runnable {
 						this.resize(this.displayWidth, this.displayHeight);
 					}
 
-					this.checkGLError("Post render");
 					++var3;
 
 					for(this.isGamePaused = !this.isMultiplayerWorld() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame(); System.currentTimeMillis() >= var1 + 1000L; var3 = 0) {

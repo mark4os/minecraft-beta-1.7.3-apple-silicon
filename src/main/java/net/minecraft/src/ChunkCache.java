@@ -5,9 +5,11 @@ public class ChunkCache implements IBlockAccess {
 	private int chunkZ;
 	private Chunk[][] chunkArray;
 	private World worldObj;
+	private final int skylightSubtracted;
 
 	public ChunkCache(World var1, int var2, int var3, int var4, int var5, int var6, int var7) {
 		this.worldObj = var1;
+		this.skylightSubtracted = var1.skylightSubtracted;
 		this.chunkX = var2 >> 4;
 		this.chunkZ = var4 >> 4;
 		int var8 = var5 >> 4;
@@ -23,9 +25,7 @@ public class ChunkCache implements IBlockAccess {
 	}
 
 	public int getBlockId(int var1, int var2, int var3) {
-		if(var2 < 0) {
-			return 0;
-		} else if(var2 >= 128) {
+		if((var2 & -128) != 0) {
 			return 0;
 		} else {
 			int var4 = (var1 >> 4) - this.chunkX;
@@ -97,7 +97,7 @@ public class ChunkCache implements IBlockAccess {
 			if(var2 < 0) {
 				return 0;
 			} else if(var2 >= 128) {
-				var5 = 15 - this.worldObj.skylightSubtracted;
+				var5 = 15 - this.skylightSubtracted;
 				if(var5 < 0) {
 					var5 = 0;
 				}
@@ -106,7 +106,7 @@ public class ChunkCache implements IBlockAccess {
 			} else {
 				var5 = (var1 >> 4) - this.chunkX;
 				var6 = (var3 >> 4) - this.chunkZ;
-				return this.chunkArray[var5][var6].getBlockLightValue(var1 & 15, var2, var3 & 15, this.worldObj.skylightSubtracted);
+				return this.chunkArray[var5][var6].getBlockLightValue(var1 & 15, var2, var3 & 15, this.skylightSubtracted);
 			}
 		} else {
 			return 15;
@@ -114,9 +114,7 @@ public class ChunkCache implements IBlockAccess {
 	}
 
 	public int getBlockMetadata(int var1, int var2, int var3) {
-		if(var2 < 0) {
-			return 0;
-		} else if(var2 >= 128) {
+		if((var2 & -128) != 0) {
 			return 0;
 		} else {
 			int var4 = (var1 >> 4) - this.chunkX;

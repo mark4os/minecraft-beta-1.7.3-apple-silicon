@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GLContext;
 public class Tessellator {
 	private static boolean convertQuadsToTriangles = false;
 	private static boolean tryVBO = false;
+	private static final boolean IS_LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 	private ByteBuffer byteBuffer;
 	private IntBuffer intBuffer;
 	private FloatBuffer floatBuffer;
@@ -141,6 +142,108 @@ public class Tessellator {
 		this.addedVertices = 0;
 	}
 
+	public void abort() {
+		this.isDrawing = false;
+		this.reset();
+	}
+
+	public int drawToChunkVBO(int vboId) {
+		if(!this.isDrawing) {
+			throw new IllegalStateException("Not tesselating!");
+		} else {
+			this.isDrawing = false;
+			int triVerts = 0;
+			if(this.vertexCount > 0) {
+				int numQuads = this.vertexCount >> 2;
+				triVerts = numQuads * 6;
+				int totalInts = numQuads * 36;
+				int[] raw = this.rawBuffer;
+				for(int q = numQuads - 1; q >= 0; --q) {
+					int src = q << 5;
+					int dst = q * 36;
+					int v0x = raw[src];
+					int v0y = raw[src + 1];
+					int v0z = raw[src + 2];
+					int v0u = raw[src + 3];
+					int v0v = raw[src + 4];
+					int v0c = raw[src + 5];
+
+					int v1x = raw[src + 8];
+					int v1y = raw[src + 9];
+					int v1z = raw[src + 10];
+					int v1u = raw[src + 11];
+					int v1v = raw[src + 12];
+					int v1c = raw[src + 13];
+
+					int v2x = raw[src + 16];
+					int v2y = raw[src + 17];
+					int v2z = raw[src + 18];
+					int v2u = raw[src + 19];
+					int v2v = raw[src + 20];
+					int v2c = raw[src + 21];
+
+					int v3x = raw[src + 24];
+					int v3y = raw[src + 25];
+					int v3z = raw[src + 26];
+					int v3u = raw[src + 27];
+					int v3v = raw[src + 28];
+					int v3c = raw[src + 29];
+
+					raw[dst] = v0x;
+					raw[dst + 1] = v0y;
+					raw[dst + 2] = v0z;
+					raw[dst + 3] = v0u;
+					raw[dst + 4] = v0v;
+					raw[dst + 5] = v0c;
+
+					raw[dst + 6] = v1x;
+					raw[dst + 7] = v1y;
+					raw[dst + 8] = v1z;
+					raw[dst + 9] = v1u;
+					raw[dst + 10] = v1v;
+					raw[dst + 11] = v1c;
+
+					raw[dst + 12] = v2x;
+					raw[dst + 13] = v2y;
+					raw[dst + 14] = v2z;
+					raw[dst + 15] = v2u;
+					raw[dst + 16] = v2v;
+					raw[dst + 17] = v2c;
+
+					raw[dst + 18] = v0x;
+					raw[dst + 19] = v0y;
+					raw[dst + 20] = v0z;
+					raw[dst + 21] = v0u;
+					raw[dst + 22] = v0v;
+					raw[dst + 23] = v0c;
+
+					raw[dst + 24] = v2x;
+					raw[dst + 25] = v2y;
+					raw[dst + 26] = v2z;
+					raw[dst + 27] = v2u;
+					raw[dst + 28] = v2v;
+					raw[dst + 29] = v2c;
+
+					raw[dst + 30] = v3x;
+					raw[dst + 31] = v3y;
+					raw[dst + 32] = v3z;
+					raw[dst + 33] = v3u;
+					raw[dst + 34] = v3v;
+					raw[dst + 35] = v3c;
+				}
+				this.intBuffer.clear();
+				this.intBuffer.put(raw, 0, totalInts);
+				this.byteBuffer.position(0);
+				this.byteBuffer.limit(totalInts << 2);
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.byteBuffer, GL15.GL_STATIC_DRAW);
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+			}
+			this.reset();
+			return triVerts;
+		}
+	}
+
 	public void startDrawingQuads() {
 		this.startDrawing(7);
 	}
@@ -212,7 +315,7 @@ public class Tessellator {
 			}
 
 			this.hasColor = true;
-			if(ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+			if(IS_LITTLE_ENDIAN) {
 				this.color = var4 << 24 | var3 << 16 | var2 << 8 | var1;
 			} else {
 				this.color = var1 << 24 | var2 << 16 | var3 << 8 | var4;
@@ -266,7 +369,7 @@ public class Tessellator {
 		this.rawBuffer[this.rawBufferIndex + 2] = Float.floatToRawIntBits((float)(var5 + this.zOffset));
 		this.rawBufferIndex += 8;
 		++this.vertexCount;
-		if(this.vertexCount % 4 == 0 && this.rawBufferIndex >= this.bufferSize - 32) {
+		if(this.rawBufferIndex >= this.bufferSize - 32 && (this.vertexCount & 3) == 0) {
 			this.draw();
 			this.isDrawing = true;
 		}

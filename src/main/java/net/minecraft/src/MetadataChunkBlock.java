@@ -51,6 +51,7 @@ public class MetadataChunkBlock {
 						var9 = var14;
 						var6 = var12;
 						var7 = var13;
+						var8 = true;
 					}
 
 					if(var14) {

@@ -24,6 +24,7 @@ public class WorldRenderer {
 	public int posZClip;
 	public boolean isInFrustum = false;
 	public boolean[] skipRenderPass = new boolean[2];
+	public int[] vboVertexCount = new int[2];
 	public int posXPlus;
 	public int posYPlus;
 	public int posZPlus;
@@ -67,9 +68,6 @@ public class WorldRenderer {
 			this.posZMinus = var3 - this.posZClip;
 			float var4 = 6.0F;
 			this.rendererBoundingBox = AxisAlignedBB.getBoundingBox((double)((float)var1 - var4), (double)((float)var2 - var4), (double)((float)var3 - var4), (double)((float)(var1 + this.sizeWidth) + var4), (double)((float)(var2 + this.sizeHeight) + var4), (double)((float)(var3 + this.sizeDepth) + var4));
-			GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
-			RenderItem.renderAABB(AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.posXClip - var4), (double)((float)this.posYClip - var4), (double)((float)this.posZClip - var4), (double)((float)(this.posXClip + this.sizeWidth) + var4), (double)((float)(this.posYClip + this.sizeHeight) + var4), (double)((float)(this.posZClip + this.sizeDepth) + var4)));
-			GL11.glEndList();
 			this.markDirty();
 		}
 	}
@@ -93,34 +91,33 @@ public class WorldRenderer {
 			}
 
 			Chunk.isLit = false;
-			HashSet var21 = new HashSet();
-			var21.addAll(this.tileEntityRenderers);
-			this.tileEntityRenderers.clear();
+			HashSet var21 = null;
+			if(!this.tileEntityRenderers.isEmpty()) {
+				var21 = new HashSet(this.tileEntityRenderers);
+				this.tileEntityRenderers.clear();
+			}
 			byte var8 = 1;
 			ChunkCache var9 = new ChunkCache(this.worldObj, var1 - var8, var2 - var8, var3 - var8, var4 + var8, var5 + var8, var6 + var8);
 			RenderBlocks var10 = new RenderBlocks(var9);
+			int minPass1Y = var5;
+			int maxPass1Y = var2 - 1;
 
 			for(int var11 = 0; var11 < 2; ++var11) {
 				boolean var12 = false;
 				boolean var13 = false;
 				boolean var14 = false;
+				int startY = (var11 == 0) ? var2 : minPass1Y;
+				int endY = (var11 == 0) ? var5 : (maxPass1Y + 1);
 
-				for(int var15 = var2; var15 < var5; ++var15) {
+				for(int var15 = startY; var15 < endY; ++var15) {
 					for(int var16 = var3; var16 < var6; ++var16) {
 						for(int var17 = var1; var17 < var4; ++var17) {
 							int var18 = var9.getBlockId(var17, var15, var16);
 							if(var18 > 0) {
 								if(!var14) {
 									var14 = true;
-									GL11.glNewList(this.glRenderList + var11, GL11.GL_COMPILE);
-									GL11.glPushMatrix();
-									this.setupGLTranslation();
-									float var19 = 1.000001F;
-									GL11.glTranslatef((float)(-this.sizeDepth) / 2.0F, (float)(-this.sizeHeight) / 2.0F, (float)(-this.sizeDepth) / 2.0F);
-									GL11.glScalef(var19, var19, var19);
-									GL11.glTranslatef((float)this.sizeDepth / 2.0F, (float)this.sizeHeight / 2.0F, (float)this.sizeDepth / 2.0F);
 									tessellator.startDrawingQuads();
-									tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
+									tessellator.setTranslationD((double)(-this.posXMinus), (double)(-this.posYMinus), (double)(-this.posZMinus));
 								}
 
 								if(var11 == 0 && Block.isBlockContainer[var18]) {
@@ -134,7 +131,11 @@ public class WorldRenderer {
 								int var20 = var24.getRenderBlockPass();
 								if(var20 != var11) {
 									var12 = true;
-								} else if(var20 == var11) {
+									if(var11 == 0) {
+										if(var15 < minPass1Y) minPass1Y = var15;
+										if(var15 > maxPass1Y) maxPass1Y = var15;
+									}
+								} else {
 									var13 |= var10.renderBlockByRenderType(var24, var17, var15, var16);
 								}
 							}
@@ -143,12 +144,16 @@ public class WorldRenderer {
 				}
 
 				if(var14) {
-					tessellator.draw();
-					GL11.glPopMatrix();
-					GL11.glEndList();
+					if(var13) {
+						this.vboVertexCount[var11] = tessellator.drawToChunkVBO(this.glRenderList + var11);
+					} else {
+						tessellator.abort();
+						this.vboVertexCount[var11] = 0;
+					}
 					tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
 				} else {
 					var13 = false;
+					this.vboVertexCount[var11] = 0;
 				}
 
 				if(var13) {
@@ -160,12 +165,17 @@ public class WorldRenderer {
 				}
 			}
 
-			HashSet var22 = new HashSet();
-			var22.addAll(this.tileEntityRenderers);
-			var22.removeAll(var21);
-			this.tileEntities.addAll(var22);
-			var21.removeAll(this.tileEntityRenderers);
-			this.tileEntities.removeAll(var21);
+			if(var21 != null || !this.tileEntityRenderers.isEmpty()) {
+				if(var21 == null) {
+					this.tileEntities.addAll(this.tileEntityRenderers);
+				} else {
+					HashSet var22 = new HashSet(this.tileEntityRenderers);
+					var22.removeAll(var21);
+					this.tileEntities.addAll(var22);
+					var21.removeAll(this.tileEntityRenderers);
+					this.tileEntities.removeAll(var21);
+				}
+			}
 			this.isChunkLit = Chunk.isLit;
 			this.isInitialized = true;
 		}
@@ -181,6 +191,7 @@ public class WorldRenderer {
 	public void setDontDraw() {
 		for(int var1 = 0; var1 < 2; ++var1) {
 			this.skipRenderPass[var1] = true;
+			this.vboVertexCount[var1] = 0;
 		}
 
 		this.isInFrustum = false;

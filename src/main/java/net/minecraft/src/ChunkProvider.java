@@ -16,6 +16,10 @@ public class ChunkProvider implements IChunkProvider {
 	private Map chunkMap = new HashMap();
 	private List chunkList = new ArrayList();
 	private World field_28066_g;
+	private final Chunk[] fastCache = new Chunk[1024];
+	private int lastQueriedChunkX = Integer.MIN_VALUE;
+	private int lastQueriedChunkZ = Integer.MIN_VALUE;
+	private Chunk lastQueriedChunk = null;
 
 	public ChunkProvider(World var1, IChunkLoader var2, IChunkProvider var3) {
 		this.field_28064_b = new EmptyChunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
@@ -25,6 +29,17 @@ public class ChunkProvider implements IChunkProvider {
 	}
 
 	public boolean chunkExists(int var1, int var2) {
+		if(var1 == this.lastQueriedChunkX && var2 == this.lastQueriedChunkZ && this.lastQueriedChunk != null) {
+			return true;
+		}
+		int idx = (var1 & 31) | ((var2 & 31) << 5);
+		Chunk cached = this.fastCache[idx];
+		if(cached != null && cached.xPosition == var1 && cached.zPosition == var2) {
+			this.lastQueriedChunkX = var1;
+			this.lastQueriedChunkZ = var2;
+			this.lastQueriedChunk = cached;
+			return true;
+		}
 		return this.chunkMap.containsKey(Integer.valueOf(ChunkCoordIntPair.chunkXZ2Int(var1, var2)));
 	}
 
@@ -45,6 +60,10 @@ public class ChunkProvider implements IChunkProvider {
 			this.chunkMap.put(Integer.valueOf(var3), var4);
 			this.chunkList.add(var4);
 			if(var4 != null) {
+				this.fastCache[(var1 & 31) | ((var2 & 31) << 5)] = var4;
+				this.lastQueriedChunkX = var1;
+				this.lastQueriedChunkZ = var2;
+				this.lastQueriedChunk = var4;
 				var4.func_4143_d();
 				var4.onChunkLoad();
 			}
@@ -70,8 +89,26 @@ public class ChunkProvider implements IChunkProvider {
 	}
 
 	public Chunk provideChunk(int var1, int var2) {
-		Chunk var3 = (Chunk)this.chunkMap.get(Integer.valueOf(ChunkCoordIntPair.chunkXZ2Int(var1, var2)));
-		return var3 == null ? this.prepareChunk(var1, var2) : var3;
+		if(var1 == this.lastQueriedChunkX && var2 == this.lastQueriedChunkZ && this.lastQueriedChunk != null) {
+			return this.lastQueriedChunk;
+		}
+		int idx = (var1 & 31) | ((var2 & 31) << 5);
+		Chunk var3 = this.fastCache[idx];
+		if(var3 != null && var3.xPosition == var1 && var3.zPosition == var2) {
+			this.lastQueriedChunkX = var1;
+			this.lastQueriedChunkZ = var2;
+			this.lastQueriedChunk = var3;
+			return var3;
+		}
+		var3 = (Chunk)this.chunkMap.get(Integer.valueOf(ChunkCoordIntPair.chunkXZ2Int(var1, var2)));
+		if(var3 == null) {
+			return this.prepareChunk(var1, var2);
+		}
+		this.fastCache[idx] = var3;
+		this.lastQueriedChunkX = var1;
+		this.lastQueriedChunkZ = var2;
+		this.lastQueriedChunk = var3;
+		return var3;
 	}
 
 	private Chunk loadChunkFromFile(int var1, int var2) {
@@ -168,6 +205,15 @@ public class ChunkProvider implements IChunkProvider {
 				this.droppedChunksSet.remove(var2);
 				this.chunkMap.remove(var2);
 				this.chunkList.remove(var3);
+				if(var3 != null) {
+					int idx = (var3.xPosition & 31) | ((var3.zPosition & 31) << 5);
+					if(this.fastCache[idx] == var3) {
+						this.fastCache[idx] = null;
+					}
+					if(this.lastQueriedChunk == var3) {
+						this.lastQueriedChunk = null;
+					}
+				}
 			}
 		}
 

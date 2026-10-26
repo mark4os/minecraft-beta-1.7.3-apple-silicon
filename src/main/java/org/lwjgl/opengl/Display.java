@@ -284,7 +284,7 @@ public class Display {
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, displayResizable ? GL_TRUE : GL_FALSE);
         glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_FALSE);
 
         Window.handle = glfwCreateWindow(mode.getWidth(), mode.getHeight(), windowTitle, NULL, NULL);
         if (Window.handle == NULL)
@@ -980,7 +980,7 @@ public class Display {
                 GLFW.glfwDefaultWindowHints();
                 glfwWindowHint(GLFW_VISIBLE, displayVisible ? GL_TRUE : GL_FALSE);
                 glfwWindowHint(GLFW_RESIZABLE, displayResizable ? GL_TRUE : GL_FALSE);
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_FALSE);
 
                 newCurrentWindow(GLFW.glfwCreateWindow(width.get(), height.get(), windowTitle,
                                                        GLFW.glfwGetWindowMonitor(Window.handle), NULL));
@@ -1014,7 +1014,7 @@ public class Display {
                 glfwDefaultWindowHints();
                 glfwWindowHint(GLFW_VISIBLE, displayVisible ? GL_TRUE : GL_FALSE);
                 glfwWindowHint(GLFW_RESIZABLE, displayResizable ? GL_TRUE : GL_FALSE);
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_FALSE);
 
                 if (fullscreen)
                     newCurrentWindow(glfwCreateWindow(width.get(), height.get(), windowTitle,

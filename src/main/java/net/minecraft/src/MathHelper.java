@@ -1,7 +1,7 @@
 package net.minecraft.src;
 
 public class MathHelper {
-	private static float[] SIN_TABLE = new float[65536];
+	private static final float[] SIN_TABLE = new float[65536];
 
 	public static final float sin(float var0) {
 		return SIN_TABLE[(int)(var0 * 10430.378F) & '\uffff'];
@@ -30,18 +30,12 @@ public class MathHelper {
 	}
 
 	public static float abs(float var0) {
-		return var0 >= 0.0F ? var0 : -var0;
+		return Math.abs(var0);
 	}
 
 	public static double abs_max(double var0, double var2) {
-		if(var0 < 0.0D) {
-			var0 = -var0;
-		}
-
-		if(var2 < 0.0D) {
-			var2 = -var2;
-		}
-
+		var0 = Math.abs(var0);
+		var2 = Math.abs(var2);
 		return var0 > var2 ? var0 : var2;
 	}
 

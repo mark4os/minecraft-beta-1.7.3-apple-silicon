@@ -84,13 +84,14 @@ public class Display {
     
     public static void setSwapInterval(int value) {
         synchronized ( GlobalLock.lock ) {
-            swap_interval = value;
-            if ( isCreated() ) {
-                drawable.setSwapInterval(swap_interval);
-                
+            if (swap_interval != value) {
+                swap_interval = value;
+                if (Window.handle != MemoryUtil.NULL) {
+                    glfwSwapInterval(swap_interval);
+                }
             }
         }
-	}
+    }
     
     private static void makeCurrentAndSetSwapInterval() throws LWJGLException {
         makeCurrent();

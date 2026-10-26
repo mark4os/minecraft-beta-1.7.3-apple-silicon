@@ -19,6 +19,14 @@ public class Mouse {
 	private static int x = 0;
 	private static int y = 0;
 
+	private static double accumulatedDX = 0.0;
+	private static double accumulatedDY = 0.0;
+	private static double deltaX = 0.0;
+	private static double deltaY = 0.0;
+	private static double lastCursorX = 0.0;
+	private static double lastCursorY = 0.0;
+	private static boolean hasLastCursorPos = false;
+
 	private static int lastDWheel = 0;
 
 	private static EventQueue queue = new EventQueue(32);
@@ -39,6 +47,18 @@ public class Mouse {
 	private static Cursor currentCursor = null;
 
 	public static void addMoveEvent(double mouseX, double mouseY) {
+		if (grabbed) {
+			if (hasLastCursorPos) {
+				double dX = mouseX - lastCursorX;
+				double dY = mouseY - lastCursorY;
+				accumulatedDX += dX;
+				accumulatedDY -= dY; // Invert Y: in GLFW downwards is positive, in OpenGL/Minecraft upwards is positive
+			}
+			lastCursorX = mouseX;
+			lastCursorY = mouseY;
+			hasLastCursorPos = true;
+		}
+
 		double scaleX = (double) Display.getWidth() / (double) Math.max(1, Display.getWindowWidth());
 		double scaleY = (double) Display.getHeight() / (double) Math.max(1, Display.getWindowHeight());
 		latestX = (int) Math.round(mouseX * scaleX);
@@ -116,6 +136,16 @@ public class Mouse {
 
 		x = latestX;
 		y = latestY;
+
+		if (grabbed) {
+			deltaX = accumulatedDX;
+			deltaY = accumulatedDY;
+			accumulatedDX = 0.0;
+			accumulatedDY = 0.0;
+		} else {
+			deltaX = x - lastX;
+			deltaY = y - lastY;
+		}
 	}
 
 	public static void create() throws LWJGLException {
@@ -127,9 +157,21 @@ public class Mouse {
 	}
 
 	public static void setGrabbed(boolean grab) {
-		GLFW.glfwSetInputMode(Display.getWindow(), GLFW.GLFW_CURSOR,
-				grab ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
+		long win = Display.getWindow();
+		if (win != MemoryUtil.NULL) {
+			GLFW.glfwSetInputMode(win, GLFW.GLFW_CURSOR,
+					grab ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
+			if (GLFW.glfwRawMouseMotionSupported()) {
+				GLFW.glfwSetInputMode(win, GLFW.GLFW_RAW_MOUSE_MOTION,
+						grab ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+			}
+		}
 		grabbed = grab;
+		hasLastCursorPos = false;
+		accumulatedDX = 0.0;
+		accumulatedDY = 0.0;
+		deltaX = 0.0;
+		deltaY = 0.0;
 	}
 
 	public static boolean isGrabbed() {
@@ -185,11 +227,19 @@ public class Mouse {
 	}
 
 	public static int getDX() {
-		return x - lastX;
+		return (int) Math.round(deltaX);
 	}
 
 	public static int getDY() {
-		return y - lastY;
+		return (int) Math.round(deltaY);
+	}
+
+	public static float getDXFloat() {
+		return (float) deltaX;
+	}
+
+	public static float getDYFloat() {
+		return (float) deltaY;
 	}
 
 	public static int getDWheel() {

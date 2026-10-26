@@ -11,6 +11,8 @@ public class MouseHelper {
 	private Cursor cursor;
 	public int deltaX;
 	public int deltaY;
+	public float deltaXFloat;
+	public float deltaYFloat;
 	private int field_1115_e = 10;
 
 	public MouseHelper(Component var1) {
@@ -32,6 +34,8 @@ public class MouseHelper {
 		Mouse.setGrabbed(true);
 		this.deltaX = 0;
 		this.deltaY = 0;
+		this.deltaXFloat = 0.0F;
+		this.deltaYFloat = 0.0F;
 	}
 
 	public void ungrabMouseCursor() {
@@ -42,7 +46,9 @@ public class MouseHelper {
 	}
 
 	public void mouseXYChange() {
-		this.deltaX = Mouse.getDX();
-		this.deltaY = Mouse.getDY();
+		this.deltaXFloat = Mouse.getDXFloat();
+		this.deltaYFloat = Mouse.getDYFloat();
+		this.deltaX = (int) Math.round(this.deltaXFloat);
+		this.deltaY = (int) Math.round(this.deltaYFloat);
 	}
 }

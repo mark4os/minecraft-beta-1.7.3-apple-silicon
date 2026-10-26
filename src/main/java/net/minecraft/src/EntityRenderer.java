@@ -339,8 +339,8 @@ public class EntityRenderer {
 			this.mc.mouseHelper.mouseXYChange();
 			float var2 = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
 			float var3 = var2 * var2 * var2 * 8.0F;
-			float var4 = (float)this.mc.mouseHelper.deltaX * var3;
-			float var5 = (float)this.mc.mouseHelper.deltaY * var3;
+			float var4 = this.mc.mouseHelper.deltaXFloat * var3;
+			float var5 = this.mc.mouseHelper.deltaYFloat * var3;
 			byte var6 = 1;
 			if(this.mc.gameSettings.invertMouse) {
 				var6 = -1;

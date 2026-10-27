@@ -571,15 +571,20 @@ public abstract class Minecraft implements Runnable {
 					Display.update();
 
 					if (this.gameSettings != null) {
-						int limit = this.gameSettings.limitFramerate;
-						if (limit < 260) {
-							int refresh = 60;
-							if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
-								refresh = Display.getDesktopDisplayMode().getFrequency();
-							}
-							if (!this.gameSettings.enableVsync || limit < refresh) {
-								Display.sync(limit);
-							}
+						int targetFps = -1;
+						int refresh = 60;
+						if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
+							refresh = Display.getDesktopDisplayMode().getFrequency();
+						}
+
+						if (this.gameSettings.enableVsync) {
+							targetFps = Math.min(refresh, this.gameSettings.limitFramerate);
+						} else if (this.gameSettings.limitFramerate < 260) {
+							targetFps = this.gameSettings.limitFramerate;
+						}
+
+						if (targetFps > 0) {
+							Display.sync(targetFps);
 						}
 					}
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {

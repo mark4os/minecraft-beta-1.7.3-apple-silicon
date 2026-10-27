@@ -18,7 +18,7 @@ run/
 *.pub
 *.token
 .env*
-.reddit.env
+.reddit.env*
 id_*
 
 # MCP and Workspace Build Artifacts
@@ -26,6 +26,13 @@ id_*
 mcp_workspace/
 options.cfg
 *.cfg
+
+# Local scripts and bootstrap tools
+scripts/
+tools/RetroMCP*
+tools/setup*
+tools/unpack*
+tools/lwjglx*
 
 # Logs and Crash reports
 *.log

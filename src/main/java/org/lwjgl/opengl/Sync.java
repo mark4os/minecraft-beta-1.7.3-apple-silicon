@@ -58,12 +58,12 @@ public class Sync {
 			return;
 		}
 
-		if (remaining > 1_500_000L) {
-			LockSupport.parkNanos(remaining - 1_200_000L);
+		if (remaining > 500_000L) {
+			LockSupport.parkNanos(remaining - 100_000L);
 		}
 
 		while (System.nanoTime() < nextFrameTime) {
-			Thread.onSpinWait();
+			Thread.yield();
 		}
 
 		nextFrameTime += frameDuration;

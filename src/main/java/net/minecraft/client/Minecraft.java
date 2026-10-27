@@ -569,7 +569,10 @@ public abstract class Minecraft implements Runnable {
 					this.screenshotListener();
 
 					if (this.gameSettings != null) {
-						if (this.gameSettings.limitFramerate == 2) {
+						if (!Display.isActive()) {
+							Display.setSwapInterval(1);
+							Display.sync(20);
+						} else if (this.gameSettings.limitFramerate == 2) {
 							Display.setSwapInterval(2);
 						} else {
 							Display.setSwapInterval(1);
@@ -577,15 +580,6 @@ public abstract class Minecraft implements Runnable {
 					}
 
 					Display.update();
-
-					int targetFps = 60;
-					if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
-						targetFps = Display.getDesktopDisplayMode().getFrequency();
-					}
-					if (this.gameSettings != null && this.gameSettings.limitFramerate == 2) {
-						targetFps = 30;
-					}
-					Display.sync(targetFps);
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
 						this.displayWidth = this.mcCanvas.getWidth();
 						this.displayHeight = this.mcCanvas.getHeight();

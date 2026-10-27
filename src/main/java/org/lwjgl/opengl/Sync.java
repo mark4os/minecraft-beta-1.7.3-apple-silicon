@@ -58,8 +58,14 @@ public class Sync {
 			return;
 		}
 
-		if (remaining > 0L) {
-			LockSupport.parkNanos(remaining);
+		// Park kernel thread for bulk of the frame to keep CPU cool and save battery
+		if (remaining > 2_000_000L) {
+			LockSupport.parkNanos(remaining - 1_500_000L);
+		}
+
+		// Microsecond-precise spin-wait with ARM64 YIELD for razor-sharp frame pacing
+		while (nextFrameTime - System.nanoTime() > 0L) {
+			Thread.onSpinWait();
 		}
 
 		nextFrameTime += frameDuration;

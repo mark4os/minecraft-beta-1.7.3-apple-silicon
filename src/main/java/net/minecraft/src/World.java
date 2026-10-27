@@ -22,6 +22,7 @@ public class World implements IBlockAccess {
 	public List weatherEffects;
 	private long field_1019_F;
 	public int skylightSubtracted;
+	protected int lastRenderSkylightSubtracted = -1;
 	protected int field_9437_g;
 	protected final int field_9436_h;
 	protected float prevRainingStrength;
@@ -1732,6 +1733,7 @@ public class World implements IBlockAccess {
 		int var1 = this.calculateSkylightSubtracted(1.0F);
 		if(var1 != this.skylightSubtracted) {
 			this.skylightSubtracted = var1;
+			this.lastRenderSkylightSubtracted = var1;
 		}
 
 	}
@@ -1757,14 +1759,19 @@ public class World implements IBlockAccess {
 			}
 		}
 
-		SpawnerAnimals.performSpawning(this, this.spawnHostileMobs, this.spawnPeacefulMobs);
+		if(this.worldInfo.getWorldTime() % 4L == 0L) {
+			SpawnerAnimals.performSpawning(this, this.spawnHostileMobs, this.spawnPeacefulMobs);
+		}
 		this.chunkProvider.unload100OldestChunks();
 		int var4 = this.calculateSkylightSubtracted(1.0F);
 		if(var4 != this.skylightSubtracted) {
 			this.skylightSubtracted = var4;
 
-			for(int var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
-				((IWorldAccess)this.worldAccesses.get(var5)).updateAllRenderers();
+			if(this.lastRenderSkylightSubtracted < 0 || Math.abs(var4 - this.lastRenderSkylightSubtracted) >= 3 || var4 == 0 || var4 == 11) {
+				this.lastRenderSkylightSubtracted = var4;
+				for(int var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
+					((IWorldAccess)this.worldAccesses.get(var5)).updateAllRenderers();
+				}
 			}
 		}
 

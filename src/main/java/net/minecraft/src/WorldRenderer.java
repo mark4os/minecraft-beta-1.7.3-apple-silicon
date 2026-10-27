@@ -31,6 +31,7 @@ public class WorldRenderer {
 	public int posZPlus;
 	public float rendererRadius;
 	public boolean needsUpdate;
+	public boolean isInUpdateList = false;
 	public AxisAlignedBB rendererBoundingBox;
 	public int chunkIndex;
 	public boolean isVisible = true;

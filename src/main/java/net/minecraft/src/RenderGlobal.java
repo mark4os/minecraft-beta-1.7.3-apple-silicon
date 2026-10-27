@@ -16,6 +16,13 @@ public class RenderGlobal implements IWorldAccess {
 	private World worldObj;
 	private RenderEngine renderEngine;
 	private List worldRenderersToUpdate = new ArrayList();
+
+	private void queueRendererForUpdate(WorldRenderer wr) {
+		if(wr != null && !wr.isInUpdateList) {
+			wr.isInUpdateList = true;
+			this.worldRenderersToUpdate.add(wr);
+		}
+	}
 	private WorldRenderer[] sortedWorldRenderers;
 	private WorldRenderer[] worldRenderers;
 	private int renderChunksWide;
@@ -221,7 +228,9 @@ public class RenderGlobal implements IWorldAccess {
 
 		int var4;
 		for(var4 = 0; var4 < this.worldRenderersToUpdate.size(); ++var4) {
-			((WorldRenderer)this.worldRenderersToUpdate.get(var4)).needsUpdate = false;
+			WorldRenderer wr = (WorldRenderer)this.worldRenderersToUpdate.get(var4);
+			wr.needsUpdate = false;
+			wr.isInUpdateList = false;
 		}
 
 		this.worldRenderersToUpdate.clear();
@@ -241,7 +250,7 @@ public class RenderGlobal implements IWorldAccess {
 					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].chunkIndex = var3++;
 					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].markDirty();
 					this.sortedWorldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4];
-					this.worldRenderersToUpdate.add(this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4]);
+					this.queueRendererForUpdate(this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4]);
 					var2 += 2;
 				}
 			}
@@ -382,7 +391,7 @@ public class RenderGlobal implements IWorldAccess {
 					boolean var15 = var14.needsUpdate;
 					var14.setPosition(var7, var13, var10);
 					if(!var15 && var14.needsUpdate) {
-						this.worldRenderersToUpdate.add(var14);
+						this.queueRendererForUpdate(var14);
 					}
 				}
 			}
@@ -394,8 +403,8 @@ public class RenderGlobal implements IWorldAccess {
 		for(int var5 = 0; var5 < 10; ++var5) {
 			this.worldRenderersCheckIndex = (this.worldRenderersCheckIndex + 1) % this.worldRenderers.length;
 			WorldRenderer var6 = this.worldRenderers[this.worldRenderersCheckIndex];
-			if(var6.needsUpdate && !this.worldRenderersToUpdate.contains(var6)) {
-				this.worldRenderersToUpdate.add(var6);
+			if(var6.needsUpdate && !var6.isInUpdateList) {
+				this.queueRendererForUpdate(var6);
 			}
 		}
 
@@ -960,6 +969,9 @@ public class RenderGlobal implements IWorldAccess {
 			for(int i = 0; i < size; ++i) {
 				WorldRenderer wr = (WorldRenderer)this.worldRenderersToUpdate.get(i);
 				if(wr == null || !wr.needsUpdate) {
+					if(wr != null) {
+						wr.isInUpdateList = false;
+					}
 					int lastIdx = size - 1;
 					if(i != lastIdx) {
 						this.worldRenderersToUpdate.set(i, this.worldRenderersToUpdate.get(lastIdx));
@@ -999,6 +1011,7 @@ public class RenderGlobal implements IWorldAccess {
 				this.worldRenderersToUpdate.set(targetIdx, this.worldRenderersToUpdate.get(lastIdx));
 			}
 			this.worldRenderersToUpdate.remove(lastIdx);
+			target.isInUpdateList = false;
 			target.updateRenderer();
 			target.needsUpdate = false;
 
@@ -1013,6 +1026,7 @@ public class RenderGlobal implements IWorldAccess {
 							this.worldRenderersToUpdate.set(outIdx, this.worldRenderersToUpdate.get(last));
 						}
 						this.worldRenderersToUpdate.remove(last);
+						bestOut.isInUpdateList = false;
 						bestOut.updateRenderer();
 						bestOut.needsUpdate = false;
 					}
@@ -1189,8 +1203,8 @@ public class RenderGlobal implements IWorldAccess {
 					int var19 = (var18 * this.renderChunksTall + var16) * this.renderChunksWide + var14;
 					WorldRenderer var20 = this.worldRenderers[var19];
 					if(!var20.needsUpdate) {
-						this.worldRenderersToUpdate.add(var20);
 						var20.markDirty();
+						this.queueRendererForUpdate(var20);
 					}
 				}
 			}
@@ -1304,10 +1318,14 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public void updateAllRenderers() {
+		EntityLiving viewEntity = this.mc.renderViewEntity;
 		for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
-			if(this.worldRenderers[var1].isChunkLit && !this.worldRenderers[var1].needsUpdate) {
-				this.worldRenderersToUpdate.add(this.worldRenderers[var1]);
-				this.worldRenderers[var1].markDirty();
+			WorldRenderer wr = this.worldRenderers[var1];
+			if(wr.isChunkLit && !wr.needsUpdate) {
+				wr.markDirty();
+				if(viewEntity == null || wr.distanceToEntitySquared(viewEntity) <= 16384.0F) {
+					this.queueRendererForUpdate(wr);
+				}
 			}
 		}
 

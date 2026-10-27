@@ -29,5 +29,10 @@ class EnumOptionsMappingHelper {
 		} catch (NoSuchFieldError var1) {
 		}
 
+		try {
+			enumOptionsMappingHelperArray[EnumOptions.VSYNC.ordinal()] = 6;
+		} catch (NoSuchFieldError var0) {
+		}
+
 	}
 }

@@ -9,11 +9,12 @@ public enum EnumOptions {
 	VIEW_BOBBING("options.viewBobbing", false, true),
 	ANAGLYPH("options.anaglyph", false, true),
 	ADVANCED_OPENGL("options.advancedOpengl", false, true),
-	FRAMERATE_LIMIT("options.framerateLimit", false, false),
+	FRAMERATE_LIMIT("options.framerateLimit", true, false),
 	DIFFICULTY("options.difficulty", false, false),
 	GRAPHICS("options.graphics", false, false),
 	AMBIENT_OCCLUSION("options.ao", false, true),
-	GUI_SCALE("options.guiScale", false, false);
+	GUI_SCALE("options.guiScale", false, false),
+	VSYNC("options.vsync", false, true);
 
 	private final boolean enumFloat;
 	private final boolean enumBoolean;

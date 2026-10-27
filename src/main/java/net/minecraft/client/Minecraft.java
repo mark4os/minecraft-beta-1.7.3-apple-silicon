@@ -568,15 +568,20 @@ public abstract class Minecraft implements Runnable {
 					this.guiAchievement.updateAchievementWindow();
 					this.screenshotListener();
 
+					Display.update();
+
 					if (this.gameSettings != null) {
-						if (this.gameSettings.limitFramerate == 2) {
-							Display.setSwapInterval(2);
-						} else {
-							Display.setSwapInterval(1);
+						int limit = this.gameSettings.limitFramerate;
+						if (limit < 260) {
+							int refresh = 60;
+							if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
+								refresh = Display.getDesktopDisplayMode().getFrequency();
+							}
+							if (!this.gameSettings.enableVsync || limit < refresh) {
+								Display.sync(limit);
+							}
 						}
 					}
-
-					Display.update();
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
 						this.displayWidth = this.mcCanvas.getWidth();
 						this.displayHeight = this.mcCanvas.getHeight();

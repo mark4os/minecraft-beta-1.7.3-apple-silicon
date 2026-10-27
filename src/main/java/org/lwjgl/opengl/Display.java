@@ -768,9 +768,7 @@ public class Display {
 
     public static void setVSyncEnabled(boolean sync) {
         vsyncEnabled = sync;
-        if (Window.handle != MemoryUtil.NULL) {
-            glfwSwapInterval(sync ? 1 : 0);
-        }
+        setSwapInterval(sync ? 1 : 0);
     }
 
     public static long getWindow() {

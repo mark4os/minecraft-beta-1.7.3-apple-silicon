@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 
 public class GameSettings {
 	private static final String[] RENDER_DISTANCES = new String[]{"options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny"};
@@ -21,7 +22,8 @@ public class GameSettings {
 	public boolean viewBobbing = true;
 	public boolean anaglyph = false;
 	public boolean advancedOpengl = false;
-	public int limitFramerate = 1;
+	public boolean enableVsync = true;
+	public int limitFramerate = 120;
 	public boolean fancyGraphics = true;
 	public boolean ambientOcclusion = true;
 	public String skin = "Default";
@@ -88,6 +90,15 @@ public class GameSettings {
 			this.mouseSensitivity = var2;
 		}
 
+		if(var1 == EnumOptions.FRAMERATE_LIMIT) {
+			int step = Math.round(var2 * 22.0F);
+			if (step >= 22) {
+				this.limitFramerate = 260;
+			} else {
+				this.limitFramerate = 30 + step * 10;
+			}
+		}
+
 	}
 
 	public void setOptionValue(EnumOptions var1, int var2) {
@@ -110,6 +121,11 @@ public class GameSettings {
 		if(var1 == EnumOptions.ADVANCED_OPENGL) {
 			this.advancedOpengl = !this.advancedOpengl;
 			this.mc.renderGlobal.loadRenderers();
+		}
+
+		if(var1 == EnumOptions.VSYNC) {
+			this.enableVsync = !this.enableVsync;
+			Display.setVSyncEnabled(this.enableVsync);
 		}
 
 		if(var1 == EnumOptions.ANAGLYPH) {
@@ -139,6 +155,15 @@ public class GameSettings {
 	}
 
 	public float getOptionFloatValue(EnumOptions var1) {
+		if(var1 == EnumOptions.FRAMERATE_LIMIT) {
+			if (this.limitFramerate >= 260) {
+				return 1.0F;
+			}
+			if (this.limitFramerate <= 30) {
+				return 0.0F;
+			}
+			return (float)(this.limitFramerate - 30) / 220.0F;
+		}
 		return var1 == EnumOptions.MUSIC ? this.musicVolume : (var1 == EnumOptions.SOUND ? this.soundVolume : (var1 == EnumOptions.SENSITIVITY ? this.mouseSensitivity : 0.0F));
 	}
 
@@ -154,6 +179,8 @@ public class GameSettings {
 			return this.advancedOpengl;
 		case 5:
 			return this.ambientOcclusion;
+		case 6:
+			return this.enableVsync;
 		default:
 			return false;
 		}
@@ -164,6 +191,9 @@ public class GameSettings {
 		String var3 = var2.translateKey(var1.getEnumString()) + ": ";
 		if(var1.getEnumFloat()) {
 			float var5 = this.getOptionFloatValue(var1);
+			if(var1 == EnumOptions.FRAMERATE_LIMIT) {
+				return this.limitFramerate >= 260 ? var3 + var2.translateKey("options.framerateLimit.max") : var3 + this.limitFramerate + " fps";
+			}
 			return var1 == EnumOptions.SENSITIVITY ? (var5 == 0.0F ? var3 + var2.translateKey("options.sensitivity.min") : (var5 == 1.0F ? var3 + var2.translateKey("options.sensitivity.max") : var3 + (int)(var5 * 200.0F) + "%")) : (var5 == 0.0F ? var3 + var2.translateKey("options.off") : var3 + (int)(var5 * 100.0F) + "%");
 		} else if(var1.getEnumBoolean()) {
 			boolean var4 = this.getOptionOrdinalValue(var1);
@@ -228,7 +258,20 @@ public class GameSettings {
 					}
 
 					if(var3[0].equals("fpsLimit")) {
-						this.limitFramerate = Integer.parseInt(var3[1]);
+						int val = Integer.parseInt(var3[1]);
+						if (val == 0) {
+							this.limitFramerate = 260;
+						} else if (val == 1) {
+							this.limitFramerate = 120;
+						} else if (val == 2) {
+							this.limitFramerate = 30;
+						} else {
+							this.limitFramerate = val;
+						}
+					}
+
+					if(var3[0].equals("enableVsync")) {
+						this.enableVsync = var3[1].equals("true");
 					}
 
 					if(var3[0].equals("difficulty")) {
@@ -260,6 +303,7 @@ public class GameSettings {
 					System.out.println("Skipping bad option: " + var2);
 				}
 			}
+			Display.setVSyncEnabled(this.enableVsync);
 		} catch (Exception var6) {
 			System.out.println("Failed to load options");
 			var6.printStackTrace();
@@ -284,6 +328,7 @@ public class GameSettings {
 			var1.println("anaglyph3d:" + this.anaglyph);
 			var1.println("advancedOpengl:" + this.advancedOpengl);
 			var1.println("fpsLimit:" + this.limitFramerate);
+			var1.println("enableVsync:" + this.enableVsync);
 			var1.println("difficulty:" + this.difficulty);
 			var1.println("fancyGraphics:" + this.fancyGraphics);
 			var1.println("ao:" + this.ambientOcclusion);

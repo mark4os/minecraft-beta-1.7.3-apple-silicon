@@ -4,7 +4,7 @@ public class GuiVideoSettings extends GuiScreen {
 	private GuiScreen field_22110_h;
 	protected String field_22107_a = "Video Settings";
 	private GameSettings guiGameSettings;
-	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.FRAMERATE_LIMIT, EnumOptions.ANAGLYPH, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL};
+	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.VSYNC, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL, EnumOptions.ANAGLYPH};
 
 	public GuiVideoSettings(GuiScreen var1, GameSettings var2) {
 		this.field_22110_h = var1;
@@ -20,10 +20,15 @@ public class GuiVideoSettings extends GuiScreen {
 
 		for(int var5 = 0; var5 < var4; ++var5) {
 			EnumOptions var6 = var3[var5];
+			int x = this.width / 2 - 155 + var2 % 2 * 160;
+			int y = this.height / 6 + 24 * (var2 >> 1);
+			if(var5 == var4 - 1 && var4 % 2 != 0) {
+				x = this.width / 2 - 75;
+			}
 			if(!var6.getEnumFloat()) {
-				this.controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.guiGameSettings.getKeyBinding(var6)));
+				this.controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), x, y, var6, this.guiGameSettings.getKeyBinding(var6)));
 			} else {
-				this.controlList.add(new GuiSlider(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.guiGameSettings.getKeyBinding(var6), this.guiGameSettings.getOptionFloatValue(var6)));
+				this.controlList.add(new GuiSlider(var6.returnEnumOrdinal(), x, y, var6, this.guiGameSettings.getKeyBinding(var6), this.guiGameSettings.getOptionFloatValue(var6)));
 			}
 
 			++var2;
@@ -44,10 +49,12 @@ public class GuiVideoSettings extends GuiScreen {
 				this.mc.displayGuiScreen(this.field_22110_h);
 			}
 
-			ScaledResolution var2 = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
-			int var3 = var2.getScaledWidth();
-			int var4 = var2.getScaledHeight();
-			this.setWorldAndResolution(this.mc, var3, var4);
+			if(var1.id == EnumOptions.GUI_SCALE.returnEnumOrdinal()) {
+				ScaledResolution var2 = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
+				int var3 = var2.getScaledWidth();
+				int var4 = var2.getScaledHeight();
+				this.setWorldAndResolution(this.mc, var3, var4);
+			}
 		}
 	}
 

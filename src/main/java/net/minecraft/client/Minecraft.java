@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.io.File;
+import java.util.concurrent.locks.LockSupport;
 import net.minecraft.src.AchievementList;
 import net.minecraft.src.AxisAlignedBB;
 import net.minecraft.src.Block;
@@ -506,6 +507,7 @@ public abstract class Minecraft implements Runnable {
 			int var3 = 0;
 
 			while(this.running) {
+				long frameLoopStart = System.nanoTime();
 				try {
 					if(this.mcApplet != null && !this.mcApplet.isActive()) {
 						break;
@@ -580,6 +582,21 @@ public abstract class Minecraft implements Runnable {
 					}
 
 					Display.update();
+
+					int refreshRate = 60;
+					if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
+						refreshRate = Display.getDesktopDisplayMode().getFrequency();
+					}
+					long targetFrameDurationNs = 1_000_000_000L / refreshRate;
+					if (this.gameSettings != null && this.gameSettings.limitFramerate == 2) {
+						targetFrameDurationNs *= 2L;
+					}
+
+					long frameElapsed = System.nanoTime() - frameLoopStart;
+					long sleepNs = targetFrameDurationNs - frameElapsed;
+					if (sleepNs > 1_000_000L) {
+						LockSupport.parkNanos(sleepNs - 250_000L);
+					}
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
 						this.displayWidth = this.mcCanvas.getWidth();
 						this.displayHeight = this.mcCanvas.getHeight();

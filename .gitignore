@@ -18,6 +18,7 @@ run/
 *.pub
 *.token
 .env*
+.reddit.env
 id_*
 
 # Logs and Crash reports

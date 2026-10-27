@@ -30,7 +30,8 @@ public class GuiOptions extends GuiScreen {
 		}
 
 		this.controlList.add(new GuiButton(101, this.width / 2 - 100, this.height / 6 + 96 + 12, var1.translateKey("options.video")));
-		this.controlList.add(new GuiButton(100, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.translateKey("options.controls")));
+		this.controlList.add(new GuiButton(100, this.width / 2 - 155, this.height / 6 + 120 + 12, 150, 20, var1.translateKey("options.controls")));
+		this.controlList.add(new GuiButton(102, this.width / 2 + 5, this.height / 6 + 120 + 12, 150, 20, var1.translateKey("options.controller")));
 		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.translateKey("gui.done")));
 	}
 
@@ -49,6 +50,11 @@ public class GuiOptions extends GuiScreen {
 			if(var1.id == 100) {
 				this.mc.gameSettings.saveOptions();
 				this.mc.displayGuiScreen(new GuiControls(this, this.options));
+			}
+
+			if(var1.id == 102) {
+				this.mc.gameSettings.saveOptions();
+				this.mc.displayGuiScreen(new GuiControllerSettings(this, this.options));
 			}
 
 			if(var1.id == 200) {

@@ -69,6 +69,7 @@ tasks.withType(JavaCompile) {
 
 run {
     workingDir = file("run")
+    systemProperties = System.properties
     jvmArgs = [
         "-XstartOnFirstThread",
         "-Xms512M",

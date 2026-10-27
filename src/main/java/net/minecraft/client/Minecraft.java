@@ -1,5 +1,8 @@
 package net.minecraft.client;
 
+import net.minecraft.src.GuiOptions;
+import net.minecraft.src.GuiControllerSettings;
+
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -129,7 +132,7 @@ public abstract class Minecraft implements Runnable {
 	public LoadingScreenRenderer loadingScreen = new LoadingScreenRenderer(this);
 	public EntityRenderer entityRenderer;
 	private ThreadDownloadResources downloadResourcesThread;
-	private int ticksRan = 0;
+	public int ticksRan = 0;
 	private int leftClickCounter = 0;
 	private int tempDisplayWidth;
 	private int tempDisplayHeight;
@@ -160,7 +163,7 @@ public abstract class Minecraft implements Runnable {
 	boolean isTakingScreenshot = false;
 	long prevFrameTime = -1L;
 	public boolean inGameHasFocus = false;
-	private int mouseTicksRan = 0;
+	public int mouseTicksRan = 0;
 	public boolean isRaining = false;
 	long systemTime = System.currentTimeMillis();
 	private int joinPlayerCounter = 0;
@@ -1007,18 +1010,22 @@ public abstract class Minecraft implements Runnable {
 										do {
 											if(!Keyboard.next()) {
 												if(this.currentScreen == null) {
-													if(Mouse.isButtonDown(0) && (float)(this.ticksRan - this.mouseTicksRan) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
+													boolean attackDown = Mouse.isButtonDown(0) || ControllerManager.isAttackDown();
+													boolean useDown = Mouse.isButtonDown(1) || ControllerManager.isUseItemDown();
+
+													if(attackDown && (float)(this.ticksRan - this.mouseTicksRan) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
 														this.clickMouse(0);
 														this.mouseTicksRan = this.ticksRan;
 													}
 
-													if(Mouse.isButtonDown(1) && (float)(this.ticksRan - this.mouseTicksRan) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
+													if(useDown && (float)(this.ticksRan - this.mouseTicksRan) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
 														this.clickMouse(1);
 														this.mouseTicksRan = this.ticksRan;
 													}
 												}
 
-												this.func_6254_a(0, this.currentScreen == null && Mouse.isButtonDown(0) && this.inGameHasFocus);
+												boolean attackHeld = this.currentScreen == null && (Mouse.isButtonDown(0) || ControllerManager.isAttackDown()) && this.inGameHasFocus;
+												this.func_6254_a(0, attackHeld);
 												break label301;
 											}
 
@@ -1529,6 +1536,10 @@ public abstract class Minecraft implements Runnable {
 
 	public static boolean isDebugInfoEnabled() {
 		return theMinecraft != null && theMinecraft.gameSettings.showDebugInfo;
+	}
+
+	public static Minecraft getMinecraft() {
+		return theMinecraft;
 	}
 
 	public boolean lineIsCommand(String var1) {

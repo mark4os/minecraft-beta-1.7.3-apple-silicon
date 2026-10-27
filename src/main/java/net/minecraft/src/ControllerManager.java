@@ -167,11 +167,16 @@ public class ControllerManager {
         leftTrigger = stateBuffer.getFloat(4 * 4);
         rightTrigger = stateBuffer.getFloat(5 * 4);
 
+        float deadzone = 0.15f;
+        if (mc.gameSettings != null) {
+            deadzone = mc.gameSettings.controllerDeadzone;
+        }
+
         // Apply Deadzone & Response Curve
-        leftStickX = applyDeadzone(rawLX, 0.18f);
-        leftStickY = applyDeadzone(rawLY, 0.18f);
-        rightStickX = applyResponseCurve(rawRX, 0.14f);
-        rightStickY = applyResponseCurve(rawRY, 0.14f);
+        leftStickX = applyDeadzone(rawLX, deadzone * 1.2f);
+        leftStickY = applyDeadzone(rawLY, deadzone * 1.2f);
+        rightStickX = applyResponseCurve(rawRX, deadzone);
+        rightStickY = applyResponseCurve(rawRY, deadzone);
 
         // Read Buttons
         buttons[BTN_A] = stateBuffer.getFloat(6 * 4) > 0.5f;
@@ -201,14 +206,17 @@ public class ControllerManager {
 
     private static void handleGameplayInput(Minecraft mc) {
         // Camera Look
-        float sensitivity = mc.gameSettings.mouseSensitivity * 2.0F + 0.5F;
-        float lookX = rightStickX * 14.0F * sensitivity;
-        float lookY = rightStickY * 12.0F * sensitivity;
-        if (mc.gameSettings.invertMouse) {
+        float sens = 1.0F;
+        if (mc.gameSettings != null) {
+            sens = mc.gameSettings.controllerSensitivity * (mc.gameSettings.mouseSensitivity * 2.0F + 0.5F);
+        }
+        float lookX = rightStickX * 14.0F * sens;
+        float lookY = rightStickY * 12.0F * sens;
+        if (mc.gameSettings != null && mc.gameSettings.controllerInvertY) {
             lookY = -lookY;
         }
         if (Math.abs(lookX) > 0.001F || Math.abs(lookY) > 0.001F) {
-            mc.thePlayer.func_346_d(lookX, -lookY);
+            mc.thePlayer.func_346_d(lookX, lookY);
         }
 
         // Hotbar cycling via Bumpers (LB / RB)
@@ -253,25 +261,18 @@ public class ControllerManager {
             mc.gameSettings.showDebugInfo = !mc.gameSettings.showDebugInfo;
         }
 
-        // Attack / Break block (Right Trigger / RT / R2)
-        if (isDown(BTN_RT)) {
-            if (wasJustPressed(BTN_RT)) {
-                mc.clickMouse(0);
-            }
-            mc.func_6254_a(0, true);
-        } else if (wasJustReleased(BTN_RT)) {
-            mc.func_6254_a(0, false);
-        }
+        // Trigger clicks (Initial press events)
+        boolean swapTriggers = mc.gameSettings != null && mc.gameSettings.controllerSwapTriggers;
+        int attackBtn = swapTriggers ? BTN_LT : BTN_RT;
+        int useBtn = swapTriggers ? BTN_RT : BTN_LT;
 
-        // Use / Place block (Left Trigger / LT / L2)
-        if (useCooldown > 0) {
-            --useCooldown;
+        if (wasJustPressed(attackBtn)) {
+            mc.clickMouse(0);
+            mc.mouseTicksRan = mc.ticksRan;
         }
-        if (isDown(BTN_LT)) {
-            if (wasJustPressed(BTN_LT) || useCooldown == 0) {
-                mc.clickMouse(1);
-                useCooldown = 4; // 4 ticks = 200ms repeat rate like right-clicking
-            }
+        if (wasJustPressed(useBtn)) {
+            mc.clickMouse(1);
+            mc.mouseTicksRan = mc.ticksRan;
         }
     }
 
@@ -337,6 +338,20 @@ public class ControllerManager {
 
     public static boolean isDown(int btn) {
         return buttons[btn];
+    }
+
+    public static boolean isAttackDown() {
+        if (!isConnected) return false;
+        Minecraft mc = Minecraft.getMinecraft();
+        boolean swap = (mc != null && mc.gameSettings != null && mc.gameSettings.controllerSwapTriggers);
+        return isDown(swap ? BTN_LT : BTN_RT);
+    }
+
+    public static boolean isUseItemDown() {
+        if (!isConnected) return false;
+        Minecraft mc = Minecraft.getMinecraft();
+        boolean swap = (mc != null && mc.gameSettings != null && mc.gameSettings.controllerSwapTriggers);
+        return isDown(swap ? BTN_RT : BTN_LT);
     }
 
     public static float getLeftStickX() {

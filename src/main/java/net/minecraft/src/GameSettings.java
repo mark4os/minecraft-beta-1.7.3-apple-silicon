@@ -26,6 +26,10 @@ public class GameSettings {
 	public int limitFramerate = 120;
 	public boolean fancyGraphics = true;
 	public boolean ambientOcclusion = true;
+	public float controllerSensitivity = 1.0F;
+	public boolean controllerInvertY = false;
+	public float controllerDeadzone = 0.15F;
+	public boolean controllerSwapTriggers = false;
 	public String skin = "Default";
 	public KeyBinding keyBindForward = new KeyBinding("key.forward", 17);
 	public KeyBinding keyBindLeft = new KeyBinding("key.left", 30);
@@ -290,6 +294,22 @@ public class GameSettings {
 						this.skin = var3[1];
 					}
 
+					if(var3[0].equals("controllerSensitivity")) {
+						this.controllerSensitivity = this.parseFloat(var3[1]);
+					}
+
+					if(var3[0].equals("controllerInvertY")) {
+						this.controllerInvertY = var3[1].equals("true");
+					}
+
+					if(var3[0].equals("controllerDeadzone")) {
+						this.controllerDeadzone = this.parseFloat(var3[1]);
+					}
+
+					if(var3[0].equals("controllerSwapTriggers")) {
+						this.controllerSwapTriggers = var3[1].equals("true");
+					}
+
 					if(var3[0].equals("lastServer") && var3.length >= 2) {
 						this.lastServer = var3[1];
 					}
@@ -332,6 +352,10 @@ public class GameSettings {
 			var1.println("difficulty:" + this.difficulty);
 			var1.println("fancyGraphics:" + this.fancyGraphics);
 			var1.println("ao:" + this.ambientOcclusion);
+			var1.println("controllerSensitivity:" + this.controllerSensitivity);
+			var1.println("controllerInvertY:" + this.controllerInvertY);
+			var1.println("controllerDeadzone:" + this.controllerDeadzone);
+			var1.println("controllerSwapTriggers:" + this.controllerSwapTriggers);
 			var1.println("skin:" + this.skin);
 			var1.println("lastServer:" + this.lastServer);
 

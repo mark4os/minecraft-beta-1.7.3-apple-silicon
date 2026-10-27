@@ -43,10 +43,6 @@ public class EntityRenderer {
 	private long prevFrameTime = System.currentTimeMillis();
 	private long field_28133_I = 0L;
 	private Random random = new Random();
-	private BiomeGenBase[] cachedRainBiomes;
-	private int cachedRainX = Integer.MIN_VALUE;
-	private int cachedRainZ = Integer.MIN_VALUE;
-	private int cachedRainRange = -1;
 	private int rainSoundCounter = 0;
 	volatile int field_1394_b = 0;
 	volatile int field_1393_c = 0;
@@ -618,13 +614,7 @@ public class EntityRenderer {
 				var16 = 10;
 			}
 
-			if(this.cachedRainBiomes == null || var5 != this.cachedRainX || var7 != this.cachedRainZ || var16 != this.cachedRainRange) {
-				this.cachedRainBiomes = var4.getWorldChunkManager().func_4069_a(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
-				this.cachedRainX = var5;
-				this.cachedRainZ = var7;
-				this.cachedRainRange = var16;
-			}
-			BiomeGenBase[] var17 = this.cachedRainBiomes;
+			BiomeGenBase[] var17 = var4.getWorldChunkManager().func_4069_a(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
 			int var18 = 0;
 
 			int var19;

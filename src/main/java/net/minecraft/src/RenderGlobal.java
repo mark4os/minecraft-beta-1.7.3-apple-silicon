@@ -1322,8 +1322,8 @@ public class RenderGlobal implements IWorldAccess {
 		for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
 			WorldRenderer wr = this.worldRenderers[var1];
 			if(wr.isChunkLit && !wr.needsUpdate) {
-				wr.markDirty();
 				if(viewEntity == null || wr.distanceToEntitySquared(viewEntity) <= 16384.0F) {
+					wr.markDirty();
 					this.queueRendererForUpdate(wr);
 				}
 			}

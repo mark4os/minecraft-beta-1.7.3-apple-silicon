@@ -53,16 +53,6 @@ public class BlockLeaves extends BlockLeavesBase {
 		if(!var1.multiplayerWorld) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			if((var6 & 8) != 0) {
-				if(var1.getBlockId(var2 - 1, var3, var4) == Block.wood.blockID ||
-				   var1.getBlockId(var2 + 1, var3, var4) == Block.wood.blockID ||
-				   var1.getBlockId(var2, var3 - 1, var4) == Block.wood.blockID ||
-				   var1.getBlockId(var2, var3 + 1, var4) == Block.wood.blockID ||
-				   var1.getBlockId(var2, var3, var4 - 1) == Block.wood.blockID ||
-				   var1.getBlockId(var2, var3, var4 + 1) == Block.wood.blockID) {
-					var1.setBlockMetadata(var2, var3, var4, var6 & -9);
-					return;
-				}
-
 				byte var7 = 4;
 				int var8 = var7 + 1;
 				byte var9 = 32;

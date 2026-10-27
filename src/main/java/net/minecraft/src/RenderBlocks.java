@@ -2725,26 +2725,14 @@ public class RenderBlocks {
 		double var34 = var6 + var1.minZ;
 		double var36 = var6 + var1.maxZ;
 		if(this.enableAO) {
-			boolean flip = (this.colorRedTopLeft + this.colorRedBottomRight) > (this.colorRedBottomLeft + this.colorRedTopRight);
-			if(flip) {
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var32, var34, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var30, var32, var34, var20, var24);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var30, var32, var36, var14, var18);
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var32, var36, var22, var26);
-			} else {
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var32, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var32, var34, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var30, var32, var34, var20, var24);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var30, var32, var36, var14, var18);
-			}
+			var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
+			var9.addVertexWithUV(var28, var32, var36, var22, var26);
+			var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
+			var9.addVertexWithUV(var28, var32, var34, var12, var16);
+			var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
+			var9.addVertexWithUV(var30, var32, var34, var20, var24);
+			var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
+			var9.addVertexWithUV(var30, var32, var36, var14, var18);
 		} else {
 			var9.addVertexWithUV(var28, var32, var36, var22, var26);
 			var9.addVertexWithUV(var28, var32, var34, var12, var16);
@@ -2819,26 +2807,14 @@ public class RenderBlocks {
 		double var34 = var6 + var1.minZ;
 		double var36 = var6 + var1.maxZ;
 		if(this.enableAO) {
-			boolean flip = (this.colorRedTopLeft + this.colorRedBottomRight) > (this.colorRedBottomLeft + this.colorRedTopRight);
-			if(flip) {
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var30, var32, var34, var20, var24);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var28, var32, var34, var12, var16);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var32, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var30, var32, var36, var14, var18);
-			} else {
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var30, var32, var36, var14, var18);
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var30, var32, var34, var20, var24);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var28, var32, var34, var12, var16);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var32, var36, var22, var26);
-			}
+			var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
+			var9.addVertexWithUV(var30, var32, var36, var14, var18);
+			var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
+			var9.addVertexWithUV(var30, var32, var34, var20, var24);
+			var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
+			var9.addVertexWithUV(var28, var32, var34, var12, var16);
+			var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
+			var9.addVertexWithUV(var28, var32, var36, var22, var26);
 		} else {
 			var9.addVertexWithUV(var30, var32, var36, var14, var18);
 			var9.addVertexWithUV(var30, var32, var34, var20, var24);
@@ -2920,26 +2896,14 @@ public class RenderBlocks {
 		double var34 = var4 + var1.maxY;
 		double var36 = var6 + var1.minZ;
 		if(this.enableAO) {
-			boolean flip = (this.colorRedTopLeft + this.colorRedBottomRight) > (this.colorRedBottomLeft + this.colorRedTopRight);
-			if(flip) {
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var30, var34, var36, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var30, var32, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var32, var36, var14, var18);
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var34, var36, var20, var24);
-			} else {
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var34, var36, var20, var24);
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var30, var34, var36, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var30, var32, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var32, var36, var14, var18);
-			}
+			var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
+			var9.addVertexWithUV(var28, var34, var36, var20, var24);
+			var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
+			var9.addVertexWithUV(var30, var34, var36, var12, var16);
+			var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
+			var9.addVertexWithUV(var30, var32, var36, var22, var26);
+			var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
+			var9.addVertexWithUV(var28, var32, var36, var14, var18);
 		} else {
 			var9.addVertexWithUV(var28, var34, var36, var20, var24);
 			var9.addVertexWithUV(var30, var34, var36, var12, var16);
@@ -3021,26 +2985,14 @@ public class RenderBlocks {
 		double var34 = var4 + var1.maxY;
 		double var36 = var6 + var1.maxZ;
 		if(this.enableAO) {
-			boolean flip = (this.colorRedTopLeft + this.colorRedBottomRight) > (this.colorRedBottomLeft + this.colorRedTopRight);
-			if(flip) {
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var32, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var30, var32, var36, var14, var18);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var30, var34, var36, var20, var24);
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var34, var36, var12, var16);
-			} else {
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var34, var36, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var32, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var30, var32, var36, var14, var18);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var30, var34, var36, var20, var24);
-			}
+			var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
+			var9.addVertexWithUV(var28, var34, var36, var12, var16);
+			var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
+			var9.addVertexWithUV(var28, var32, var36, var22, var26);
+			var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
+			var9.addVertexWithUV(var30, var32, var36, var14, var18);
+			var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
+			var9.addVertexWithUV(var30, var34, var36, var20, var24);
 		} else {
 			var9.addVertexWithUV(var28, var34, var36, var12, var16);
 			var9.addVertexWithUV(var28, var32, var36, var22, var26);
@@ -3122,26 +3074,14 @@ public class RenderBlocks {
 		double var34 = var6 + var1.minZ;
 		double var36 = var6 + var1.maxZ;
 		if(this.enableAO) {
-			boolean flip = (this.colorRedTopLeft + this.colorRedBottomRight) > (this.colorRedBottomLeft + this.colorRedTopRight);
-			if(flip) {
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var32, var34, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var28, var30, var34, var22, var26);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var30, var36, var14, var18);
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var32, var36, var20, var24);
-			} else {
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var32, var36, var20, var24);
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var32, var34, var12, var16);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var28, var30, var34, var22, var26);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var30, var36, var14, var18);
-			}
+			var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
+			var9.addVertexWithUV(var28, var32, var36, var20, var24);
+			var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
+			var9.addVertexWithUV(var28, var32, var34, var12, var16);
+			var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
+			var9.addVertexWithUV(var28, var30, var34, var22, var26);
+			var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
+			var9.addVertexWithUV(var28, var30, var36, var14, var18);
 		} else {
 			var9.addVertexWithUV(var28, var32, var36, var20, var24);
 			var9.addVertexWithUV(var28, var32, var34, var12, var16);
@@ -3223,26 +3163,14 @@ public class RenderBlocks {
 		double var34 = var6 + var1.minZ;
 		double var36 = var6 + var1.maxZ;
 		if(this.enableAO) {
-			boolean flip = (this.colorRedTopLeft + this.colorRedBottomRight) > (this.colorRedBottomLeft + this.colorRedTopRight);
-			if(flip) {
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var30, var34, var14, var18);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var28, var32, var34, var20, var24);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var32, var36, var12, var16);
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var30, var36, var22, var26);
-			} else {
-				var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
-				var9.addVertexWithUV(var28, var30, var36, var22, var26);
-				var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
-				var9.addVertexWithUV(var28, var30, var34, var14, var18);
-				var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
-				var9.addVertexWithUV(var28, var32, var34, var20, var24);
-				var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
-				var9.addVertexWithUV(var28, var32, var36, var12, var16);
-			}
+			var9.setColorOpaque_F(this.colorRedTopLeft, this.colorGreenTopLeft, this.colorBlueTopLeft);
+			var9.addVertexWithUV(var28, var30, var36, var22, var26);
+			var9.setColorOpaque_F(this.colorRedBottomLeft, this.colorGreenBottomLeft, this.colorBlueBottomLeft);
+			var9.addVertexWithUV(var28, var30, var34, var14, var18);
+			var9.setColorOpaque_F(this.colorRedBottomRight, this.colorGreenBottomRight, this.colorBlueBottomRight);
+			var9.addVertexWithUV(var28, var32, var34, var20, var24);
+			var9.setColorOpaque_F(this.colorRedTopRight, this.colorGreenTopRight, this.colorBlueTopRight);
+			var9.addVertexWithUV(var28, var32, var36, var12, var16);
 		} else {
 			var9.addVertexWithUV(var28, var30, var36, var22, var26);
 			var9.addVertexWithUV(var28, var30, var34, var14, var18);

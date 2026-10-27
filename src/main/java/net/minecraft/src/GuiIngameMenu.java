@@ -1,11 +1,12 @@
 package net.minecraft.src;
 
 public class GuiIngameMenu extends GuiScreen {
-	private int updateCounter2 = 0;
 	private int updateCounter = 0;
+	private int saveChunksCounter = 0;
+	private int saveDisplayTicks = 25;
+	private boolean isSaving = true;
 
 	public void initGui() {
-		this.updateCounter2 = 0;
 		this.controlList.clear();
 		byte var1 = -16;
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + var1, "Save and quit to title"));
@@ -52,16 +53,34 @@ public class GuiIngameMenu extends GuiScreen {
 	public void updateScreen() {
 		super.updateScreen();
 		++this.updateCounter;
+
+		if(this.isSaving && this.mc.theWorld != null) {
+			boolean moreToSave = !this.mc.theWorld.func_650_a(this.saveChunksCounter++);
+			if(!moreToSave) {
+				this.isSaving = false;
+			}
+		}
+
+		if(this.saveDisplayTicks > 0) {
+			--this.saveDisplayTicks;
+		}
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
 		this.drawDefaultBackground();
-		boolean var4 = !this.mc.theWorld.func_650_a(this.updateCounter2++);
-		if(var4 || this.updateCounter < 20) {
-			float var5 = ((float)(this.updateCounter % 10) + var3) / 10.0F;
-			var5 = MathHelper.sin(var5 * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
-			int var6 = (int)(255.0F * var5);
-			this.drawString(this.fontRenderer, "Saving level..", 8, this.height - 16, var6 << 16 | var6 << 8 | var6);
+
+		if(this.isSaving || this.saveDisplayTicks > 0) {
+			float fade = 1.0F;
+			if(!this.isSaving && this.saveDisplayTicks < 10) {
+				fade = (float)this.saveDisplayTicks / 10.0F;
+			}
+
+			float pulse = MathHelper.sin(((float)(this.updateCounter % 10) + var3) / 10.0F * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
+			int brightness = (int)(255.0F * pulse * fade);
+			if(brightness > 4) {
+				int color = brightness << 16 | brightness << 8 | brightness;
+				this.drawString(this.fontRenderer, "Saving level..", 8, this.height - 16, color);
+			}
 		}
 
 		this.drawCenteredString(this.fontRenderer, "Game menu", this.width / 2, 40, 16777215);

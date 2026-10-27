@@ -11,7 +11,7 @@ Native Minecraft Beta 1.7.3 client for Apple Silicon (M1/M2/M3/M4/M5) macOS, bui
 [![Java](https://img.shields.io/badge/Java-17%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org)
 [![Graphics](https://img.shields.io/badge/Graphics-LWJGL%203%20%2F%20GLFW-5586A4?style=for-the-badge&logo=opengl&logoColor=white)](https://www.lwjgl.org)
 [![Display](https://img.shields.io/badge/Display-Liquid%20Retina%20%2F%20120Hz-34C759?style=for-the-badge&logo=apple&logoColor=white)](https://apple.com)
-[![Release](https://img.shields.io/badge/Release-v1.0.0-blue?style=for-the-badge)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
+[![Release](https://img.shields.io/badge/Release-v1.0.1-blue?style=for-the-badge)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
 
 <br/>
 

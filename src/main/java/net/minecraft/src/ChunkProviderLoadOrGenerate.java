@@ -53,8 +53,10 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 			if(!this.chunkExists(var1, var2)) {
 				if(this.chunks[var5] != null) {
 					this.chunks[var5].onChunkUnload();
-					this.saveChunk(this.chunks[var5]);
-					this.saveExtraChunkData(this.chunks[var5]);
+					if(this.chunks[var5].needsSaving(false)) {
+						this.saveChunk(this.chunks[var5]);
+						this.saveExtraChunkData(this.chunks[var5]);
+					}
 				}
 
 				Chunk var6 = this.func_542_c(var1, var2);

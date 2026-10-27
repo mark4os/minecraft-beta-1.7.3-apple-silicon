@@ -76,6 +76,8 @@ run {
         "-XX:+AlwaysPreTouch",
         "-XX:+UseG1GC",
         "-XX:MaxGCPauseMillis=5",
+        "-XX:+DisableExplicitGC",
+        "-XX:+ParallelRefProcEnabled",
         "-XX:-UsePerfData",
         "-Dminecraft.dir=" + file("run").absolutePath,
         "-Djava.awt.headless=true",
@@ -175,6 +177,8 @@ exec "\$JAVA_BIN" \\
     -XX:+AlwaysPreTouch \\
     -XX:+UseG1GC \\
     -XX:MaxGCPauseMillis=5 \\
+    -XX:+DisableExplicitGC \\
+    -XX:+ParallelRefProcEnabled \\
     -XX:-UsePerfData \\
     -Dminecraft.dir="\$DATA_DIR" \\
     -Djava.awt.headless=true \\

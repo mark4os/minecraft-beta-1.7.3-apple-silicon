@@ -200,8 +200,10 @@ public class ChunkProvider implements IChunkProvider {
 				Integer var2 = (Integer)this.droppedChunksSet.iterator().next();
 				Chunk var3 = (Chunk)this.chunkMap.get(var2);
 				var3.onChunkUnload();
-				this.func_28062_b(var3);
-				this.func_28063_a(var3);
+				if(var3.needsSaving(false)) {
+					this.func_28062_b(var3);
+					this.func_28063_a(var3);
+				}
 				this.droppedChunksSet.remove(var2);
 				this.chunkMap.remove(var2);
 				this.chunkList.remove(var3);

@@ -48,6 +48,7 @@ public class RenderBlocks {
 	private float colorRedTopLeft;
 	private float colorRedBottomLeft;
 	private float colorRedBottomRight;
+	private final boolean[] fluidSides = new boolean[4];
 	private float colorRedTopRight;
 	private float colorGreenTopLeft;
 	private float colorGreenBottomLeft;
@@ -1477,8 +1478,11 @@ public class RenderBlocks {
 		float var9 = (float)(var6 & 255) / 255.0F;
 		boolean var10 = var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1);
 		boolean var11 = var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0);
-		boolean[] var12 = new boolean[]{var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2), var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3), var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4), var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)};
-		if(!var10 && !var11 && !var12[0] && !var12[1] && !var12[2] && !var12[3]) {
+		this.fluidSides[0] = var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2);
+		this.fluidSides[1] = var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3);
+		this.fluidSides[2] = var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4);
+		this.fluidSides[3] = var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5);
+		if(!var10 && !var11 && !this.fluidSides[0] && !this.fluidSides[1] && !this.fluidSides[2] && !this.fluidSides[3]) {
 			return false;
 		} else {
 			boolean var13 = false;
@@ -1557,7 +1561,7 @@ public class RenderBlocks {
 				int var54 = var1.getBlockTextureFromSideAndMetadata(var28 + 2, var23);
 				int var33 = (var54 & 15) << 4;
 				int var55 = var54 & 240;
-				if(this.renderAllFaces || var12[var28]) {
+				if(this.renderAllFaces || this.fluidSides[var28]) {
 					float var35;
 					float var39;
 					float var40;

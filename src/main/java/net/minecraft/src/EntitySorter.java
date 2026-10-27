@@ -3,6 +3,8 @@ package net.minecraft.src;
 import java.util.Comparator;
 
 public class EntitySorter implements Comparator {
+	public static final EntitySorter INSTANCE = new EntitySorter((Entity)null);
+
 	public EntitySorter(Entity var1) {
 	}
 

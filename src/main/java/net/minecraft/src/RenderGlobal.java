@@ -260,7 +260,7 @@ public class RenderGlobal implements IWorldAccess {
 			EntityLiving var7 = this.mc.renderViewEntity;
 			if(var7 != null) {
 				this.markRenderersForNewPosition(MathHelper.floor_double(var7.posX), MathHelper.floor_double(var7.posY), MathHelper.floor_double(var7.posZ));
-				Arrays.sort(this.sortedWorldRenderers, new EntitySorter(var7));
+				Arrays.sort(this.sortedWorldRenderers, EntitySorter.INSTANCE);
 			}
 		}
 
@@ -441,7 +441,7 @@ public class RenderGlobal implements IWorldAccess {
 				float dz = (float)wr.posZPlus - pz;
 				wr.sortDistance = dx * dx + dy * dy + dz * dz;
 			}
-			Arrays.sort(this.sortedWorldRenderers, new EntitySorter(var1));
+			Arrays.sort(this.sortedWorldRenderers, EntitySorter.INSTANCE);
 		}
 
 		RenderHelper.disableStandardItemLighting();

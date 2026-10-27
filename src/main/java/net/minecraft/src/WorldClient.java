@@ -28,8 +28,8 @@ public class WorldClient extends World {
 
 			if(this.lastRenderSkylightSubtracted < 0 || Math.abs(var1 - this.lastRenderSkylightSubtracted) >= 3 || var1 == 0 || var1 == 11) {
 				this.lastRenderSkylightSubtracted = var1;
-				for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
-					((IWorldAccess)this.worldAccesses.get(var2)).updateAllRenderers();
+				for(int accessIdx = 0; accessIdx < this.worldAccesses.size(); ++accessIdx) {
+					((IWorldAccess)this.worldAccesses.get(accessIdx)).updateAllRenderers();
 				}
 			}
 		}

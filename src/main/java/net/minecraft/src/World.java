@@ -1769,8 +1769,8 @@ public class World implements IBlockAccess {
 
 			if(this.lastRenderSkylightSubtracted < 0 || Math.abs(var4 - this.lastRenderSkylightSubtracted) >= 3 || var4 == 0 || var4 == 11) {
 				this.lastRenderSkylightSubtracted = var4;
-				for(int var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
-					((IWorldAccess)this.worldAccesses.get(var5)).updateAllRenderers();
+				for(int accessIdx = 0; accessIdx < this.worldAccesses.size(); ++accessIdx) {
+					((IWorldAccess)this.worldAccesses.get(accessIdx)).updateAllRenderers();
 				}
 			}
 		}

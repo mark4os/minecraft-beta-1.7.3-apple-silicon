@@ -1,5 +1,0 @@
-{
-    "java.compile.nullAnalysis.mode": "disabled",
-    "java.settings.url": "${workspaceFolder}/.settings/org.eclipse.jdt.core.prefs",
-    "java.configuration.updateBuildConfiguration": "automatic"
-}

@@ -21,6 +21,12 @@ run/
 .reddit.env
 id_*
 
+# MCP and Workspace Build Artifacts
+.cache/
+mcp_workspace/
+options.cfg
+*.cfg
+
 # Logs and Crash reports
 *.log
 hs_err_pid*.log

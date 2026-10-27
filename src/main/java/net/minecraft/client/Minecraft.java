@@ -16,6 +16,7 @@ import net.minecraft.src.ChunkProviderLoadOrGenerate;
 import net.minecraft.src.ColorizerFoliage;
 import net.minecraft.src.ColorizerGrass;
 import net.minecraft.src.ColorizerWater;
+import net.minecraft.src.ControllerManager;
 import net.minecraft.src.EffectRenderer;
 import net.minecraft.src.EntityClientPlayerMP;
 import net.minecraft.src.EntityLiving;
@@ -525,6 +526,8 @@ public abstract class Minecraft implements Runnable {
 						this.timer.updateTimer();
 					}
 
+					ControllerManager.update(this);
+
 					long var23 = System.nanoTime();
 
 					for(int var6 = 0; var6 < this.timer.elapsedTicks; ++var6) {
@@ -784,7 +787,7 @@ public abstract class Minecraft implements Runnable {
 		}
 	}
 
-	private void func_6254_a(int var1, boolean var2) {
+	public void func_6254_a(int var1, boolean var2) {
 		if(!this.playerController.field_1064_b) {
 			if(!var2) {
 				this.leftClickCounter = 0;
@@ -805,7 +808,7 @@ public abstract class Minecraft implements Runnable {
 		}
 	}
 
-	private void clickMouse(int var1) {
+	public void clickMouse(int var1) {
 		if(var1 != 0 || this.leftClickCounter <= 0) {
 			if(var1 == 0) {
 				this.thePlayer.swingItem();

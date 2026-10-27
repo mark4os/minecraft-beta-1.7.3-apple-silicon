@@ -1,6 +1,7 @@
 .gradle/
 build/
 run/
+bin/
 .DS_Store
 *.png
 

@@ -88,8 +88,40 @@ run {
     }
 }
 
+tasks.register('compileGameControllerNative') {
+    def nativeSrc = file("src/main/native/gamecontroller_bridge.m")
+    def outDir = file("${project.layout.buildDirectory.get()}/natives")
+    def outFile = file("$outDir/libgamecontroller.dylib")
+    def resNativeDir = file("src/main/resources/natives")
+    
+    inputs.file nativeSrc
+    outputs.file outFile
+    
+    doLast {
+        outDir.mkdirs()
+        resNativeDir.mkdirs()
+        def javaHome = System.getProperty("java.home")
+        def pb = new ProcessBuilder(
+            'clang', '-dynamiclib', '-O3', '-arch', 'arm64',
+            '-framework', 'GameController', '-framework', 'Foundation',
+            "-I${javaHome}/include",
+            "-I${javaHome}/include/darwin",
+            nativeSrc.absolutePath,
+            '-o', outFile.absolutePath
+        )
+        pb.inheritIO().start().waitFor()
+        copy {
+            from outFile
+            into resNativeDir
+        }
+    }
+}
+
+processResources.dependsOn compileGameControllerNative
+
 tasks.register('bundleApp') {
     dependsOn 'installDist'
+    dependsOn 'compileGameControllerNative'
     group = 'distribution'
     description = 'Creates a standalone macOS .app bundle for Apple Silicon'
 
@@ -106,6 +138,11 @@ tasks.register('bundleApp') {
 
         copy {
             from file("${project.layout.buildDirectory.get()}/install/minecraft-b1.7.3-arm64/lib")
+            into libDir
+        }
+
+        copy {
+            from file("${project.layout.buildDirectory.get()}/natives/libgamecontroller.dylib")
             into libDir
         }
 

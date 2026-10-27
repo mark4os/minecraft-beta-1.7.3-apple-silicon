@@ -68,6 +68,22 @@ public class MovementInputFromOptions extends MovementInput {
 
 		this.jump = this.movementKeyStates[4];
 		this.sneak = this.movementKeyStates[5];
+
+		if (ControllerManager.isConnected()) {
+			float stickX = ControllerManager.getLeftStickX();
+			float stickY = ControllerManager.getLeftStickY();
+			if (Math.abs(stickX) > 0.05F || Math.abs(stickY) > 0.05F) {
+				this.moveStrafe = -stickX;
+				this.moveForward = stickY;
+			}
+			if (ControllerManager.isDown(ControllerManager.BTN_A)) {
+				this.jump = true;
+			}
+			if (ControllerManager.isDown(ControllerManager.BTN_B) || ControllerManager.isDown(ControllerManager.BTN_LS)) {
+				this.sneak = true;
+			}
+		}
+
 		if(this.sneak) {
 			this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
 			this.moveForward = (float)((double)this.moveForward * 0.3D);

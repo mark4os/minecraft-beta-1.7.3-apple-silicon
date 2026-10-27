@@ -55,6 +55,8 @@ application {
         "-XX:+AlwaysPreTouch",
         "-XX:+UseG1GC",
         "-XX:MaxGCPauseMillis=5",
+        "-XX:+DisableExplicitGC",
+        "-XX:+ParallelRefProcEnabled",
         "-XX:-UsePerfData",
         "-Dminecraft.dir=run",
         "-Djava.awt.headless=true",
@@ -173,9 +175,9 @@ tasks.register('bundleApp') {
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.3</string>
+    <string>1.0.4</string>
     <key>CFBundleVersion</key>
-    <string>1.0.3</string>
+    <string>1.0.4</string>
     <key>LSMinimumSystemVersion</key>
     <string>11.0</string>
     <key>NSHighResolutionCapable</key>

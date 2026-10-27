@@ -577,20 +577,22 @@ public abstract class Minecraft implements Runnable {
 					Display.update();
 
 					if (this.gameSettings != null) {
-						int targetFps = -1;
 						int refresh = 60;
 						if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
 							refresh = Display.getDesktopDisplayMode().getFrequency();
 						}
 
 						if (this.gameSettings.enableVsync) {
-							targetFps = Math.min(refresh, this.gameSettings.limitFramerate);
-						} else if (this.gameSettings.limitFramerate < 260) {
-							targetFps = this.gameSettings.limitFramerate;
-						}
-
-						if (targetFps > 0) {
-							Display.sync(targetFps);
+							// Hardware VSync handles frame pacing at display refresh rate.
+							// Only use software limiter if framerate cap is strictly below refresh.
+							if (this.gameSettings.limitFramerate < refresh) {
+								Display.sync(this.gameSettings.limitFramerate);
+							}
+						} else {
+							// VSync disabled: enforce frame limiter via software sleep/spin
+							if (this.gameSettings.limitFramerate < 260) {
+								Display.sync(this.gameSettings.limitFramerate);
+							}
 						}
 					}
 					if(this.mcCanvas != null && !this.fullscreen && (this.mcCanvas.getWidth() != this.displayWidth || this.mcCanvas.getHeight() != this.displayHeight)) {
@@ -683,7 +685,29 @@ public abstract class Minecraft implements Runnable {
 	}
 
 	private void displayDebugInfo(long var1) {
-		long var3 = 16666666L;
+		int refresh = 60;
+		if (Display.getDesktopDisplayMode() != null && Display.getDesktopDisplayMode().getFrequency() > 0) {
+			refresh = Display.getDesktopDisplayMode().getFrequency();
+		}
+
+		int targetFps = 60;
+		if (this.gameSettings != null) {
+			if (this.gameSettings.enableVsync) {
+				targetFps = Math.min(refresh, this.gameSettings.limitFramerate);
+			} else if (this.gameSettings.limitFramerate < 260) {
+				targetFps = this.gameSettings.limitFramerate;
+			} else {
+				targetFps = refresh;
+			}
+		}
+		if (targetFps <= 0) targetFps = 60;
+
+		long targetNanos = 1000000000L / (long)targetFps;
+		// Notch's 16.666ms line was hardcoded, causing any normal 60.0 FPS frame (~16.67ms) to turn red.
+		// Allow a reasonable 1.5ms / 10% scheduler tolerance so smooth target-rate frames render green,
+		// and only actual lag spikes (>18ms on 60Hz or >10ms on 120Hz) turn red.
+		long lagThreshold = targetNanos + Math.max(1500000L, targetNanos / 10L);
+
 		if(this.prevFrameTime == -1L) {
 			this.prevFrameTime = System.nanoTime();
 		}
@@ -703,7 +727,7 @@ public abstract class Minecraft implements Runnable {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		Tessellator var7 = Tessellator.instance;
 		var7.startDrawing(7);
-		int var8 = (int)(var3 / 200000L);
+		int var8 = (int)(targetNanos / 200000L);
 		var7.setColorOpaque_I(536870912);
 		var7.addVertex(0.0D, (double)(this.displayHeight - var8), 0.0D);
 		var7.addVertex(0.0D, (double)this.displayHeight, 0.0D);
@@ -738,7 +762,7 @@ public abstract class Minecraft implements Runnable {
 			var14 = var14 * var14 / 255;
 			int var15 = var14 * var14 / 255;
 			var15 = var15 * var15 / 255;
-			if(frameTimes[var12] > var3) {
+			if(frameTimes[var12] > lagThreshold) {
 				var7.setColorOpaque_I(-16777216 + var14 * 65536);
 			} else {
 				var7.setColorOpaque_I(-16777216 + var14 * 256);

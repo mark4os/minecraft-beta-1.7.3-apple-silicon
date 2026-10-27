@@ -963,6 +963,14 @@ public abstract class Minecraft implements Runnable {
 			this.renderEngine.updateDynamicTextures();
 		}
 
+		if(!Display.isActive()) {
+			if(this.inGameHasFocus) {
+				this.displayInGameMenu();
+			} else if(this.thePlayer != null) {
+				this.thePlayer.resetPlayerKeyState();
+			}
+		}
+
 		if(this.currentScreen == null && this.thePlayer != null) {
 			if(this.thePlayer.health <= 0) {
 				this.displayGuiScreen((GuiScreen)null);

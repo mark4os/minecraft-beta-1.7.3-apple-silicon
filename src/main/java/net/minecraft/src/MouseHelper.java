@@ -36,6 +36,7 @@ public class MouseHelper {
 		this.deltaY = 0;
 		this.deltaXFloat = 0.0F;
 		this.deltaYFloat = 0.0F;
+		Mouse.poll();
 	}
 
 	public void ungrabMouseCursor() {

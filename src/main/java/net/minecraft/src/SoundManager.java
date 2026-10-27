@@ -179,6 +179,9 @@ public class SoundManager {
 					var9 *= var5;
 				}
 
+				if(sndSystem.playing(var8)) {
+					sndSystem.stop(var8);
+				}
 				sndSystem.newSource(var5 > 1.0F, var8, var7.soundUrl, var7.soundName, false, var2, var3, var4, 2, var9);
 				sndSystem.setPitch(var8, var6);
 				if(var5 > 1.0F) {
@@ -187,6 +190,7 @@ public class SoundManager {
 
 				sndSystem.setVolume(var8, var5 * this.options.soundVolume);
 				sndSystem.play(var8);
+				sndSystem.setTemporary(var8, true);
 			}
 
 		}
@@ -198,6 +202,9 @@ public class SoundManager {
 			if(var4 != null) {
 				this.field_587_e = (this.field_587_e + 1) % 256;
 				String var5 = "sound_" + this.field_587_e;
+				if(sndSystem.playing(var5)) {
+					sndSystem.stop(var5);
+				}
 				sndSystem.newSource(false, var5, var4.soundUrl, var4.soundName, false, 0.0F, 0.0F, 0.0F, 0, 0.0F);
 				if(var2 > 1.0F) {
 					var2 = 1.0F;
@@ -207,6 +214,7 @@ public class SoundManager {
 				sndSystem.setPitch(var5, var3);
 				sndSystem.setVolume(var5, var2 * this.options.soundVolume);
 				sndSystem.play(var5);
+				sndSystem.setTemporary(var5, true);
 			}
 
 		}

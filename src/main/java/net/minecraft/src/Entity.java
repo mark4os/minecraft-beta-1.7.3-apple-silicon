@@ -445,7 +445,7 @@ public abstract class Entity {
 				}
 
 				if(this.distanceWalkedModified > (float)this.nextStepDistance && var28 > 0) {
-					++this.nextStepDistance;
+					this.nextStepDistance = (int)this.distanceWalkedModified + 1;
 					StepSound var29 = Block.blocksList[var28].stepSound;
 					if(this.worldObj.getBlockId(var38, var26 + 1, var39) == Block.snow.blockID) {
 						var29 = Block.snow.stepSound;

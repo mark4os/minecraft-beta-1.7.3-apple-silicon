@@ -167,7 +167,8 @@ public class BlockBed extends Block {
 
 			for(int var12 = var8; var12 <= var10; ++var12) {
 				for(int var13 = var9; var13 <= var11; ++var13) {
-					if(var0.isBlockNormalCube(var12, var2 - 1, var13) && var0.isAirBlock(var12, var2, var13) && var0.isAirBlock(var12, var2 + 1, var13)) {
+					boolean isSolidGround = var0.isBlockNormalCube(var12, var2 - 1, var13) || var0.getBlockMaterial(var12, var2 - 1, var13).getIsSolid();
+					if(isSolidGround && var0.isAirBlock(var12, var2, var13) && var0.isAirBlock(var12, var2 + 1, var13)) {
 						if(var4 <= 0) {
 							return new ChunkCoordinates(var12, var2, var13);
 						}
@@ -176,6 +177,10 @@ public class BlockBed extends Block {
 					}
 				}
 			}
+		}
+
+		if(var4 <= 0 && var0.isAirBlock(var1, var2 + 1, var3) && var0.isAirBlock(var1, var2 + 2, var3)) {
+			return new ChunkCoordinates(var1, var2 + 1, var3);
 		}
 
 		return null;

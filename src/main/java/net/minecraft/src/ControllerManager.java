@@ -57,6 +57,8 @@ public class ControllerManager {
     // In-menu virtual cursor coordinates
     private static double virtualCursorX = -1;
     private static double virtualCursorY = -1;
+    private static int lastKnownMouseX = -1;
+    private static int lastKnownMouseY = -1;
 
     // Cooldown for trigger repeated clicks in game
     private static int useCooldown = 0;
@@ -199,8 +201,14 @@ public class ControllerManager {
         // Process controller actions
         if (mc.currentScreen != null) {
             handleMenuNavigation(mc);
-        } else if (mc.inGameHasFocus && mc.thePlayer != null) {
-            handleGameplayInput(mc);
+        } else {
+            virtualCursorX = -1;
+            virtualCursorY = -1;
+            lastKnownMouseX = -1;
+            lastKnownMouseY = -1;
+            if (mc.inGameHasFocus && mc.thePlayer != null) {
+                handleGameplayInput(mc);
+            }
         }
     }
 
@@ -280,49 +288,99 @@ public class ControllerManager {
         if (virtualCursorX < 0 || virtualCursorY < 0) {
             virtualCursorX = Mouse.getX();
             virtualCursorY = Mouse.getY();
+            if (virtualCursorX <= 0 && virtualCursorY <= 0) {
+                virtualCursorX = mc.displayWidth / 2.0;
+                virtualCursorY = mc.displayHeight / 2.0;
+            }
+            lastKnownMouseX = (int) virtualCursorX;
+            lastKnownMouseY = (int) virtualCursorY;
         }
 
-        // Move virtual cursor with Left Stick or D-Pad
+        // Check if physical mouse / trackpad was moved by the user
+        int curMouseX = Mouse.getX();
+        int curMouseY = Mouse.getY();
+        if (lastKnownMouseX != -1 && (curMouseX != lastKnownMouseX || curMouseY != lastKnownMouseY)) {
+            virtualCursorX = curMouseX;
+            virtualCursorY = curMouseY;
+            lastKnownMouseX = curMouseX;
+            lastKnownMouseY = curMouseY;
+        }
+
+        // Move virtual cursor with Left Stick, Right Stick, or D-Pad
         float moveX = leftStickX;
         float moveY = leftStickY;
+        if (Math.abs(rightStickX) > Math.abs(moveX)) {
+            moveX = rightStickX;
+        }
+        if (Math.abs(rightStickY) > Math.abs(moveY)) {
+            moveY = rightStickY;
+        }
         if (isDown(BTN_DPAD_LEFT)) moveX -= 0.8f;
         if (isDown(BTN_DPAD_RIGHT)) moveX += 0.8f;
         if (isDown(BTN_DPAD_UP)) moveY += 0.8f;
         if (isDown(BTN_DPAD_DOWN)) moveY -= 0.8f;
 
-        float cursorSpeed = 16.0f;
         if (Math.abs(moveX) > 0.05f || Math.abs(moveY) > 0.05f) {
-            virtualCursorX += moveX * cursorSpeed;
-            virtualCursorY += moveY * cursorSpeed;
+            float speed = 14.0f;
+            if (mc.gameSettings != null) {
+                speed *= mc.gameSettings.controllerSensitivity;
+            }
+            virtualCursorX += moveX * speed;
+            virtualCursorY += moveY * speed;
 
             if (virtualCursorX < 0) virtualCursorX = 0;
             if (virtualCursorX > mc.displayWidth) virtualCursorX = mc.displayWidth;
             if (virtualCursorY < 0) virtualCursorY = 0;
             if (virtualCursorY > mc.displayHeight) virtualCursorY = mc.displayHeight;
 
+            double winW = Math.max(1, org.lwjgl.opengl.Display.getWindowWidth());
+            double winH = Math.max(1, org.lwjgl.opengl.Display.getWindowHeight());
+            double dispW = Math.max(1, org.lwjgl.opengl.Display.getWidth());
+            double dispH = Math.max(1, org.lwjgl.opengl.Display.getHeight());
+
+            double glfwX = virtualCursorX * winW / dispW;
+            double glfwY = (dispH - virtualCursorY) * winH / dispH;
+
+            // Deliver move event into LWJGL queue so GuiScreen and EntityRenderer receive it
+            Mouse.addMoveEvent(glfwX, glfwY);
             Mouse.setCursorPosition((int) virtualCursorX, (int) virtualCursorY);
-        } else {
-            // Keep in sync with actual mouse if user moved physical mouse
-            virtualCursorX = Mouse.getX();
-            virtualCursorY = Mouse.getY();
+
+            lastKnownMouseX = (int) virtualCursorX;
+            lastKnownMouseY = (int) virtualCursorY;
         }
 
-        // A button = Left Click (Select / Drag stack)
-        if (wasJustPressed(BTN_A)) {
+        // Button Clicks
+        // A button or RT = Left Click (Select / Drag)
+        boolean clickLeft = wasJustPressed(BTN_A) || wasJustPressed(BTN_RT);
+        boolean releaseLeft = wasJustReleased(BTN_A) || wasJustReleased(BTN_RT);
+        if (clickLeft) {
             Mouse.addButtonEvent(0, true);
-        } else if (wasJustReleased(BTN_A)) {
+        } else if (releaseLeft) {
             Mouse.addButtonEvent(0, false);
         }
 
-        // X button = Right Click (Split stack / Place 1 item)
-        if (wasJustPressed(BTN_X)) {
+        // X button or LT = Right Click (Split stack / Place 1 item)
+        boolean clickRight = wasJustPressed(BTN_X) || wasJustPressed(BTN_LT);
+        boolean releaseRight = wasJustReleased(BTN_X) || wasJustReleased(BTN_LT);
+        if (clickRight) {
             Mouse.addButtonEvent(1, true);
-        } else if (wasJustReleased(BTN_X)) {
+        } else if (releaseRight) {
             Mouse.addButtonEvent(1, false);
         }
 
         // B button = Back / Escape / Close menu
         if (wasJustPressed(BTN_B)) {
+            if (mc.currentScreen instanceof GuiControllerSettings) {
+                mc.gameSettings.saveOptions();
+                mc.displayGuiScreen(((GuiControllerSettings) mc.currentScreen).getParentScreen());
+            } else {
+                mc.displayGuiScreen((GuiScreen) null);
+                mc.setIngameFocus();
+            }
+        }
+
+        // Start button = Close menu / Resume
+        if (wasJustPressed(BTN_START)) {
             mc.displayGuiScreen((GuiScreen) null);
             mc.setIngameFocus();
         }

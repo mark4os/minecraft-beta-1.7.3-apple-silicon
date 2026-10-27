@@ -60,3 +60,4 @@ public class GuiControllerSlider extends GuiButton {
 		this.dragging = false;
 	}
 }
+

@@ -144,4 +144,9 @@ public class GuiControllerSettings extends GuiScreen {
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
+
+	public GuiScreen getParentScreen() {
+		return this.parentScreen;
+	}
 }
+

@@ -1017,20 +1017,6 @@ public class RenderGlobal implements IWorldAccess {
 
 			if(!target.skipAllRenderPasses()) {
 				++geometryUpdated;
-				if(best != null && bestOut != null && !var2 && bestOut.needsUpdate && (System.nanoTime() - startNano) < 700000L) {
-					int newSize = this.worldRenderersToUpdate.size();
-					int outIdx = this.worldRenderersToUpdate.indexOf(bestOut);
-					if(outIdx >= 0) {
-						int last = newSize - 1;
-						if(outIdx != last) {
-							this.worldRenderersToUpdate.set(outIdx, this.worldRenderersToUpdate.get(last));
-						}
-						this.worldRenderersToUpdate.remove(last);
-						bestOut.isInUpdateList = false;
-						bestOut.updateRenderer();
-						bestOut.needsUpdate = false;
-					}
-				}
 			} else if((System.nanoTime() - startNano) > 1000000L) {
 				break;
 			}

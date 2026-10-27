@@ -381,23 +381,9 @@ public class Display {
         };
 
         Window.scrollCallback = new GLFWScrollCallback() {
-            private double scrollAccumulator = 0.0;
-            private long lastScrollTime = 0L;
-
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
-                long now = System.currentTimeMillis();
-                if (now - lastScrollTime > 250L) {
-                    scrollAccumulator = 0.0;
-                }
-                scrollAccumulator += yoffset;
-
-                if (Math.abs(scrollAccumulator) >= 1.0) {
-                    int notches = (int) scrollAccumulator;
-                    Mouse.addWheelEvent(notches * 120);
-                    scrollAccumulator -= notches;
-                    lastScrollTime = now;
-                }
+                Mouse.addWheelEvent((int) (yoffset * 120));
             }
         };
 

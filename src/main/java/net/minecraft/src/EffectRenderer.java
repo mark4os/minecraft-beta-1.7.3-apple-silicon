@@ -111,7 +111,7 @@ public class EffectRenderer {
 	public void addBlockDestroyEffects(int var1, int var2, int var3, int var4, int var5) {
 		if(var4 != 0) {
 			Block var6 = Block.blocksList[var4];
-			byte var7 = 2;
+			byte var7 = 4;
 
 			for(int var8 = 0; var8 < var7; ++var8) {
 				for(int var9 = 0; var9 < var7; ++var9) {

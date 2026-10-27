@@ -400,13 +400,11 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public int sortAndRender(EntityLiving var1, int var2, double var3) {
-		if(this.worldRenderersToUpdate.isEmpty()) {
-			for(int var5 = 0; var5 < 3; ++var5) {
-				this.worldRenderersCheckIndex = (this.worldRenderersCheckIndex + 1) % this.worldRenderers.length;
-				WorldRenderer var6 = this.worldRenderers[this.worldRenderersCheckIndex];
-				if(var6.needsUpdate && !var6.isInUpdateList) {
-					this.queueRendererForUpdate(var6);
-				}
+		for(int var5 = 0; var5 < 10; ++var5) {
+			this.worldRenderersCheckIndex = (this.worldRenderersCheckIndex + 1) % this.worldRenderers.length;
+			WorldRenderer var6 = this.worldRenderers[this.worldRenderersCheckIndex];
+			if(var6.needsUpdate && !var6.isInUpdateList) {
+				this.queueRendererForUpdate(var6);
 			}
 		}
 
@@ -954,52 +952,60 @@ public class RenderGlobal implements IWorldAccess {
 			return true;
 		}
 
-		int bestIdx = -1;
-		WorldRenderer best = null;
-		float bestDist = Float.MAX_VALUE;
-		boolean bestInFrustum = false;
+		long startNano = System.nanoTime();
+		int geometryUpdated = 0;
 
-		int bestOutIdx = -1;
-		WorldRenderer bestOut = null;
-		float bestOutDist = Float.MAX_VALUE;
+		while(geometryUpdated < 1 && !this.worldRenderersToUpdate.isEmpty()) {
+			size = this.worldRenderersToUpdate.size();
+			int bestIdx = -1;
+			WorldRenderer best = null;
+			float bestDist = Float.MAX_VALUE;
+			boolean bestInFrustum = false;
 
-		for(int i = 0; i < size; ++i) {
-			WorldRenderer wr = (WorldRenderer)this.worldRenderersToUpdate.get(i);
-			if(wr == null || !wr.needsUpdate) {
-				if(wr != null) {
-					wr.isInUpdateList = false;
+			int bestOutIdx = -1;
+			WorldRenderer bestOut = null;
+			float bestOutDist = Float.MAX_VALUE;
+
+			for(int i = 0; i < size; ++i) {
+				WorldRenderer wr = (WorldRenderer)this.worldRenderersToUpdate.get(i);
+				if(wr == null || !wr.needsUpdate) {
+					if(wr != null) {
+						wr.isInUpdateList = false;
+					}
+					int lastIdx = size - 1;
+					if(i != lastIdx) {
+						this.worldRenderersToUpdate.set(i, this.worldRenderersToUpdate.get(lastIdx));
+					}
+					this.worldRenderersToUpdate.remove(lastIdx);
+					--size;
+					--i;
+					continue;
 				}
-				int lastIdx = size - 1;
-				if(i != lastIdx) {
-					this.worldRenderersToUpdate.set(i, this.worldRenderersToUpdate.get(lastIdx));
+
+				boolean inFrustum = wr.isInFrustum;
+				float dist = wr.distanceToEntitySquared(var1);
+				if(inFrustum) {
+					if(!bestInFrustum || dist < bestDist) {
+						best = wr;
+						bestIdx = i;
+						bestDist = dist;
+						bestInFrustum = true;
+					}
+				} else if(!var2) {
+					if(dist < bestOutDist) {
+						bestOut = wr;
+						bestOutIdx = i;
+						bestOutDist = dist;
+					}
 				}
-				this.worldRenderersToUpdate.remove(lastIdx);
-				--size;
-				--i;
-				continue;
 			}
 
-			boolean inFrustum = wr.isInFrustum;
-			float dist = wr.distanceToEntitySquared(var1);
-			if(inFrustum) {
-				if(!bestInFrustum || dist < bestDist) {
-					best = wr;
-					bestIdx = i;
-					bestDist = dist;
-					bestInFrustum = true;
-				}
-			} else if(!var2) {
-				if(dist < bestOutDist) {
-					bestOut = wr;
-					bestOutIdx = i;
-					bestOutDist = dist;
-				}
+			WorldRenderer target = best != null ? best : bestOut;
+			int targetIdx = best != null ? bestIdx : bestOutIdx;
+			if(target == null) {
+				break;
 			}
-		}
 
-		WorldRenderer target = best != null ? best : bestOut;
-		int targetIdx = best != null ? bestIdx : bestOutIdx;
-		if(target != null) {
 			int lastIdx = size - 1;
 			if(targetIdx != lastIdx) {
 				this.worldRenderersToUpdate.set(targetIdx, this.worldRenderersToUpdate.get(lastIdx));
@@ -1008,6 +1014,26 @@ public class RenderGlobal implements IWorldAccess {
 			target.isInUpdateList = false;
 			target.updateRenderer();
 			target.needsUpdate = false;
+
+			if(!target.skipAllRenderPasses()) {
+				++geometryUpdated;
+				if(best != null && bestOut != null && !var2 && bestOut.needsUpdate && (System.nanoTime() - startNano) < 700000L) {
+					int newSize = this.worldRenderersToUpdate.size();
+					int outIdx = this.worldRenderersToUpdate.indexOf(bestOut);
+					if(outIdx >= 0) {
+						int last = newSize - 1;
+						if(outIdx != last) {
+							this.worldRenderersToUpdate.set(outIdx, this.worldRenderersToUpdate.get(last));
+						}
+						this.worldRenderersToUpdate.remove(last);
+						bestOut.isInUpdateList = false;
+						bestOut.updateRenderer();
+						bestOut.needsUpdate = false;
+					}
+				}
+			} else if((System.nanoTime() - startNano) > 1000000L) {
+				break;
+			}
 		}
 
 		return this.worldRenderersToUpdate.isEmpty();
@@ -1296,8 +1322,8 @@ public class RenderGlobal implements IWorldAccess {
 		for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
 			WorldRenderer wr = this.worldRenderers[var1];
 			if(wr.isChunkLit && !wr.needsUpdate) {
+				wr.markDirty();
 				if(viewEntity == null || wr.distanceToEntitySquared(viewEntity) <= 16384.0F) {
-					wr.markDirty();
 					this.queueRendererForUpdate(wr);
 				}
 			}

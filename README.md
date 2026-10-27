@@ -11,7 +11,7 @@ Native Minecraft Beta 1.7.3 client for Apple Silicon (M1/M2/M3/M4/M5) macOS, bui
 [![Java](https://img.shields.io/badge/Java-17%20LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org)
 [![Graphics](https://img.shields.io/badge/Graphics-LWJGL%203%20%2F%20GLFW-5586A4?style=for-the-badge&logo=opengl&logoColor=white)](https://www.lwjgl.org)
 [![Display](https://img.shields.io/badge/Display-Liquid%20Retina%20%2F%20120Hz-34C759?style=for-the-badge&logo=apple&logoColor=white)](https://apple.com)
-[![Release](https://img.shields.io/badge/Release-v1.0.5-blue?style=for-the-badge)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
+[![Release](https://img.shields.io/badge/Release-v1.0.1-blue?style=for-the-badge)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
 
 <br/>
 
@@ -34,7 +34,7 @@ This port updates the client to run natively on modern macOS with raw mouse inpu
 - **Native ARM64**: Runs directly on Java 17 LTS without Rosetta 2.
 - **LWJGL 3 (GLFW)**: Replaced legacy AWT/Carbon windowing. Uses raw mouse input (`GLFW_RAW_MOUSE_MOTION`) and fixes macOS modifier key stuck states.
 - **Retina HiDPI**: True 2x framebuffer scaling using `glfwGetFramebufferSize`.
-- **Frame Pacing & VSync**: Native Metal hardware VSync locking (`swapInterval=1`) to eliminate judder and keep tick interpolation in phase with display refreshes (60Hz / 120Hz ProMotion) with flat frame times and low thermals. Camera and chunk offsets are unified to `prevPos + (pos - prevPos) * partialTicks`.
+- **Frame Pacing & Judder Fix**: Hybrid precision frame pacer (`parkNanos` + `Thread.onSpinWait`) to keep tick interpolation in phase with display refreshes (60Hz and 120Hz ProMotion). Camera and chunk offsets are unified to `prevPos + (pos - prevPos) * partialTicks`.
 - **Chunk VBOs**: Replaced Display Lists with `GL_ARB_vertex_buffer_object` stored in Unified Memory.
 - **Fullscreen**: Native fullscreen toggle via `Cmd + F` or `Fn + F11`.
 - **Audio**: Bundled local OpenAL audio, no broken 2011 AWS resource requests.

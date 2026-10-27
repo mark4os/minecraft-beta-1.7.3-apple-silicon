@@ -833,7 +833,7 @@ public class EntityRenderer {
 			}
 		} else if(var3.isInsideOfMaterial(Material.water)) {
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
-			GL11.glFogf(GL11.GL_FOG_DENSITY, 0.03F);
+			GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);
 			var4 = 0.4F;
 			var5 = 0.4F;
 			var6 = 0.9F;
@@ -855,7 +855,7 @@ public class EntityRenderer {
 			}
 		} else {
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-			GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance * 0.75F);
+			GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance * 0.25F);
 			GL11.glFogf(GL11.GL_FOG_END, this.farPlaneDistance);
 			if(var1 < 0) {
 				GL11.glFogf(GL11.GL_FOG_START, 0.0F);

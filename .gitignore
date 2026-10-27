@@ -4,3 +4,25 @@ run/
 .DS_Store
 *.png
 
+# IDE and Editor
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Security & Private data
+*.key
+*.pem
+*.pub
+*.token
+.env*
+id_*
+
+# Logs and Crash reports
+*.log
+hs_err_pid*.log
+.system_generated/
+
+

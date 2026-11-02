@@ -10,12 +10,12 @@ public class WorldChunkManager {
 	public double[] humidity;
 	public double[] field_4196_c;
 	public BiomeGenBase[] field_4195_d;
-	private final int[] cacheX = new int[1024];
-	private final int[] cacheZ = new int[1024];
-	private final boolean[] cacheValid = new boolean[1024];
-	private final double[] cacheTemp = new double[1024];
-	private final double[] cacheHumid = new double[1024];
-	private final BiomeGenBase[] cacheBiome = new BiomeGenBase[1024];
+	private final int[] cacheX = new int[4096];
+	private final int[] cacheZ = new int[4096];
+	private final boolean[] cacheValid = new boolean[4096];
+	private final double[] cacheTemp = new double[4096];
+	private final double[] cacheHumid = new double[4096];
+	private final BiomeGenBase[] cacheBiome = new BiomeGenBase[4096];
 
 	protected WorldChunkManager() {
 	}
@@ -41,7 +41,9 @@ public class WorldChunkManager {
 
 	public BiomeGenBase[] func_4069_a(int var1, int var2, int var3, int var4) {
 		if(var3 == 1 && var4 == 1) {
-			int idx = (var1 & 31) | ((var2 & 31) << 5);
+			int hx = var1 ^ (var1 >>> 4);
+			int hz = var2 ^ (var2 >>> 4);
+			int idx = (hx & 63) | ((hz & 63) << 6);
 			if(this.cacheValid[idx] && this.cacheX[idx] == var1 && this.cacheZ[idx] == var2) {
 				if(this.temperature == null || this.temperature.length < 1) {
 					this.temperature = new double[1];

@@ -46,11 +46,16 @@ public class PlayerController {
 
 	public boolean sendUseItem(EntityPlayer var1, World var2, ItemStack var3) {
 		int var4 = var3.stackSize;
+		boolean isOffHand = (var3 == var1.inventory.offHandInventory[0]);
 		ItemStack var5 = var3.useItemRightClick(var2, var1);
 		if(var5 != var3 || var5 != null && var5.stackSize != var4) {
-			var1.inventory.mainInventory[var1.inventory.currentItem] = var5;
-			if(var5.stackSize == 0) {
-				var1.inventory.mainInventory[var1.inventory.currentItem] = null;
+			if(isOffHand) {
+				var1.inventory.offHandInventory[0] = (var5 != null && var5.stackSize == 0) ? null : var5;
+			} else {
+				var1.inventory.mainInventory[var1.inventory.currentItem] = var5;
+				if(var5.stackSize == 0) {
+					var1.inventory.mainInventory[var1.inventory.currentItem] = null;
+				}
 			}
 
 			return true;

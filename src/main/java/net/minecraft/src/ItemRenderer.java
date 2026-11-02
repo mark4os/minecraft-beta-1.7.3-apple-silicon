@@ -261,6 +261,30 @@ public class ItemRenderer {
 			GL11.glPopMatrix();
 		}
 
+		ItemStack offHandStack = var3.inventory.getOffHandItem();
+		if(offHandStack != null && (var5 == null || var5.itemID != Item.mapItem.shiftedIndex)) {
+			GL11.glPushMatrix();
+			int offColor = Item.itemsList[offHandStack.itemID].getColorFromDamage(offHandStack.getItemDamage());
+			float offR = (float)(offColor >> 16 & 255) / 255.0F;
+			float offG = (float)(offColor >> 8 & 255) / 255.0F;
+			float offB = (float)(offColor & 255) / 255.0F;
+			GL11.glColor4f(var6 * offR, var6 * offG, var6 * offB, 1.0F);
+			GL11.glScalef(-1.0F, 1.0F, 1.0F);
+			GL11.glFrontFace(GL11.GL_CW);
+			var14 = 0.8F;
+			GL11.glTranslatef(0.7F * var14, -0.65F * var14, -0.9F * var14);
+			GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+			var8 = 0.4F;
+			GL11.glScalef(var8, var8, var8);
+			if(offHandStack.getItem().shouldRotateAroundWhenRendering()) {
+				GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
+			}
+			this.renderItem(var3, offHandStack);
+			GL11.glFrontFace(GL11.GL_CCW);
+			GL11.glPopMatrix();
+		}
+
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		RenderHelper.disableStandardItemLighting();
 	}

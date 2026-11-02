@@ -52,6 +52,14 @@ public class World implements IBlockAccess {
 	private boolean spawnPeacefulMobs;
 	static int lightingUpdatesScheduled = 0;
 	private Set positionsToUpdate;
+	private ArrayList positionsToUpdateList = new ArrayList(400);
+	public static long profSpawnerNs = 0L;
+	public static long profEntitiesNs = 0L;
+	public static long profBlocksNs = 0L;
+	public static long profLightingNs = 0L;
+	public static long profSaveNs = 0L;
+	public static long profMaxTickNs = 0L;
+	public static String profSpikeSource = "none";
 	private int lastPlayerChunkX = Integer.MIN_VALUE;
 	private int lastPlayerChunkZ = Integer.MIN_VALUE;
 	private int lastPlayerCount = -1;
@@ -688,11 +696,13 @@ public class World implements IBlockAccess {
 			var5 = var4;
 		}
 
-		return this.worldProvider.lightBrightnessTable[var5];
+		float val = this.worldProvider.lightBrightnessTable[var5];
+		return DynamicLights.isActive() ? DynamicLights.getDynamicBrightness(var1, var2, var3, val, this.worldProvider.lightBrightnessTable) : val;
 	}
 
 	public float getLightBrightness(int var1, int var2, int var3) {
-		return this.worldProvider.lightBrightnessTable[this.getBlockLightValue(var1, var2, var3)];
+		float val = this.worldProvider.lightBrightnessTable[this.getBlockLightValue(var1, var2, var3)];
+		return DynamicLights.isActive() ? DynamicLights.getDynamicBrightness(var1, var2, var3, val, this.worldProvider.lightBrightnessTable) : val;
 	}
 
 	public boolean isDaytime() {
@@ -1174,6 +1184,7 @@ public class World implements IBlockAccess {
 	}
 
 	public void updateEntities() {
+		long t0 = System.nanoTime();
 		int var1;
 		Entity var2;
 		for(var1 = 0; var1 < this.weatherEffects.size(); ++var1) {
@@ -1184,24 +1195,26 @@ public class World implements IBlockAccess {
 			}
 		}
 
-		this.loadedEntityList.removeAll(this.unloadedEntityList);
-
 		int var3;
 		int var4;
-		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
-			var2 = (Entity)this.unloadedEntityList.get(var1);
-			var3 = var2.chunkCoordX;
-			var4 = var2.chunkCoordZ;
-			if(var2.addedToChunk && this.chunkExists(var3, var4)) {
-				this.getChunkFromChunkCoords(var3, var4).removeEntity(var2);
+		if(!this.unloadedEntityList.isEmpty()) {
+			this.loadedEntityList.removeAll(this.unloadedEntityList);
+
+			for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
+				var2 = (Entity)this.unloadedEntityList.get(var1);
+				var3 = var2.chunkCoordX;
+				var4 = var2.chunkCoordZ;
+				if(var2.addedToChunk && this.chunkExists(var3, var4)) {
+					this.getChunkFromChunkCoords(var3, var4).removeEntity(var2);
+				}
 			}
-		}
 
-		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
-			this.releaseEntitySkin((Entity)this.unloadedEntityList.get(var1));
-		}
+			for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
+				this.releaseEntitySkin((Entity)this.unloadedEntityList.get(var1));
+			}
 
-		this.unloadedEntityList.clear();
+			this.unloadedEntityList.clear();
+		}
 
 		for(var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
 			var2 = (Entity)this.loadedEntityList.get(var1);
@@ -1231,16 +1244,14 @@ public class World implements IBlockAccess {
 		}
 
 		this.field_31055_L = true;
-		Iterator var10 = this.loadedTileEntityList.iterator();
-
-		while(var10.hasNext()) {
-			TileEntity var5 = (TileEntity)var10.next();
+		for(var1 = 0; var1 < this.loadedTileEntityList.size(); ++var1) {
+			TileEntity var5 = (TileEntity)this.loadedTileEntityList.get(var1);
 			if(!var5.func_31006_g()) {
 				var5.updateEntity();
 			}
 
 			if(var5.func_31006_g()) {
-				var10.remove();
+				this.loadedTileEntityList.remove(var1--);
 				Chunk var7 = this.getChunkFromChunkCoords(var5.xCoord >> 4, var5.zCoord >> 4);
 				if(var7 != null) {
 					var7.removeChunkBlockTileEntity(var5.xCoord & 15, var5.yCoord, var5.zCoord & 15);
@@ -1250,10 +1261,8 @@ public class World implements IBlockAccess {
 
 		this.field_31055_L = false;
 		if(!this.field_30900_E.isEmpty()) {
-			Iterator var6 = this.field_30900_E.iterator();
-
-			while(var6.hasNext()) {
-				TileEntity var8 = (TileEntity)var6.next();
+			for(var1 = 0; var1 < this.field_30900_E.size(); ++var1) {
+				TileEntity var8 = (TileEntity)this.field_30900_E.get(var1);
 				if(!var8.func_31006_g()) {
 					if(!this.loadedTileEntityList.contains(var8)) {
 						this.loadedTileEntityList.add(var8);
@@ -1270,7 +1279,7 @@ public class World implements IBlockAccess {
 
 			this.field_30900_E.clear();
 		}
-
+		profEntitiesNs = System.nanoTime() - t0;
 	}
 
 	public void func_31054_a(Collection var1) {
@@ -1759,9 +1768,12 @@ public class World implements IBlockAccess {
 			}
 		}
 
+		long tSpw = System.nanoTime();
 		if(this.worldInfo.getWorldTime() % 4L == 0L) {
 			SpawnerAnimals.performSpawning(this, this.spawnHostileMobs, this.spawnPeacefulMobs);
 		}
+		profSpawnerNs = System.nanoTime() - tSpw;
+
 		this.chunkProvider.unload100OldestChunks();
 		int var4 = this.calculateSkylightSubtracted(1.0F);
 		if(var4 != this.skylightSubtracted) {
@@ -1775,14 +1787,18 @@ public class World implements IBlockAccess {
 			}
 		}
 
+		long tSave = System.nanoTime();
 		var2 = this.worldInfo.getWorldTime() + 1L;
 		if(var2 % (long)this.autosavePeriod == 0L) {
 			this.saveWorld(false, (IProgressUpdate)null);
 		}
+		profSaveNs = System.nanoTime() - tSave;
 
 		this.worldInfo.setWorldTime(var2);
+		long tBlk = System.nanoTime();
 		this.TickUpdates(false);
 		this.updateBlocksAndPlayCaveSounds();
+		profBlocksNs = System.nanoTime() - tBlk;
 	}
 
 	private void func_27163_E() {
@@ -1877,7 +1893,7 @@ public class World implements IBlockAccess {
 		int var6;
 		int var7;
 		int playerCount = this.playerEntities.size();
-		boolean rebuildPositions = playerCount != this.lastPlayerCount || this.positionsToUpdate.isEmpty();
+		boolean rebuildPositions = playerCount != this.lastPlayerCount || this.positionsToUpdateList.isEmpty();
 		if(!rebuildPositions && playerCount == 1) {
 			EntityPlayer p0 = (EntityPlayer)this.playerEntities.get(0);
 			int cx = MathHelper.floor_double(p0.posX / 16.0D);
@@ -1891,6 +1907,7 @@ public class World implements IBlockAccess {
 
 		if(rebuildPositions) {
 			this.positionsToUpdate.clear();
+			this.positionsToUpdateList.clear();
 			this.lastPlayerCount = playerCount;
 			for(int var1 = 0; var1 < playerCount; ++var1) {
 				EntityPlayer var2 = (EntityPlayer)this.playerEntities.get(var1);
@@ -1904,7 +1921,10 @@ public class World implements IBlockAccess {
 
 				for(var6 = -var5; var6 <= var5; ++var6) {
 					for(var7 = -var5; var7 <= var5; ++var7) {
-						this.positionsToUpdate.add(new ChunkCoordIntPair(var6 + var3, var7 + var4));
+						ChunkCoordIntPair pair = new ChunkCoordIntPair(var6 + var3, var7 + var4);
+						if(this.positionsToUpdate.add(pair)) {
+							this.positionsToUpdateList.add(pair);
+						}
 					}
 				}
 			}
@@ -1914,10 +1934,9 @@ public class World implements IBlockAccess {
 			--this.soundCounter;
 		}
 
-		Iterator var12 = this.positionsToUpdate.iterator();
-
-		while(var12.hasNext()) {
-			ChunkCoordIntPair var13 = (ChunkCoordIntPair)var12.next();
+		int posSize = this.positionsToUpdateList.size();
+		for(int posIdx = 0; posIdx < posSize; ++posIdx) {
+			ChunkCoordIntPair var13 = (ChunkCoordIntPair)this.positionsToUpdateList.get(posIdx);
 			var3 = var13.chunkXPos * 16;
 			var4 = var13.chunkZPos * 16;
 			Chunk var14 = this.getChunkFromChunkCoords(var13.chunkXPos, var13.chunkZPos);
@@ -2379,6 +2398,10 @@ public class World implements IBlockAccess {
 
 	public WorldInfo getWorldInfo() {
 		return this.worldInfo;
+	}
+
+	public ISaveHandler getSaveHandler() {
+		return this.saveHandler;
 	}
 
 	public void updateAllPlayersSleepingFlag() {

@@ -18,6 +18,7 @@ public class WorldInfo {
 	private int rainTime;
 	private boolean thundering;
 	private int thunderTime;
+	private boolean keepInventory = false;
 
 	public WorldInfo(NBTTagCompound var1) {
 		this.randomSeed = var1.getLong("RandomSeed");
@@ -33,6 +34,7 @@ public class WorldInfo {
 		this.raining = var1.getBoolean("raining");
 		this.thunderTime = var1.getInteger("thunderTime");
 		this.thundering = var1.getBoolean("thundering");
+		this.keepInventory = var1.getBoolean("keepInventory");
 		if(var1.hasKey("Player")) {
 			this.playerTag = var1.getCompoundTag("Player");
 			this.dimension = this.playerTag.getInteger("Dimension");
@@ -61,6 +63,7 @@ public class WorldInfo {
 		this.raining = var1.raining;
 		this.thunderTime = var1.thunderTime;
 		this.thundering = var1.thundering;
+		this.keepInventory = var1.keepInventory;
 	}
 
 	public NBTTagCompound getNBTTagCompound() {
@@ -100,10 +103,19 @@ public class WorldInfo {
 		var1.setBoolean("raining", this.raining);
 		var1.setInteger("thunderTime", this.thunderTime);
 		var1.setBoolean("thundering", this.thundering);
+		var1.setBoolean("keepInventory", this.keepInventory);
 		if(var2 != null) {
 			var1.setCompoundTag("Player", var2);
 		}
 
+	}
+
+	public boolean getKeepInventory() {
+		return this.keepInventory;
+	}
+
+	public void setKeepInventory(boolean var1) {
+		this.keepInventory = var1;
 	}
 
 	public long getRandomSeed() {

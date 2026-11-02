@@ -19,6 +19,9 @@ public class GuiInventory extends GuiContainer {
 
 	protected void drawGuiContainerForegroundLayer() {
 		this.fontRenderer.drawString("Crafting", 86, 16, 4210752);
+		if (this.mc.thePlayer != null && this.mc.thePlayer.inventory.getOffHandItem() == null) {
+			this.fontRenderer.drawString("F", 93, 66, 7368816);
+		}
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
@@ -34,6 +37,8 @@ public class GuiInventory extends GuiContainer {
 		int var3 = (this.width - this.xSize) / 2;
 		int var4 = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(var3, var4, 0, 0, this.xSize, this.ySize);
+		// Draw 18x18 off-hand slot box using native slot texture from inventory.png
+		this.drawTexturedModalRect(var3 + 87, var4 + 61, 7, 83, 18, 18);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glPushMatrix();

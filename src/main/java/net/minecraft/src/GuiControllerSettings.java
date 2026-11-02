@@ -132,7 +132,7 @@ public class GuiControllerSettings extends GuiScreen {
 		this.drawString(this.fontRenderer, "\u00a7fLB / RB: \u00a77Cycle Hotbar", leftCol, textY + lineSpacing * 2, 16777215);
 		this.drawString(this.fontRenderer, "\u00a7fLeft Stick: \u00a77Move Player", leftCol, textY + lineSpacing * 3, 16777215);
 		this.drawString(this.fontRenderer, "\u00a7fRight Stick: \u00a77Look Around", leftCol, textY + lineSpacing * 4, 16777215);
-		this.drawString(this.fontRenderer, "\u00a7fD-Pad: \u00a77Hotbar / F5 / Fog", leftCol, textY + lineSpacing * 5, 16777215);
+		this.drawString(this.fontRenderer, "\u00a7fD-Pad: \u00a77Off-Hand(L) / F5(U) / Fog(D)", leftCol, textY + lineSpacing * 5, 16777215);
 
 		// Right Column
 		this.drawString(this.fontRenderer, "\u00a7fA / Cross: \u00a77Jump", rightCol, textY, 16777215);

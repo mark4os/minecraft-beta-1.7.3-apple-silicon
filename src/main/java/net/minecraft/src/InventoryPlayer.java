@@ -3,6 +3,7 @@ package net.minecraft.src;
 public class InventoryPlayer implements IInventory {
 	public ItemStack[] mainInventory = new ItemStack[36];
 	public ItemStack[] armorInventory = new ItemStack[4];
+	public ItemStack[] offHandInventory = new ItemStack[1];
 	public int currentItem = 0;
 	public EntityPlayer player;
 	private ItemStack itemStack;
@@ -14,6 +15,35 @@ public class InventoryPlayer implements IInventory {
 
 	public ItemStack getCurrentItem() {
 		return this.currentItem < 9 && this.currentItem >= 0 ? this.mainInventory[this.currentItem] : null;
+	}
+
+	public ItemStack getOffHandItem() {
+		return this.offHandInventory[0];
+	}
+
+	public void setOffHandItem(ItemStack var1) {
+		this.offHandInventory[0] = var1;
+		this.onInventoryChanged();
+	}
+
+	public void swapHands() {
+		if (this.currentItem >= 0 && this.currentItem < 9) {
+			ItemStack main = this.mainInventory[this.currentItem];
+			this.mainInventory[this.currentItem] = this.offHandInventory[0];
+			this.offHandInventory[0] = main;
+			this.onInventoryChanged();
+		}
+	}
+
+	public void copyInventory(InventoryPlayer other) {
+		for (int i = 0; i < this.mainInventory.length; ++i) {
+			this.mainInventory[i] = ItemStack.copyItemStack(other.mainInventory[i]);
+		}
+		for (int i = 0; i < this.armorInventory.length; ++i) {
+			this.armorInventory[i] = ItemStack.copyItemStack(other.armorInventory[i]);
+		}
+		this.offHandInventory[0] = ItemStack.copyItemStack(other.offHandInventory[0]);
+		this.currentItem = other.currentItem;
 	}
 
 	private int getInventorySlotContainItem(int var1) {
@@ -112,6 +142,9 @@ public class InventoryPlayer implements IInventory {
 				this.mainInventory[var1].updateAnimation(this.player.worldObj, this.player, var1, this.currentItem == var1);
 			}
 		}
+		if(this.offHandInventory[0] != null) {
+			this.offHandInventory[0].updateAnimation(this.player.worldObj, this.player, 40, true);
+		}
 
 	}
 
@@ -152,7 +185,10 @@ public class InventoryPlayer implements IInventory {
 
 	public ItemStack decrStackSize(int var1, int var2) {
 		ItemStack[] var3 = this.mainInventory;
-		if(var1 >= this.mainInventory.length) {
+		if(var1 >= this.mainInventory.length + this.armorInventory.length) {
+			var3 = this.offHandInventory;
+			var1 -= this.mainInventory.length + this.armorInventory.length;
+		} else if(var1 >= this.mainInventory.length) {
 			var3 = this.armorInventory;
 			var1 -= this.mainInventory.length;
 		}
@@ -178,7 +214,10 @@ public class InventoryPlayer implements IInventory {
 
 	public void setInventorySlotContents(int var1, ItemStack var2) {
 		ItemStack[] var3 = this.mainInventory;
-		if(var1 >= var3.length) {
+		if(var1 >= this.mainInventory.length + this.armorInventory.length) {
+			var1 -= this.mainInventory.length + this.armorInventory.length;
+			var3 = this.offHandInventory;
+		} else if(var1 >= var3.length) {
 			var1 -= var3.length;
 			var3 = this.armorInventory;
 		}
@@ -216,12 +255,20 @@ public class InventoryPlayer implements IInventory {
 			}
 		}
 
+		if(this.offHandInventory[0] != null) {
+			var3 = new NBTTagCompound();
+			var3.setByte("Slot", (byte)150);
+			this.offHandInventory[0].writeToNBT(var3);
+			var1.setTag(var3);
+		}
+
 		return var1;
 	}
 
 	public void readFromNBT(NBTTagList var1) {
 		this.mainInventory = new ItemStack[36];
 		this.armorInventory = new ItemStack[4];
+		this.offHandInventory = new ItemStack[1];
 
 		for(int var2 = 0; var2 < var1.tagCount(); ++var2) {
 			NBTTagCompound var3 = (NBTTagCompound)var1.tagAt(var2);
@@ -235,6 +282,10 @@ public class InventoryPlayer implements IInventory {
 				if(var4 >= 100 && var4 < this.armorInventory.length + 100) {
 					this.armorInventory[var4 - 100] = var5;
 				}
+
+				if(var4 == 150) {
+					this.offHandInventory[0] = var5;
+				}
 			}
 		}
 
@@ -246,7 +297,10 @@ public class InventoryPlayer implements IInventory {
 
 	public ItemStack getStackInSlot(int var1) {
 		ItemStack[] var2 = this.mainInventory;
-		if(var1 >= var2.length) {
+		if(var1 >= this.mainInventory.length + this.armorInventory.length) {
+			var1 -= this.mainInventory.length + this.armorInventory.length;
+			var2 = this.offHandInventory;
+		} else if(var1 >= var2.length) {
 			var1 -= var2.length;
 			var2 = this.armorInventory;
 		}
@@ -331,6 +385,11 @@ public class InventoryPlayer implements IInventory {
 				this.player.dropPlayerItemWithRandomChoice(this.armorInventory[var1], true);
 				this.armorInventory[var1] = null;
 			}
+		}
+
+		if(this.offHandInventory[0] != null) {
+			this.player.dropPlayerItemWithRandomChoice(this.offHandInventory[0], true);
+			this.offHandInventory[0] = null;
 		}
 
 	}

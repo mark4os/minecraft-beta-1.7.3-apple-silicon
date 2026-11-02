@@ -69,7 +69,8 @@ public class ChunkCache implements IBlockAccess {
 			var5 = var4;
 		}
 
-		return this.lightBrightnessTable[var5];
+		float val = this.lightBrightnessTable[var5];
+		return DynamicLights.isActive() ? DynamicLights.getDynamicBrightness(var1, var2, var3, val, this.lightBrightnessTable) : val;
 	}
 
 	public float getLightBrightness(int var1, int var2, int var3) {
@@ -79,11 +80,15 @@ public class ChunkCache implements IBlockAccess {
 				return brightnessCache[idx];
 			}
 			float val = this.lightBrightnessTable[this.getLightValueExt(var1, var2, var3, true)];
+			if(DynamicLights.isActive()) {
+				val = DynamicLights.getDynamicBrightness(var1, var2, var3, val, this.lightBrightnessTable);
+			}
 			brightnessCacheTag[idx] = this.cacheId;
 			brightnessCache[idx] = val;
 			return val;
 		}
-		return this.lightBrightnessTable[this.getLightValue(var1, var2, var3)];
+		float val = this.lightBrightnessTable[this.getLightValue(var1, var2, var3)];
+		return DynamicLights.isActive() ? DynamicLights.getDynamicBrightness(var1, var2, var3, val, this.lightBrightnessTable) : val;
 	}
 
 	public int getLightValue(int var1, int var2, int var3) {

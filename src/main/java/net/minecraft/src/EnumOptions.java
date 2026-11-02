@@ -14,7 +14,8 @@ public enum EnumOptions {
 	GRAPHICS("options.graphics", false, false),
 	AMBIENT_OCCLUSION("options.ao", false, true),
 	GUI_SCALE("options.guiScale", false, false),
-	VSYNC("options.vsync", false, true);
+	VSYNC("options.vsync", false, true),
+	DYNAMIC_LIGHTS("options.dynamicLights", false, true);
 
 	private final boolean enumFloat;
 	private final boolean enumBoolean;

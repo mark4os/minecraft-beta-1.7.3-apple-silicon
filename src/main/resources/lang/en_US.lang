@@ -104,6 +104,7 @@ options.anaglyph=3D Anaglyph
 options.framerateLimit=Max Framerate
 options.framerateLimit.max=Unlimited
 options.vsync=VSync
+options.dynamicLights=Dynamic Lights
 options.difficulty=Difficulty
 options.difficulty.peaceful=Peaceful
 options.difficulty.easy=Easy

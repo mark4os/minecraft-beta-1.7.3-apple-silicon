@@ -445,6 +445,7 @@ public class EntityRenderer {
 			this.frustrum.setPosition(var7, var9, var11);
 			this.mc.renderGlobal.clipRenderersByFrustrum(this.frustrum, var1);
 			if(var18 == 0) {
+				DynamicLights.update(this.mc);
 				this.mc.renderGlobal.updateRenderers(var4, false);
 			}
 

@@ -38,6 +38,9 @@ public class ContainerPlayer extends Container {
 			this.addSlot(new Slot(var1, var3, 8 + var3 * 18, 142));
 		}
 
+		// Off-hand slot (slot index 45 in ContainerPlayer -> index 40 in InventoryPlayer)
+		this.addSlot(new Slot(var1, 40, 88, 62));
+
 		this.onCraftMatrixChanged(this.craftMatrix);
 	}
 

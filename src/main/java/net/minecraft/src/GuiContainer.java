@@ -9,6 +9,7 @@ public abstract class GuiContainer extends GuiScreen {
 	protected int xSize = 176;
 	protected int ySize = 166;
 	public Container inventorySlots;
+	private Slot hoveredSlot = null;
 
 	public GuiContainer(Container var1) {
 		this.inventorySlots = var1;
@@ -51,6 +52,7 @@ public abstract class GuiContainer extends GuiScreen {
 			}
 		}
 
+		this.hoveredSlot = var6;
 		InventoryPlayer var12 = this.mc.thePlayer.inventory;
 		if(var12.getItemStack() != null) {
 			GL11.glTranslatef(0.0F, 0.0F, 32.0F);
@@ -153,9 +155,26 @@ public abstract class GuiContainer extends GuiScreen {
 
 	}
 
+	public void swapHoveredWithOffhand() {
+		if (this.mc == null || this.mc.thePlayer == null) return;
+		if (this.hoveredSlot != null && !(this.hoveredSlot instanceof SlotCrafting)) {
+			ItemStack slotStack = this.hoveredSlot.getStack();
+			ItemStack offStack = this.mc.thePlayer.inventory.getOffHandItem();
+			if (offStack == null || this.hoveredSlot.isItemValid(offStack)) {
+				this.hoveredSlot.putStack(offStack);
+				this.mc.thePlayer.inventory.setOffHandItem(slotStack);
+				this.hoveredSlot.onSlotChanged();
+			}
+		} else {
+			this.mc.thePlayer.inventory.swapHands();
+		}
+	}
+
 	protected void keyTyped(char var1, int var2) {
 		if(var2 == 1 || var2 == this.mc.gameSettings.keyBindInventory.keyCode) {
 			this.mc.thePlayer.closeScreen();
+		} else if(var2 == Keyboard.KEY_F) {
+			this.swapHoveredWithOffhand();
 		}
 
 	}

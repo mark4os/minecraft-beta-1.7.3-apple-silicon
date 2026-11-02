@@ -224,7 +224,9 @@ public abstract class EntityPlayer extends EntityLiving {
 			this.dropPlayerItemWithRandomChoice(new ItemStack(Item.appleRed, 1), true);
 		}
 
-		this.inventory.dropAllItems();
+		if(this.worldObj == null || this.worldObj.getWorldInfo() == null || !this.worldObj.getWorldInfo().getKeepInventory()) {
+			this.inventory.dropAllItems();
+		}
 		if(var1 != null) {
 			this.motionX = (double)(-MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
 			this.motionZ = (double)(-MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);

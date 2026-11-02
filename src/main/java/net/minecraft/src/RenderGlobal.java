@@ -954,8 +954,9 @@ public class RenderGlobal implements IWorldAccess {
 
 		long startNano = System.nanoTime();
 		int geometryUpdated = 0;
+		int maxGeometryUpdates = DynamicLights.isActive() ? 6 : 1;
 
-		while(geometryUpdated < 1 && !this.worldRenderersToUpdate.isEmpty()) {
+		while(geometryUpdated < maxGeometryUpdates && !this.worldRenderersToUpdate.isEmpty()) {
 			size = this.worldRenderersToUpdate.size();
 			int bestIdx = -1;
 			WorldRenderer best = null;
@@ -1017,6 +1018,9 @@ public class RenderGlobal implements IWorldAccess {
 
 			if(!target.skipAllRenderPasses()) {
 				++geometryUpdated;
+				if(geometryUpdated >= 1 && (bestDist > 1024.0F || (System.nanoTime() - startNano) > 1500000L)) {
+					break;
+				}
 			} else if((System.nanoTime() - startNano) > 1000000L) {
 				break;
 			}

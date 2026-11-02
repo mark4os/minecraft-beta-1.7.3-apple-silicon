@@ -26,6 +26,7 @@ public class GameSettings {
 	public int limitFramerate = 120;
 	public boolean fancyGraphics = true;
 	public boolean ambientOcclusion = true;
+	public boolean dynamicLights = true;
 	public float controllerSensitivity = 1.0F;
 	public boolean controllerInvertY = false;
 	public float controllerDeadzone = 0.15F;
@@ -155,6 +156,10 @@ public class GameSettings {
 			this.mc.renderGlobal.loadRenderers();
 		}
 
+		if(var1 == EnumOptions.DYNAMIC_LIGHTS) {
+			this.dynamicLights = !this.dynamicLights;
+		}
+
 		this.saveOptions();
 	}
 
@@ -185,6 +190,8 @@ public class GameSettings {
 			return this.ambientOcclusion;
 		case 6:
 			return this.enableVsync;
+		case 7:
+			return this.dynamicLights;
 		default:
 			return false;
 		}
@@ -290,6 +297,10 @@ public class GameSettings {
 						this.ambientOcclusion = var3[1].equals("true");
 					}
 
+					if(var3[0].equals("dynamicLights")) {
+						this.dynamicLights = var3[1].equals("true");
+					}
+
 					if(var3[0].equals("skin")) {
 						this.skin = var3[1];
 					}
@@ -352,6 +363,7 @@ public class GameSettings {
 			var1.println("difficulty:" + this.difficulty);
 			var1.println("fancyGraphics:" + this.fancyGraphics);
 			var1.println("ao:" + this.ambientOcclusion);
+			var1.println("dynamicLights:" + this.dynamicLights);
 			var1.println("controllerSensitivity:" + this.controllerSensitivity);
 			var1.println("controllerInvertY:" + this.controllerInvertY);
 			var1.println("controllerDeadzone:" + this.controllerDeadzone);

@@ -34,5 +34,10 @@ class EnumOptionsMappingHelper {
 		} catch (NoSuchFieldError var0) {
 		}
 
+		try {
+			enumOptionsMappingHelperArray[EnumOptions.DYNAMIC_LIGHTS.ordinal()] = 7;
+		} catch (NoSuchFieldError var6) {
+		}
+
 	}
 }

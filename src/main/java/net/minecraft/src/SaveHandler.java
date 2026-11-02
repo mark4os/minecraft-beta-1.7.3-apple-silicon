@@ -47,7 +47,7 @@ public class SaveHandler implements ISaveHandler {
 		}
 	}
 
-	protected File getSaveDirectory() {
+	public File getSaveDirectory() {
 		return this.saveDirectory;
 	}
 
@@ -112,62 +112,77 @@ public class SaveHandler implements ISaveHandler {
 		return null;
 	}
 
+	private static final java.util.concurrent.ExecutorService saveExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(new java.util.concurrent.ThreadFactory() {
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r, "Async-LevelDat-Saver");
+			t.setDaemon(true);
+			return t;
+		}
+	});
+
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			public void run() {
+				saveExecutor.shutdown();
+				try {
+					saveExecutor.awaitTermination(3L, java.util.concurrent.TimeUnit.SECONDS);
+				} catch (InterruptedException e) {
+				}
+			}
+		}, "SaveHandler-Flush"));
+	}
+
+	public static void flushAsyncSaves() {
+		try {
+			saveExecutor.submit(new Runnable() {
+				public void run() {
+				}
+			}).get(3L, java.util.concurrent.TimeUnit.SECONDS);
+		} catch (Exception ignored) {
+		}
+	}
+
+	private void writeLevelDatInternal(final NBTTagCompound rootTag) {
+		final File dir = this.saveDirectory;
+		saveExecutor.submit(new Runnable() {
+			public void run() {
+				try {
+					File var5 = new File(dir, "level.dat_new");
+					File var6 = new File(dir, "level.dat_old");
+					File var7 = new File(dir, "level.dat");
+					CompressedStreamTools.writeGzippedCompoundToOutputStream(rootTag, new FileOutputStream(var5));
+					if(var6.exists()) {
+						var6.delete();
+					}
+
+					var7.renameTo(var6);
+					if(var7.exists()) {
+						var7.delete();
+					}
+
+					var5.renameTo(var7);
+					if(var5.exists()) {
+						var5.delete();
+					}
+				} catch (Exception var8) {
+					var8.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public void saveWorldInfoAndPlayer(WorldInfo var1, List var2) {
 		NBTTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
 		NBTTagCompound var4 = new NBTTagCompound();
 		var4.setTag("Data", var3);
-
-		try {
-			File var5 = new File(this.saveDirectory, "level.dat_new");
-			File var6 = new File(this.saveDirectory, "level.dat_old");
-			File var7 = new File(this.saveDirectory, "level.dat");
-			CompressedStreamTools.writeGzippedCompoundToOutputStream(var4, new FileOutputStream(var5));
-			if(var6.exists()) {
-				var6.delete();
-			}
-
-			var7.renameTo(var6);
-			if(var7.exists()) {
-				var7.delete();
-			}
-
-			var5.renameTo(var7);
-			if(var5.exists()) {
-				var5.delete();
-			}
-		} catch (Exception var8) {
-			var8.printStackTrace();
-		}
-
+		this.writeLevelDatInternal(var4);
 	}
 
 	public void saveWorldInfo(WorldInfo var1) {
 		NBTTagCompound var2 = var1.getNBTTagCompound();
 		NBTTagCompound var3 = new NBTTagCompound();
 		var3.setTag("Data", var2);
-
-		try {
-			File var4 = new File(this.saveDirectory, "level.dat_new");
-			File var5 = new File(this.saveDirectory, "level.dat_old");
-			File var6 = new File(this.saveDirectory, "level.dat");
-			CompressedStreamTools.writeGzippedCompoundToOutputStream(var3, new FileOutputStream(var4));
-			if(var5.exists()) {
-				var5.delete();
-			}
-
-			var6.renameTo(var5);
-			if(var6.exists()) {
-				var6.delete();
-			}
-
-			var4.renameTo(var6);
-			if(var4.exists()) {
-				var4.delete();
-			}
-		} catch (Exception var7) {
-			var7.printStackTrace();
-		}
-
+		this.writeLevelDatInternal(var3);
 	}
 
 	public File func_28113_a(String var1) {

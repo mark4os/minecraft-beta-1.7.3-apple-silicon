@@ -171,7 +171,9 @@ public class PlayerControllerMP extends PlayerController {
 	public ItemStack func_27174_a(int var1, int var2, int var3, boolean var4, EntityPlayer var5) {
 		short var6 = var5.craftingInventory.func_20111_a(var5.inventory);
 		ItemStack var7 = super.func_27174_a(var1, var2, var3, var4, var5);
-		this.netClientHandler.addToSendQueue(new Packet102WindowClick(var1, var2, var3, var4, var7, var6));
+		if(!(var1 == 0 && var2 >= 45)) {
+			this.netClientHandler.addToSendQueue(new Packet102WindowClick(var1, var2, var3, var4, var7, var6));
+		}
 		return var7;
 	}
 

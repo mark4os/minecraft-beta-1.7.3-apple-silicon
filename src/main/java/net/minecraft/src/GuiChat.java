@@ -7,6 +7,13 @@ public class GuiChat extends GuiScreen {
 	private int updateCounter = 0;
 	private static final String field_20082_i = ChatAllowedCharacters.allowedCharacters;
 
+	public GuiChat() {
+	}
+
+	public GuiChat(String initialMessage) {
+		this.message = initialMessage != null ? initialMessage : "";
+	}
+
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
 	}

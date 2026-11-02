@@ -235,9 +235,9 @@ public class ControllerManager {
             mc.thePlayer.inventory.changeCurrentItem(-1);
         }
 
-        // D-Pad cycling / Perspective
+        // D-Pad actions: Left = Swap Off-Hand, Right = Cycle Hotbar, Up = F5, Down = Fog
         if (wasJustPressed(BTN_DPAD_LEFT)) {
-            mc.thePlayer.inventory.changeCurrentItem(1);
+            mc.thePlayer.inventory.swapHands();
         }
         if (wasJustPressed(BTN_DPAD_RIGHT)) {
             mc.thePlayer.inventory.changeCurrentItem(-1);
@@ -366,6 +366,11 @@ public class ControllerManager {
             Mouse.addButtonEvent(1, true);
         } else if (releaseRight) {
             Mouse.addButtonEvent(1, false);
+        }
+
+        // Y button in Container = Swap hovered slot with Off-Hand
+        if (wasJustPressed(BTN_Y) && mc.currentScreen instanceof GuiContainer) {
+            ((GuiContainer) mc.currentScreen).swapHoveredWithOffhand();
         }
 
         // B button = Back / Escape / Close menu

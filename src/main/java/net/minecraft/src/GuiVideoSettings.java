@@ -4,7 +4,7 @@ public class GuiVideoSettings extends GuiScreen {
 	private GuiScreen field_22110_h;
 	protected String field_22107_a = "Video Settings";
 	private GameSettings guiGameSettings;
-	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.VSYNC, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL, EnumOptions.ANAGLYPH};
+	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.DYNAMIC_LIGHTS, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.VSYNC, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL, EnumOptions.ANAGLYPH};
 
 	public GuiVideoSettings(GuiScreen var1, GameSettings var2) {
 		this.field_22110_h = var1;

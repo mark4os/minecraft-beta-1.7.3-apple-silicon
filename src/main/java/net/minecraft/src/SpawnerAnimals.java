@@ -7,6 +7,10 @@ import java.util.Set;
 
 public final class SpawnerAnimals {
 	private static Set eligibleChunksForSpawning = new HashSet();
+	private static java.util.ArrayList eligibleChunksList = new java.util.ArrayList(300);
+	private static int lastPlayerChunkX = Integer.MIN_VALUE;
+	private static int lastPlayerChunkZ = Integer.MIN_VALUE;
+	private static int lastPlayerCount = -1;
 	protected static final Class[] nightSpawnEntities = new Class[]{EntitySpider.class, EntityZombie.class, EntitySkeleton.class};
 
 	protected static ChunkPosition getRandomSpawningPointInChunk(World var0, int var1, int var2) {
@@ -20,19 +24,42 @@ public final class SpawnerAnimals {
 		if(!var1 && !var2) {
 			return 0;
 		} else {
-			eligibleChunksForSpawning.clear();
+			int playerCount = var0.playerEntities.size();
+			boolean rebuildChunks = playerCount != lastPlayerCount || eligibleChunksList.isEmpty();
+			if (!rebuildChunks && playerCount == 1) {
+				EntityPlayer p0 = (EntityPlayer)var0.playerEntities.get(0);
+				int cx = MathHelper.floor_double(p0.posX / 16.0D);
+				int cz = MathHelper.floor_double(p0.posZ / 16.0D);
+				if (cx != lastPlayerChunkX || cz != lastPlayerChunkZ) {
+					rebuildChunks = true;
+				}
+			} else if (playerCount > 1) {
+				rebuildChunks = true;
+			}
 
 			int var3;
 			int var6;
-			for(var3 = 0; var3 < var0.playerEntities.size(); ++var3) {
-				EntityPlayer var4 = (EntityPlayer)var0.playerEntities.get(var3);
-				int var5 = MathHelper.floor_double(var4.posX / 16.0D);
-				var6 = MathHelper.floor_double(var4.posZ / 16.0D);
-				byte var7 = 8;
+			if (rebuildChunks) {
+				eligibleChunksForSpawning.clear();
+				eligibleChunksList.clear();
+				lastPlayerCount = playerCount;
+				for(var3 = 0; var3 < playerCount; ++var3) {
+					EntityPlayer var4 = (EntityPlayer)var0.playerEntities.get(var3);
+					int var5 = MathHelper.floor_double(var4.posX / 16.0D);
+					var6 = MathHelper.floor_double(var4.posZ / 16.0D);
+					if (var3 == 0) {
+						lastPlayerChunkX = var5;
+						lastPlayerChunkZ = var6;
+					}
+					byte var7 = 8;
 
-				for(int var8 = -var7; var8 <= var7; ++var8) {
-					for(int var9 = -var7; var9 <= var7; ++var9) {
-						eligibleChunksForSpawning.add(new ChunkCoordIntPair(var8 + var5, var9 + var6));
+					for(int var8 = -var7; var8 <= var7; ++var8) {
+						for(int var9 = -var7; var9 <= var7; ++var9) {
+							ChunkCoordIntPair pair = new ChunkCoordIntPair(var8 + var5, var9 + var6);
+							if (eligibleChunksForSpawning.add(pair)) {
+								eligibleChunksList.add(pair);
+							}
+						}
 					}
 				}
 			}
@@ -41,12 +68,13 @@ public final class SpawnerAnimals {
 			ChunkCoordinates var35 = var0.getSpawnPoint();
 			EnumCreatureType[] var36 = EnumCreatureType.values();
 			var6 = var36.length;
+			int chunkCount = eligibleChunksList.size();
 
 			label133:
 			for(int var37 = 0; var37 < var6; ++var37) {
 				EnumCreatureType var38 = var36[var37];
-				if((!var38.getPeacefulCreature() || var2) && (var38.getPeacefulCreature() || var1) && var0.countEntities(var38.getCreatureClass()) <= var38.getMaxNumberOfCreature() * eligibleChunksForSpawning.size() / 256) {
-					Iterator var39 = eligibleChunksForSpawning.iterator();
+				if((!var38.getPeacefulCreature() || var2) && (var38.getPeacefulCreature() || var1) && var0.countEntities(var38.getCreatureClass()) <= var38.getMaxNumberOfCreature() * chunkCount / 256) {
+					int chunkIdx = 0;
 
 					label130:
 					while(true) {
@@ -60,28 +88,27 @@ public final class SpawnerAnimals {
 								List var12;
 								do {
 									do {
-										if(!var39.hasNext()) {
+										if(chunkIdx >= chunkCount) {
 											continue label133;
 										}
 
-										var10 = (ChunkCoordIntPair)var39.next();
+										var10 = (ChunkCoordIntPair)eligibleChunksList.get(chunkIdx++);
 										BiomeGenBase var11 = var0.getWorldChunkManager().getBiomeGenAtChunkCoord(var10);
 										var12 = var11.getSpawnableList(var38);
 									} while(var12 == null);
 								} while(var12.isEmpty());
 
 								int var13 = 0;
-
-								for(Iterator var14 = var12.iterator(); var14.hasNext(); var13 += var15.spawnRarityRate) {
-									var15 = (SpawnListEntry)var14.next();
+								int listSize = var12.size();
+								for(int idx = 0; idx < listSize; ++idx) {
+									var15 = (SpawnListEntry)var12.get(idx);
+									var13 += var15.spawnRarityRate;
 								}
 
 								int var40 = var0.rand.nextInt(var13);
 								var15 = (SpawnListEntry)var12.get(0);
-								Iterator var16 = var12.iterator();
-
-								while(var16.hasNext()) {
-									SpawnListEntry var17 = (SpawnListEntry)var16.next();
+								for(int idx = 0; idx < listSize; ++idx) {
+									SpawnListEntry var17 = (SpawnListEntry)var12.get(idx);
 									var40 -= var17.spawnRarityRate;
 									if(var40 < 0) {
 										var15 = var17;
@@ -89,10 +116,9 @@ public final class SpawnerAnimals {
 									}
 								}
 
-								ChunkPosition var41 = getRandomSpawningPointInChunk(var0, var10.chunkXPos * 16, var10.chunkZPos * 16);
-								var42 = var41.x;
-								var18 = var41.y;
-								var19 = var41.z;
+								var42 = (var10.chunkXPos << 4) + var0.rand.nextInt(16);
+								var18 = var0.rand.nextInt(128);
+								var19 = (var10.chunkZPos << 4) + var0.rand.nextInt(16);
 							} while(var0.isBlockNormalCube(var42, var18, var19));
 						} while(var0.getBlockMaterial(var42, var18, var19) != var38.getCreatureMaterial());
 

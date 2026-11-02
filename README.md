@@ -3,7 +3,8 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20ARM64%20(Apple%20Silicon)-black?logo=apple)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon)
 [![Java](https://img.shields.io/badge/Java-17%20(Temurin%20%2F%20OpenJDK)-orange?logo=openjdk)](https://adoptium.net)
 [![LWJGL](https://img.shields.io/badge/LWJGL-3.3.3%20(GLFW)-blue)](https://www.lwjgl.org)
-[![Version](https://img.shields.io/badge/Release-v1.0.4-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
+[![Version](https://img.shields.io/badge/Release-v1.1.0-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
+[![Roadmap](https://img.shields.io/badge/Roadmap-View%20Development%20Plan-blue)](ROADMAP.md)
 [![License](https://img.shields.io/badge/Status-Community%20Preservation-purple)](#disclaimer)
 
 A fully native, standalone macOS ARM64 port of **Minecraft Beta 1.7.3** running directly on modern Apple Silicon Macs (M1/M2/M3/M4/M5) with OpenJDK 17 and LWJGL 3 (GLFW).
@@ -55,6 +56,20 @@ This port completely modernizes the underlying runtime while strictly preserving
 - **VBO Acceleration**: Uses OpenGL Vertex Buffer Objects for chunk rendering to reduce CPU-GPU draw overhead.
 - **Garbage Collector Tuning**: Pre-configured with Low-Latency G1GC parameters (`-XX:+UseG1GC -XX:MaxGCPauseMillis=5 -XX:+DisableExplicitGC`) eliminating memory-allocation spikes.
 - **Flicker-Free Pause Menu**: Fixed the classic Beta 1.7.3 bug where chunk saving was executed inside the OpenGL rendering loop, causing "Saving level.." to flash and flicker when opening or returning from settings.
+- **Zero Standing-Still Tick Spikes**: Fixed the vanilla `WorldChunkManager` biome cache hash collision bug (where 98.6% of `SpawnerAnimals` biome lookups missed cache and ran 4,335 Simplex noise evaluations per second) and made `level.dat` disk writes asynchronous, completely eliminating periodic tick spikes.
+
+### 🔦 Dynamic Lighting, Off-Hand & Gameplay QoL (`v1.1.0`)
+- **Smooth Dynamic Lighting (`Dynamic Lights: ON / OFF`)**: Holding a Torch, Glowstone, Jack-o'-Lantern, Lava Bucket, or Redstone Torch in either your main hand or off-hand smoothly illuminates surrounding blocks, caves, and entities in real time without melting ice or snow.
+- **Second Hand / Off-Hand (`F` Key & Controller Support)**:
+  - Dedicated off-hand slot in the player inventory (`GuiInventory`) and left-of-hotbar HUD indicator.
+  - Press `F` in-game (or `D-Pad Left` on controller) to swap items between main hand and off-hand; press `F` (or `Y` / `Triangle` on controller) while hovering over any slot in an inventory/chest to move it directly to the off-hand.
+  - Full first-person and third-person left-hand item rendering and automatic right-click usage/placement (e.g., mine with a pickaxe in your main hand while placing torches or eating food from your off-hand).
+- **Per-World Keep Inventory (`/keepinventory true/false`)**:
+  - Press `T` or `/` in Singleplayer or LAN Multiplayer and run `/keepinventory true` (or `/gamerule keepInventory true`) to preserve all inventory, armor, and off-hand items upon death and respawn. Saved persistently per world in `level.dat`.
+- **Cross-Platform Open to LAN (`Open to LAN` in Pause Menu)**:
+  - Host your Singleplayer world on your local network (`port 25565`, `online-mode=false`) with one click.
+  - Automatically copies your `<LAN_IP>:25565` address to the macOS clipboard and prints it in chat.
+  - **100% Cross-Platform Compatible**: Any official/vanilla Minecraft Beta 1.7.3 client on Windows, Linux, or macOS (Betacraft, Prism Launcher, MultiMC, official launcher) can join directly via IP!
 
 ### 📦 Self-Contained App & Offline Audio
 - **Drag-and-Drop Installation**: Distributed as a signed standalone macOS `.app` bundle inside a styled `.dmg` installer.
@@ -116,8 +131,9 @@ The output disk image will be placed in `build/distributions/Minecraft-Beta-1.7.
 | **Button A** | **Cross (✕)** | Jump | Left Click (Select / Drag) |
 | **Button B** | **Circle (◯)** | Sneak / Crouch | Back / Close Menu / Resume |
 | **Button X** | **Square (□)** | Open Inventory | Right Click (Place 1 item) |
-| **Button Y** | **Triangle (△)** | Drop Current Item | — |
-| **D-Pad Left / Right**| **D-Pad Left / Right** | Cycle Hotbar | Nudge Virtual Cursor |
+| **Button Y** | **Triangle (△)** | Drop Current Item | Swap Hovered Slot with Off-Hand |
+| **D-Pad Left** | **D-Pad Left** | Swap Main Hand / Off-Hand (`F`) | Nudge Virtual Cursor |
+| **D-Pad Right** | **D-Pad Right** | Cycle Hotbar | Nudge Virtual Cursor |
 | **D-Pad Up** | **D-Pad Up** | Toggle Perspective (F5) | Nudge Virtual Cursor |
 | **D-Pad Down** | **D-Pad Down** | Toggle Render Distance (Fog) | Nudge Virtual Cursor |
 | **Start / Menu** | **Options** | Pause Menu | Resume Game |
@@ -133,6 +149,8 @@ The output disk image will be placed in `build/distributions/Minecraft-Beta-1.7.
 | `Left Click` | Attack / Mine |
 | `Right Click` | Use / Place Block |
 | `E` | Open Inventory |
+| `F` | Swap Main Hand & Off-Hand (in-game or hovered slot in inventory) |
+| `T` or `/` | Open Chat / Command Line (`/keepinventory true/false`, `/seed`, `/time set`) |
 | `Q` | Drop Item |
 | `1` – `9` / `Scroll Wheel` | Select Hotbar Slot |
 | `Cmd + F` or `Fn + F11` | Toggle Fullscreen |

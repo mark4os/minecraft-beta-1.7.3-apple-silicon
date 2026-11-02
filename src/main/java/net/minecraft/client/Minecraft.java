@@ -48,10 +48,13 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.GuiSleepMP;
 import net.minecraft.src.GuiUnused;
 import net.minecraft.src.IChunkProvider;
+import net.minecraft.src.IProgressUpdate;
 import net.minecraft.src.ISaveFormat;
 import net.minecraft.src.ISaveHandler;
+import net.minecraft.src.InventoryPlayer;
 import net.minecraft.src.ItemRenderer;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.LanServerManager;
 import net.minecraft.src.LoadingScreenRenderer;
 import net.minecraft.src.MathHelper;
 import net.minecraft.src.MinecraftError;
@@ -869,14 +872,29 @@ public abstract class Minecraft implements Runnable {
 						this.thePlayer.swingItem();
 					}
 
-					if(var7 == null) {
-						return;
+					if(var7 != null) {
+						if(var7.stackSize == 0) {
+							this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+						} else if(var7.stackSize != var8) {
+							this.entityRenderer.itemRenderer.func_9449_b();
+						}
 					}
 
-					if(var7.stackSize == 0) {
-						this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-					} else if(var7.stackSize != var8) {
-						this.entityRenderer.itemRenderer.func_9449_b();
+					if(var2) {
+						ItemStack offHandStack = this.thePlayer.inventory.getOffHandItem();
+						if(offHandStack != null) {
+							int offCount = offHandStack.stackSize;
+							if(this.playerController.sendPlaceBlock(this.thePlayer, this.theWorld, offHandStack, var3, var4, var5, var6)) {
+								var2 = false;
+								this.thePlayer.swingItem();
+							}
+
+							if(offHandStack.stackSize == 0) {
+								this.thePlayer.inventory.offHandInventory[0] = null;
+							} else if(offHandStack.stackSize != offCount) {
+								this.entityRenderer.itemRenderer.func_9449_b();
+							}
+						}
 					}
 				}
 			}
@@ -885,6 +903,11 @@ public abstract class Minecraft implements Runnable {
 				ItemStack var9 = this.thePlayer.inventory.getCurrentItem();
 				if(var9 != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, var9)) {
 					this.entityRenderer.itemRenderer.func_9450_c();
+				} else {
+					ItemStack offHandStack = this.thePlayer.inventory.getOffHandItem();
+					if(offHandStack != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, offHandStack)) {
+						this.entityRenderer.itemRenderer.func_9450_c();
+					}
 				}
 			}
 
@@ -973,6 +996,7 @@ public abstract class Minecraft implements Runnable {
 
 		this.statFileWriter.func_27178_d();
 		this.ingameGUI.updateTick();
+		LanServerManager.onClientTick(this);
 		this.entityRenderer.getMouseOver(1.0F);
 		int var3;
 		if(this.thePlayer != null) {
@@ -1094,8 +1118,16 @@ public abstract class Minecraft implements Runnable {
 													this.thePlayer.dropCurrentItem();
 												}
 
-												if(this.isMultiplayerWorld() && Keyboard.getEventKey() == this.gameSettings.keyBindChat.keyCode) {
+												if(Keyboard.getEventKey() == Keyboard.KEY_F) {
+													this.thePlayer.inventory.swapHands();
+												}
+
+												if(Keyboard.getEventKey() == this.gameSettings.keyBindChat.keyCode) {
 													this.displayGuiScreen(new GuiChat());
+												}
+
+												if(Keyboard.getEventKey() == Keyboard.KEY_SLASH) {
+													this.displayGuiScreen(new GuiChat("/"));
 												}
 											}
 
@@ -1475,13 +1507,20 @@ public abstract class Minecraft implements Runnable {
 		this.theWorld.setSpawnLocation();
 		this.theWorld.updateEntityList();
 		int var8 = 0;
+		InventoryPlayer savedInventory = null;
 		if(this.thePlayer != null) {
 			var8 = this.thePlayer.entityId;
+			if(this.theWorld.getWorldInfo().getKeepInventory()) {
+				savedInventory = this.thePlayer.inventory;
+			}
 			this.theWorld.setEntityDead(this.thePlayer);
 		}
 
 		this.renderViewEntity = null;
 		this.thePlayer = (EntityPlayerSP)this.playerController.createPlayer(this.theWorld);
+		if(savedInventory != null) {
+			this.thePlayer.inventory.copyInventory(savedInventory);
+		}
 		this.thePlayer.dimension = var2;
 		this.renderViewEntity = this.thePlayer;
 		this.thePlayer.preparePlayerToSpawn();
@@ -1567,9 +1606,59 @@ public abstract class Minecraft implements Runnable {
 	}
 
 	public boolean lineIsCommand(String var1) {
-		if(var1.startsWith("/")) {
+		if(var1 == null || !var1.startsWith("/")) {
+			return false;
 		}
-
-		return false;
+		if(this.isMultiplayerWorld()) {
+			return false;
+		}
+		String[] parts = var1.trim().split("\\s+");
+		String cmd = parts[0].toLowerCase();
+		if(cmd.equals("/keepinventory") || (cmd.equals("/gamerule") && parts.length >= 2 && parts[1].equalsIgnoreCase("keepinventory"))) {
+			String arg = null;
+			if(cmd.equals("/keepinventory") && parts.length >= 2) {
+				arg = parts[1].toLowerCase();
+			} else if(cmd.equals("/gamerule") && parts.length >= 3) {
+				arg = parts[2].toLowerCase();
+			}
+			if(this.theWorld != null && this.theWorld.getWorldInfo() != null) {
+				if(arg == null) {
+					boolean cur = this.theWorld.getWorldInfo().getKeepInventory();
+					this.ingameGUI.addChatMessage("\u00a7eKeepInventory is currently: " + (cur ? "\u00a7aON (true)" : "\u00a7cOFF (false)"));
+				} else if(arg.equals("true") || arg.equals("on") || arg.equals("1")) {
+					this.theWorld.getWorldInfo().setKeepInventory(true);
+					this.theWorld.saveWorld(true, (IProgressUpdate)null);
+					this.ingameGUI.addChatMessage("\u00a7aKeepInventory enabled (true) for this world.");
+				} else if(arg.equals("false") || arg.equals("off") || arg.equals("0")) {
+					this.theWorld.getWorldInfo().setKeepInventory(false);
+					this.theWorld.saveWorld(true, (IProgressUpdate)null);
+					this.ingameGUI.addChatMessage("\u00a7cKeepInventory disabled (false) for this world.");
+				} else {
+					this.ingameGUI.addChatMessage("\u00a7cUsage: /keepinventory <true|false>");
+				}
+			}
+			return true;
+		} else if(cmd.equals("/seed")) {
+			if(this.theWorld != null && this.theWorld.getWorldInfo() != null) {
+				this.ingameGUI.addChatMessage("Seed: " + this.theWorld.getRandomSeed());
+			}
+			return true;
+		} else if(cmd.equals("/time") && parts.length >= 3 && parts[1].equalsIgnoreCase("set")) {
+			if(this.theWorld != null) {
+				try {
+					long t = parts[2].equalsIgnoreCase("day") ? 0L : (parts[2].equalsIgnoreCase("night") ? 13000L : Long.parseLong(parts[2]));
+					this.theWorld.setWorldTime(t);
+					this.ingameGUI.addChatMessage("Time set to " + t);
+				} catch (NumberFormatException e) {
+					this.ingameGUI.addChatMessage("\u00a7cUsage: /time set <number|day|night>");
+				}
+			}
+			return true;
+		} else if(cmd.equals("/help") || cmd.equals("/?")) {
+			this.ingameGUI.addChatMessage("\u00a7eCommands: /keepinventory <true|false>, /seed, /time set <day|night>");
+			return true;
+		}
+		this.ingameGUI.addChatMessage("\u00a7cUnknown command. Type /help for commands.");
+		return true;
 	}
 }

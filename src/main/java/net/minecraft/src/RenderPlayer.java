@@ -38,7 +38,9 @@ public class RenderPlayer extends RenderLiving {
 
 	public void renderPlayer(EntityPlayer var1, double var2, double var4, double var6, float var8, float var9) {
 		ItemStack var10 = var1.inventory.getCurrentItem();
+		ItemStack offHand = var1.inventory.getOffHandItem();
 		this.modelArmorChestplate.field_1278_i = this.modelArmor.field_1278_i = this.modelBipedMain.field_1278_i = var10 != null;
+		this.modelArmorChestplate.field_1279_h = this.modelArmor.field_1279_h = this.modelBipedMain.field_1279_h = offHand != null;
 		this.modelArmorChestplate.isSneak = this.modelArmor.isSneak = this.modelBipedMain.isSneak = var1.isSneaking();
 		double var11 = var4 - (double)var1.yOffset;
 		if(var1.isSneaking() && !(var1 instanceof EntityPlayerSP)) {
@@ -48,6 +50,7 @@ public class RenderPlayer extends RenderLiving {
 		super.doRenderLiving(var1, var2, var11, var6, var8, var9);
 		this.modelArmorChestplate.isSneak = this.modelArmor.isSneak = this.modelBipedMain.isSneak = false;
 		this.modelArmorChestplate.field_1278_i = this.modelArmor.field_1278_i = this.modelBipedMain.field_1278_i = false;
+		this.modelArmorChestplate.field_1279_h = this.modelArmor.field_1279_h = this.modelBipedMain.field_1279_h = false;
 	}
 
 	protected void renderName(EntityPlayer var1, double var2, double var4, double var6) {
@@ -210,6 +213,42 @@ public class RenderPlayer extends RenderLiving {
 			}
 
 			this.renderManager.itemRenderer.renderItem(var1, var21);
+			GL11.glPopMatrix();
+		}
+
+		ItemStack offHandStack = var1.inventory.getOffHandItem();
+		if(offHandStack != null) {
+			GL11.glPushMatrix();
+			this.modelBipedMain.bipedLeftArm.postRender(1.0F / 16.0F);
+			GL11.glTranslatef(1.0F / 16.0F, 7.0F / 16.0F, 1.0F / 16.0F);
+			if(offHandStack.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[offHandStack.itemID].getRenderType())) {
+				var5 = 0.5F;
+				GL11.glTranslatef(0.0F, 3.0F / 16.0F, -(5.0F / 16.0F));
+				var5 *= 12.0F / 16.0F;
+				GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+				GL11.glScalef(var5, -var5, var5);
+			} else if(Item.itemsList[offHandStack.itemID].isFull3D()) {
+				var5 = 10.0F / 16.0F;
+				if(Item.itemsList[offHandStack.itemID].shouldRotateAroundWhenRendering()) {
+					GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
+					GL11.glTranslatef(0.0F, -(2.0F / 16.0F), 0.0F);
+				}
+
+				GL11.glTranslatef(0.0F, 3.0F / 16.0F, 0.0F);
+				GL11.glScalef(var5, -var5, var5);
+				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			} else {
+				var5 = 6.0F / 16.0F;
+				GL11.glTranslatef(0.25F, 3.0F / 16.0F, -(3.0F / 16.0F));
+				GL11.glScalef(var5, var5, var5);
+				GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
+			}
+
+			this.renderManager.itemRenderer.renderItem(var1, offHandStack);
 			GL11.glPopMatrix();
 		}
 

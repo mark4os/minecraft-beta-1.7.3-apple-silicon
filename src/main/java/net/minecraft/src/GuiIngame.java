@@ -52,6 +52,10 @@ public class GuiIngame extends Gui {
 		this.zLevel = -90.0F;
 		this.drawTexturedModalRect(var6 / 2 - 91, var7 - 22, 0, 0, 182, 22);
 		this.drawTexturedModalRect(var6 / 2 - 91 - 1 + var11.currentItem * 20, var7 - 22 - 1, 0, 22, 24, 22);
+		if(var11.getOffHandItem() != null) {
+			this.drawTexturedModalRect(var6 / 2 - 91 - 28, var7 - 22, 0, 0, 21, 22);
+			this.drawTexturedModalRect(var6 / 2 - 91 - 28 + 21, var7 - 22, 181, 0, 1, 22);
+		}
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
@@ -145,6 +149,9 @@ public class GuiIngame extends Gui {
 			var17 = var7 - 16 - 3;
 			this.renderInventorySlot(var15, var16, var17, var1);
 		}
+		if(var11.getOffHandItem() != null) {
+			this.renderInventorySlot(40, var6 / 2 - 91 - 28 + 3, var7 - 16 - 3, var1);
+		}
 
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -187,6 +194,12 @@ public class GuiIngame extends Gui {
 			this.drawString(var8, "y: " + this.mc.thePlayer.posY, 2, 72, 14737632);
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
 			this.drawString(var8, "f: " + (MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
+			double entMs = World.profEntitiesNs / 1000000.0D;
+			double spwMs = World.profSpawnerNs / 1000000.0D;
+			double blkMs = World.profBlocksNs / 1000000.0D;
+			double savMs = World.profSaveNs / 1000000.0D;
+			String profStr = String.format("Tick: ent=%.2fms spw=%.2fms blk=%.2fms sav=%.2fms", entMs, spwMs, blkMs, savMs);
+			this.drawString(var8, profStr, 2, 98, 11184810);
 			GL11.glPopMatrix();
 		}
 
@@ -341,7 +354,7 @@ public class GuiIngame extends Gui {
 	}
 
 	private void renderInventorySlot(int var1, int var2, int var3, float var4) {
-		ItemStack var5 = this.mc.thePlayer.inventory.mainInventory[var1];
+		ItemStack var5 = this.mc.thePlayer.inventory.getStackInSlot(var1);
 		if(var5 != null) {
 			float var6 = (float)var5.animationsToGo - var4;
 			if(var6 > 0.0F) {

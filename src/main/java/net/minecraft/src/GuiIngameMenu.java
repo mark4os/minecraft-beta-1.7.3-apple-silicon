@@ -11,13 +11,24 @@ public class GuiIngameMenu extends GuiScreen {
 		byte var1 = -16;
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + var1, "Save and quit to title"));
 		if(this.mc.isMultiplayerWorld()) {
-			((GuiButton)this.controlList.get(0)).displayString = "Disconnect";
+			((GuiButton)this.controlList.get(0)).displayString = LanServerManager.isLanServerRunning() ? "Save & Stop LAN Server" : "Disconnect";
 		}
 
 		this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + var1, "Back to game"));
 		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + var1, "Options..."));
 		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + var1, 98, 20, StatCollector.translateToLocal("gui.achievements")));
 		this.controlList.add(new GuiButton(6, this.width / 2 + 2, this.height / 4 + 48 + var1, 98, 20, StatCollector.translateToLocal("gui.stats")));
+
+		GuiButton lanBtn;
+		if(!this.mc.isMultiplayerWorld()) {
+			lanBtn = new GuiButton(7, this.width / 2 - 100, this.height / 4 + 72 + var1, "Open to LAN");
+		} else if(LanServerManager.isLanServerRunning()) {
+			lanBtn = new GuiButton(7, this.width / 2 - 100, this.height / 4 + 72 + var1, "LAN IP: " + LanServerManager.getLanAddress() + " (Copy)");
+		} else {
+			lanBtn = new GuiButton(7, this.width / 2 - 100, this.height / 4 + 72 + var1, "Multiplayer Server");
+			lanBtn.enabled = false;
+		}
+		this.controlList.add(lanBtn);
 	}
 
 	protected void actionPerformed(GuiButton var1) {
@@ -32,7 +43,24 @@ public class GuiIngameMenu extends GuiScreen {
 			}
 
 			this.mc.changeWorld1((World)null);
+			if(LanServerManager.isLanServerRunning()) {
+				LanServerManager.stopLanServer();
+			}
 			this.mc.displayGuiScreen(new GuiMainMenu());
+		}
+
+		if(var1.id == 7) {
+			if(!this.mc.isMultiplayerWorld()) {
+				var1.enabled = false;
+				var1.displayString = "Starting LAN Server...";
+				if(!LanServerManager.openToLan(this.mc)) {
+					var1.displayString = "LAN Failed (Retry)";
+					var1.enabled = true;
+				}
+			} else if(LanServerManager.isLanServerRunning()) {
+				LanServerManager.copyToClipboard(LanServerManager.getLanAddress());
+				var1.displayString = "\u00a7aCopied: " + LanServerManager.getLanAddress();
+			}
 		}
 
 		if(var1.id == 4) {

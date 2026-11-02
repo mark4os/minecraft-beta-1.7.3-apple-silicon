@@ -128,6 +128,7 @@ public class LanServerManager {
 			ProcessBuilder pb = new ProcessBuilder(
 				javaBin,
 				"-Djava.awt.headless=true",
+				"-Djava.net.preferIPv4Stack=true",
 				"-Xmx1024M",
 				"-Xms256M",
 				"-jar",
@@ -211,8 +212,12 @@ public class LanServerManager {
 				savedHostOffHand = null;
 			}
 			String addr = getLanAddress();
+			String vpnIp = detectVpnIpv4();
 			mc.ingameGUI.addChatMessage("\u00a7a[LAN] World opened to LAN & Multiplayer!");
-			mc.ingameGUI.addChatMessage("\u00a7eJoin IP (copied to clipboard): \u00a7b" + addr);
+			mc.ingameGUI.addChatMessage("\u00a7eWi-Fi / LAN IP (copied): \u00a7b" + addr);
+			if (vpnIp != null && !vpnIp.equals(lanIp)) {
+				mc.ingameGUI.addChatMessage("\u00a7eVPN / Tunnel IP: \u00a7b" + vpnIp + ":" + lanPort);
+			}
 			mc.ingameGUI.addChatMessage("\u00a77Any official Beta 1.7.3 client (Win/Mac/Linux) can join via IP.");
 		}
 	}
@@ -318,6 +323,33 @@ public class LanServerManager {
 		} catch (Exception ignored) {
 		}
 		return fallback;
+	}
+
+	public static String detectVpnIpv4() {
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface nif = interfaces.nextElement();
+				if (nif.isLoopback() || !nif.isUp()) {
+					continue;
+				}
+				String name = nif.getName().toLowerCase();
+				if (name.startsWith("utun") || name.startsWith("tun") || name.startsWith("tap") || name.startsWith("zt") || name.startsWith("tailscale")) {
+					Enumeration<InetAddress> addrs = nif.getInetAddresses();
+					while (addrs.hasMoreElements()) {
+						InetAddress addr = addrs.nextElement();
+						if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+							String ip = addr.getHostAddress();
+							if (!ip.startsWith("169.254.")) {
+								return ip;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception ignored) {
+		}
+		return null;
 	}
 }
 

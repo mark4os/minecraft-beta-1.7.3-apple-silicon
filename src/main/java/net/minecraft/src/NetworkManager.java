@@ -44,8 +44,8 @@ public class NetworkManager {
 		this.netHandler = var3;
 
 		try {
-			var1.setSoTimeout(30000);
-			var1.setTrafficClass(24);
+			var1.setSoTimeout(60000);
+			var1.setTcpNoDelay(true);
 		} catch (SocketException var5) {
 			System.err.println(var5.getMessage());
 		}
@@ -121,7 +121,6 @@ public class NetworkManager {
 	}
 
 	public void wakeThreads() {
-		this.readThread.interrupt();
 		this.writeThread.interrupt();
 	}
 

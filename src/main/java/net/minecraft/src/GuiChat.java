@@ -42,6 +42,21 @@ public class GuiChat extends GuiScreen {
 		} else {
 			if(var2 == 14 && this.message.length() > 0) {
 				this.message = this.message.substring(0, this.message.length() - 1);
+				return;
+			}
+
+			if((var1 == 22 || (var2 == Keyboard.KEY_V && (Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))))) {
+				String clip = GuiScreen.getClipboardString();
+				if(clip != null) {
+					for(int i = 0; i < clip.length() && this.message.length() < 100; ++i) {
+						char c = clip.charAt(i);
+						if(c == '\u02BC' || c == '\u2019') c = '\'';
+						if(field_20082_i.indexOf(c) >= 0) {
+							this.message = this.message + c;
+						}
+					}
+				}
+				return;
 			}
 
 			if(field_20082_i.indexOf(var1) >= 0 && this.message.length() < 100) {

@@ -82,7 +82,7 @@ public class DynamicLights {
 		active = (level > 0);
 
 		if (level != lastUpdatedLightLevel) {
-			int r = Math.max(level, lastUpdatedLightLevel);
+			int r = Math.min(Math.max(level, lastUpdatedLightLevel), 9);
 			if (lastUpdatedLightLevel > 0) {
 				markRadiusDirty(mc.theWorld, lastUpdatedX, lastUpdatedY, lastUpdatedZ, r);
 			}
@@ -100,8 +100,8 @@ public class DynamicLights {
 			double dz = pz - lastUpdatedZ;
 			double distSq = dx * dx + dy * dy + dz * dz;
 			long now = System.currentTimeMillis();
-			if (distSq >= 0.0625D && (now - lastUpdateMs) >= 40L) {
-				int r = level;
+			if (distSq >= 0.36D && (now - lastUpdateMs) >= 80L) {
+				int r = Math.min(level, 9);
 				int minX = MathHelper.floor_double(Math.min(px, lastUpdatedX)) - r;
 				int minY = MathHelper.floor_double(Math.min(py, lastUpdatedY)) - r;
 				int minZ = MathHelper.floor_double(Math.min(pz, lastUpdatedZ)) - r;
@@ -144,7 +144,11 @@ public class DynamicLights {
 		double dx = (double) x + 0.5D - lightX;
 		double dy = (double) y + 0.5D - lightY;
 		double dz = (double) z + 0.5D - lightZ;
-		double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+		double distSq = dx * dx + dy * dy + dz * dz;
+		if (distSq >= 169.0D) {
+			return vanillaBrightness;
+		}
+		double dist = Math.sqrt(distSq);
 		float dynLevel = (float) currentLightLevel - (float) dist * 1.15F;
 		if (dynLevel <= 0.0F) {
 			return vanillaBrightness;
@@ -180,7 +184,11 @@ public class DynamicLights {
 		double dx = (double) x + 0.5D - lightX;
 		double dy = (double) y + 0.5D - lightY;
 		double dz = (double) z + 0.5D - lightZ;
-		double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+		double distSq = dx * dx + dy * dy + dz * dz;
+		if (distSq >= 169.0D) {
+			return vanillaLight;
+		}
+		double dist = Math.sqrt(distSq);
 		int dynInt = (int) ((float) currentLightLevel - (float) dist * 1.15F + 0.5F);
 		if (dynInt > 15) {
 			dynInt = 15;

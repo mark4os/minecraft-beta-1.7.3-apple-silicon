@@ -38,6 +38,10 @@ public class GuiScreen extends Gui {
 
 	public static String getClipboardString() {
 		try {
+			String glfwClip = org.lwjgl.glfw.GLFW.glfwGetClipboardString(org.lwjgl.opengl.Display.getWindow());
+			if (glfwClip != null) {
+				return glfwClip;
+			}
 			Transferable var0 = Toolkit.getDefaultToolkit().getSystemClipboard().getContents((Object)null);
 			if(var0 != null && var0.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 				String var1 = (String)var0.getTransferData(DataFlavor.stringFlavor);

@@ -167,7 +167,8 @@ public class Keyboard {
 	private static int[] keyEvents = new int[queue.getMaxEvents()];
 	private static boolean[] keyEventStates = new boolean[queue.getMaxEvents()];
 	private static long[] nanoTimeEvents = new long[queue.getMaxEvents()];
-	private static char[] keyEventChars = new char[256];
+	private static char[] charEvents = new char[queue.getMaxEvents()];
+	private static int lastPressEventPos = -1;
 
 	private static boolean repeatEvents = false;
 	private static int latestEventKey = 0;
@@ -200,33 +201,40 @@ public class Keyboard {
 	}
 
 	public static void addKeyEvent(int key, int status) {
-		// eventCount++;
-		// if (eventCount > maxEvents) eventCount = maxEvents;
-
 		switch (status) {
 		case GLFW.GLFW_REPEAT:
 			if (!repeatEvents)
 				break;
 		case GLFW.GLFW_RELEASE:
 		case GLFW.GLFW_PRESS:
-			keyEvents[queue.getNextPos()] = KeyCodes.toLwjglKey(key);
-			keyEventStates[queue.getNextPos()] = status == GLFW.GLFW_PRESS || status == GLFW.GLFW_REPEAT;
-
-			nanoTimeEvents[queue.getNextPos()] = Sys.getNanoTime();
-
+			int pos = queue.getNextPos();
+			int lwjglKey = KeyCodes.toLwjglKey(key);
+			boolean pressed = status == GLFW.GLFW_PRESS || status == GLFW.GLFW_REPEAT;
+			keyEvents[pos] = lwjglKey;
+			keyEventStates[pos] = pressed;
+			charEvents[pos] = 0;
+			nanoTimeEvents[pos] = Sys.getNanoTime();
+			lastPressEventPos = pressed ? pos : -1;
 			queue.add();
 		}
-		/*
-		 * nextEventPos++; if (nextEventPos == maxEvents) nextEventPos = 0;
-		 * 
-		 * if (currentEventPos == nextEventPos) currentEventPos++; if
-		 * (currentEventPos == maxEvents) currentEventPos = 0;
-		 */
 	}
 
 	public static void addCharEvent(int key, char c) {
-		int index = KeyCodes.toLwjglKey(key);
-		keyEventChars[index] = c;
+		if (c == '\u02BC' || c == '\u2019') {
+			c = '\'';
+		}
+		if (lastPressEventPos >= 0 && keyEventStates[lastPressEventPos] && charEvents[lastPressEventPos] == 0) {
+			charEvents[lastPressEventPos] = c;
+			lastPressEventPos = -1;
+		} else {
+			int pos = queue.getNextPos();
+			keyEvents[pos] = KeyCodes.toLwjglKey(key);
+			keyEventStates[pos] = true;
+			charEvents[pos] = c;
+			nanoTimeEvents[pos] = Sys.getNanoTime();
+			lastPressEventPos = -1;
+			queue.add();
+		}
 	}
 
         public static boolean areRepeatEventsEnabled() {
@@ -260,15 +268,11 @@ public class Keyboard {
 	}
 
 	public static boolean next() {
-		return queue.next();
-		/*
-		 * if (eventCount == 0) return false;
-		 * 
-		 * eventCount--; currentEventPos++; if (currentEventPos == maxEvents)
-		 * currentEventPos = 0;
-		 * 
-		 * return true;
-		 */
+		boolean hasNext = queue.next();
+		if (hasNext && queue.getCurrentPos() == lastPressEventPos) {
+			lastPressEventPos = -1;
+		}
+		return hasNext;
 	}
 
 	public static int getEventKey() {
@@ -276,7 +280,7 @@ public class Keyboard {
 	}
 
 	public static char getEventCharacter() {
-		return keyEventChars[getEventKey()];
+		return charEvents[queue.getCurrentPos()];
 	}
 
 	public static boolean getEventKeyState() {

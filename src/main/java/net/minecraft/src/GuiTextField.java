@@ -41,13 +41,14 @@ public class GuiTextField extends Gui {
 				this.parentGuiScreen.selectNextField();
 			}
 
-			if(var1 == 22) {
+			if(var1 == 22 || (var2 == org.lwjgl.input.Keyboard.KEY_V && (org.lwjgl.input.Keyboard.isKeyDown(org.lwjgl.input.Keyboard.KEY_LMETA) || org.lwjgl.input.Keyboard.isKeyDown(org.lwjgl.input.Keyboard.KEY_RMETA) || org.lwjgl.input.Keyboard.isKeyDown(org.lwjgl.input.Keyboard.KEY_LCONTROL) || org.lwjgl.input.Keyboard.isKeyDown(org.lwjgl.input.Keyboard.KEY_RCONTROL)))) {
 				String var3 = GuiScreen.getClipboardString();
 				if(var3 == null) {
 					var3 = "";
 				}
 
-				int var4 = 32 - this.text.length();
+				int maxLen = this.maxStringLength > 0 ? this.maxStringLength : 32;
+				int var4 = maxLen - this.text.length();
 				if(var4 > var3.length()) {
 					var4 = var3.length();
 				}
@@ -55,6 +56,7 @@ public class GuiTextField extends Gui {
 				if(var4 > 0) {
 					this.text = this.text + var3.substring(0, var4);
 				}
+				return;
 			}
 
 			if(var2 == 14 && this.text.length() > 0) {

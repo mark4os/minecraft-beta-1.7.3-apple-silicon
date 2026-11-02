@@ -26,16 +26,13 @@ class NetworkWriterThread extends Thread {
 					break;
 				}
 
+				boolean sentAny = false;
 				while(NetworkManager.sendNetworkPacket(this.netManager)) {
+					sentAny = true;
 				}
 
 				try {
-					sleep(100L);
-				} catch (InterruptedException var16) {
-				}
-
-				try {
-					if(NetworkManager.func_28140_f(this.netManager) != null) {
+					if(sentAny && NetworkManager.func_28140_f(this.netManager) != null) {
 						NetworkManager.func_28140_f(this.netManager).flush();
 					}
 				} catch (IOException var18) {
@@ -44,6 +41,11 @@ class NetworkWriterThread extends Thread {
 					}
 
 					var18.printStackTrace();
+				}
+
+				try {
+					sleep(15L);
+				} catch (InterruptedException var16) {
 				}
 			} finally {
 				if(var13) {

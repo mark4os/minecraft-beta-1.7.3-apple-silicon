@@ -586,11 +586,11 @@ public abstract class Minecraft implements Runnable {
 						}
 
 						if (this.gameSettings.enableVsync) {
-							// Hardware VSync handles frame pacing at display refresh rate.
-							// Only use software limiter if framerate cap is strictly below refresh.
-							if (this.gameSettings.limitFramerate < refresh) {
-								Display.sync(this.gameSettings.limitFramerate);
-							}
+							// On macOS Metal-backed NSOpenGLContext, triple-buffered CoreAnimation drawables
+							// can allow glfwSwapBuffers to return early (causing 75-89 FPS bursts).
+							// Always enforce software nanosecond pacing at min(refresh, limitFramerate).
+							int cap = this.gameSettings.limitFramerate < 260 ? Math.min(refresh, this.gameSettings.limitFramerate) : refresh;
+							Display.sync(cap);
 						} else {
 							// VSync disabled: enforce frame limiter via software sleep/spin
 							if (this.gameSettings.limitFramerate < 260) {

@@ -53,7 +53,7 @@ public class Sync {
 
 		long remaining = nextFrameTime - now;
 
-		if (remaining < -frameDuration) {
+		if (remaining <= 0L) {
 			nextFrameTime = now + frameDuration;
 			return;
 		}

@@ -3,7 +3,7 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20ARM64%20(Apple%20Silicon)-black?logo=apple)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon)
 [![Java](https://img.shields.io/badge/Java-17%20(Temurin%20%2F%20OpenJDK)-orange?logo=openjdk)](https://adoptium.net)
 [![LWJGL](https://img.shields.io/badge/LWJGL-3.3.3%20(GLFW)-blue)](https://www.lwjgl.org)
-[![Version](https://img.shields.io/badge/Release-v1.1.0-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
+[![Version](https://img.shields.io/badge/Release-v1.1.1-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
 [![Roadmap](https://img.shields.io/badge/Roadmap-View%20Development%20Plan-blue)](ROADMAP.md)
 [![License](https://img.shields.io/badge/Status-Community%20Preservation-purple)](#disclaimer)
 
@@ -69,7 +69,9 @@ This port completely modernizes the underlying runtime while strictly preserving
 - **Cross-Platform Open to LAN (`Open to LAN` in Pause Menu)**:
   - Host your Singleplayer world on your local network (`port 25565`, `online-mode=false`) with one click.
   - Automatically copies your `<LAN_IP>:25565` address to the macOS clipboard and prints it in chat.
-  - **100% Cross-Platform Compatible**: Any official/vanilla Minecraft Beta 1.7.3 client on Windows, Linux, or macOS (Betacraft, Prism Launcher, MultiMC, official launcher) can join directly via IP!
+  - **100% Cross-Platform Compatible**: Any official/vanilla Minecraft Beta 1.7.3 client on Windows, Linux, or macOS (Betacraft, Prism Launcher, MultiMC, official launcher) can join directly via IP (Wi-Fi LAN or VPN/Tunnel IP)!
+- **Multilingual In-Game Chat (Ukrainian, Russian & English)**:
+  - Full keyboard input, `Cmd+V` clipboard pasting, and crisp 8x8 pixel-art font rendering for Ukrainian (`Іі, Її, Єє, Ґґ, А-Я, а-я`), Russian (`Ёё, Ъъ, Ыы, Ээ, А-Я, а-я`), and English in chat, signs, and text fields.
 
 ### 📦 Self-Contained App & Offline Audio
 - **Drag-and-Drop Installation**: Distributed as a signed standalone macOS `.app` bundle inside a styled `.dmg` installer.

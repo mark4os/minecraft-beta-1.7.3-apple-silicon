@@ -420,9 +420,8 @@ public class Display {
         System.out.println("[Display] GL_APPLE_vertex_array_object: " + GLContext.getCapabilities().GL_APPLE_vertex_array_object);
         System.out.println("[Display] GL_ARB_vertex_buffer_object: " + GLContext.getCapabilities().GL_ARB_vertex_buffer_object);
 
-        vsyncEnabled = true;
-        glfwSwapInterval(1);
         glfwShowWindow(Window.handle);
+        glfwSwapInterval(vsyncEnabled ? 1 : 0);
 
         Mouse.create();
         Keyboard.create();
@@ -907,10 +906,14 @@ public class Display {
     }
 
     public static DisplayMode getDesktopDisplayMode() {
+        if (desktopDisplayMode != null) {
+            return desktopDisplayMode;
+        }
         long mon = GLFW.glfwGetPrimaryMonitor();
         GLFWVidMode mode = GLFW.glfwGetVideoMode(mon);
-        return new DisplayMode(mode.width(), mode.height(), mode.redBits() + mode.greenBits() + mode.blueBits(),
+        desktopDisplayMode = new DisplayMode(mode.width(), mode.height(), mode.redBits() + mode.greenBits() + mode.blueBits(),
                                mode.refreshRate());
+        return desktopDisplayMode;
     }
 
     public static boolean wasResized() {
@@ -1142,9 +1145,8 @@ public class Display {
         glfwMakeContextCurrent(Window.handle);
         context = org.lwjgl.opengl.GLContext.createFromCurrent();
 
-        vsyncEnabled = true;
-        glfwSwapInterval(1);
         glfwShowWindow(Window.handle);
+        glfwSwapInterval(vsyncEnabled ? 1 : 0);
     }
 
     static class Window {

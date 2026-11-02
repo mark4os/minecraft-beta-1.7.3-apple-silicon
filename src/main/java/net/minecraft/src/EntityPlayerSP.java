@@ -139,6 +139,9 @@ public class EntityPlayerSP extends EntityPlayer {
 	}
 
 	public void sendChatMessage(String var1) {
+		if (this.mc != null && this.mc.ingameGUI != null) {
+			this.mc.ingameGUI.addChatMessage("<" + this.username + "> " + var1);
+		}
 	}
 
 	public boolean isSneaking() {

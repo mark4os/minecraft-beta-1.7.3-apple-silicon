@@ -168,7 +168,9 @@ public class Keyboard {
 	private static boolean[] keyEventStates = new boolean[queue.getMaxEvents()];
 	private static long[] nanoTimeEvents = new long[queue.getMaxEvents()];
 	private static char[] charEvents = new char[queue.getMaxEvents()];
+	private static char[] keyEventChars = new char[512];
 	private static int lastPressEventPos = -1;
+	private static char pendingChar = 0;
 
 	private static boolean repeatEvents = false;
 	private static int latestEventKey = 0;
@@ -212,9 +214,18 @@ public class Keyboard {
 			boolean pressed = status == GLFW.GLFW_PRESS || status == GLFW.GLFW_REPEAT;
 			keyEvents[pos] = lwjglKey;
 			keyEventStates[pos] = pressed;
-			charEvents[pos] = 0;
+			if (pressed && pendingChar != 0) {
+				charEvents[pos] = pendingChar;
+				pendingChar = 0;
+				lastPressEventPos = -1;
+			} else {
+				charEvents[pos] = 0;
+				lastPressEventPos = pressed ? pos : -1;
+			}
+			if (!pressed && lwjglKey >= 0 && lwjglKey < keyEventChars.length) {
+				keyEventChars[lwjglKey] = 0;
+			}
 			nanoTimeEvents[pos] = Sys.getNanoTime();
-			lastPressEventPos = pressed ? pos : -1;
 			queue.add();
 		}
 	}
@@ -223,17 +234,15 @@ public class Keyboard {
 		if (c == '\u02BC' || c == '\u2019') {
 			c = '\'';
 		}
+		int lwjglKey = KeyCodes.toLwjglKey(key);
+		if (lwjglKey >= 0 && lwjglKey < keyEventChars.length) {
+			keyEventChars[lwjglKey] = c;
+		}
 		if (lastPressEventPos >= 0 && keyEventStates[lastPressEventPos] && charEvents[lastPressEventPos] == 0) {
 			charEvents[lastPressEventPos] = c;
 			lastPressEventPos = -1;
 		} else {
-			int pos = queue.getNextPos();
-			keyEvents[pos] = KeyCodes.toLwjglKey(key);
-			keyEventStates[pos] = true;
-			charEvents[pos] = c;
-			nanoTimeEvents[pos] = Sys.getNanoTime();
-			lastPressEventPos = -1;
-			queue.add();
+			pendingChar = c;
 		}
 	}
 
@@ -280,7 +289,15 @@ public class Keyboard {
 	}
 
 	public static char getEventCharacter() {
-		return charEvents[queue.getCurrentPos()];
+		int pos = queue.getCurrentPos();
+		char c = (pos >= 0 && pos < charEvents.length) ? charEvents[pos] : 0;
+		if (c == 0) {
+			int k = getEventKey();
+			if (k >= 0 && k < keyEventChars.length) {
+				c = keyEventChars[k];
+			}
+		}
+		return c;
 	}
 
 	public static boolean getEventKeyState() {

@@ -586,9 +586,6 @@ public abstract class Minecraft implements Runnable {
 						}
 
 						if (this.gameSettings.enableVsync) {
-							// On macOS Metal-backed NSOpenGLContext, triple-buffered CoreAnimation drawables
-							// can allow glfwSwapBuffers to return early (causing 75-89 FPS bursts).
-							// Always enforce software nanosecond pacing at min(refresh, limitFramerate).
 							int cap = this.gameSettings.limitFramerate < 260 ? Math.min(refresh, this.gameSettings.limitFramerate) : refresh;
 							Display.sync(cap);
 						} else {
@@ -706,9 +703,7 @@ public abstract class Minecraft implements Runnable {
 		if (targetFps <= 0) targetFps = 60;
 
 		long targetNanos = 1000000000L / (long)targetFps;
-		// Notch's 16.666ms line was hardcoded, causing any normal 60.0 FPS frame (~16.67ms) to turn red.
-		// Allow a reasonable 1.5ms / 10% scheduler tolerance so smooth target-rate frames render green,
-		// and only actual lag spikes (>18ms on 60Hz or >10ms on 120Hz) turn red.
+		// Frame pacing tolerance above target budget
 		long lagThreshold = targetNanos + Math.max(1500000L, targetNanos / 10L);
 
 		if(this.prevFrameTime == -1L) {

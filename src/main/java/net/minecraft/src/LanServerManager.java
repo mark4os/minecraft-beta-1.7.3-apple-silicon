@@ -66,7 +66,7 @@ public class LanServerManager {
 		savedHostOffHand = mc.thePlayer.inventory.getOffHandItem() != null ? mc.thePlayer.inventory.getOffHandItem().copy() : null;
 
 		try {
-			// 1. Save host player's exact state into <worldDir>/players/<hostUsername>.dat
+			// Save host player state into world save
 			File playersDir = new File(worldDir, "players");
 			playersDir.mkdirs();
 			NBTTagCompound playerNbt = new NBTTagCompound();
@@ -76,13 +76,13 @@ public class LanServerManager {
 				CompressedStreamTools.writeGzippedCompoundToOutputStream(playerNbt, fos);
 			}
 
-			// 2. Save singleplayer world, flush async level.dat writer, and close all RegionFile handles
+			// Flush singleplayer world and release region file handles before starting server
 			mc.theWorld.saveWorld(true, (IProgressUpdate) null);
 			SaveHandler.flushAsyncSaves();
 			RegionFileCache.func_22192_a();
 			mc.changeWorld1((World) null);
 
-			// 3. Extract embedded minecraft_server.jar into savesDir
+			// Extract embedded server jar if needed
 			File serverJar = new File(savesDir, ".lan_server.jar");
 			try (InputStream in = LanServerManager.class.getResourceAsStream("/server/minecraft_server.jar")) {
 				if (in == null) {
@@ -98,11 +98,9 @@ public class LanServerManager {
 				}
 			}
 
-			// 4. Find free port (prefer 25565) and detect LAN IPv4
 			lanPort = findFreePort(25565);
 			lanIp = detectLanIpv4();
 
-			// 5. Write server.properties and ops.txt
 			File propsFile = new File(savesDir, "server.properties");
 			try (PrintWriter pw = new PrintWriter(new FileOutputStream(propsFile))) {
 				pw.println("#Minecraft Beta 1.7.3 LAN Server Properties");
@@ -123,7 +121,6 @@ public class LanServerManager {
 				pw.println(hostUsername.toLowerCase());
 			}
 
-			// 6. Start the LAN Server child process
 			String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 			ProcessBuilder pb = new ProcessBuilder(
 				javaBin,
@@ -194,7 +191,6 @@ public class LanServerManager {
 			copyToClipboard(getLanAddress());
 			pendingWelcomeChat = true;
 
-			// 7. Connect host client to 127.0.0.1:lanPort
 			mc.displayGuiScreen(new GuiConnecting(mc, "127.0.0.1", lanPort));
 			return true;
 		} catch (Exception e) {
@@ -242,7 +238,7 @@ public class LanServerManager {
 			}
 		}
 
-		// Sync host's player.dat back into level.dat -> Data -> Player for Singleplayer continuity
+		// Sync player.dat back to level.dat for singleplayer
 		if (activeWorldDir != null && hostUsername != null) {
 			try {
 				File playerDat = new File(new File(activeWorldDir, "players"), hostUsername + ".dat");

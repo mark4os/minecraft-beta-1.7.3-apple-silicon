@@ -1,97 +1,72 @@
 # Minecraft Beta 1.7.3 (Apple Silicon)
 
-[![Platform](https://img.shields.io/badge/Platform-macOS%20ARM64%20(Apple%20Silicon)-black?logo=apple)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon)
-[![Java](https://img.shields.io/badge/Java-17%20(Temurin%20%2F%20OpenJDK)-orange?logo=openjdk)](https://adoptium.net)
-[![LWJGL](https://img.shields.io/badge/LWJGL-3.3.3%20(GLFW)-blue)](https://www.lwjgl.org)
-[![Version](https://img.shields.io/badge/Release-v1.2.0-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
-[![Roadmap](https://img.shields.io/badge/Roadmap-View%20Development%20Plan-blue)](ROADMAP.md)
-[![License](https://img.shields.io/badge/Status-Community%20Preservation-purple)](#disclaimer)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20ARM64-black?logo=apple)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon)
+[![Release](https://img.shields.io/badge/Release-v1.2.0-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
 
-A fully native, standalone macOS ARM64 port of **Minecraft Beta 1.7.3** running directly on modern Apple Silicon Macs (M1/M2/M3/M4/M5) with OpenJDK 17 and LWJGL 3 (GLFW).
+A native macOS ARM64 port of Minecraft Beta 1.7.3 running directly on Apple Silicon Macs (M1/M2/M3/M4/M5) with OpenJDK 17 and LWJGL 3 (GLFW).
 
 ---
 
 ## Overview
 
-Playing vintage Minecraft Beta 1.7.3 on modern Apple Silicon hardware normally requires Rosetta 2 emulation running legacy LWJGL 2 / Carbon / AWT libraries. This introduces significant issues:
-- **Input Lag & Stuttering**: Rosetta 2 translation overhead and obsolete AWT cursor grabbing causes frame pacing inconsistencies and microstutters.
-- **Retina Display Blur**: Legacy windowing renders at low resolution and stretches non-integer pixels across Retina screens.
-- **Broken Window Resizing & Mouse Drift**: Dragging window edges or switching spaces breaks input focus and mouse centering.
-- **Audio Server Disconnects**: Old sound resources fail to download because original 2011 Mojang resource servers are defunct.
-- **Zero Controller Support**: Classic Beta 1.7.3 only supported keyboard and mouse.
+Running Minecraft Beta 1.7.3 on modern Apple Silicon Macs through legacy launchers usually requires Rosetta 2 translation together with legacy LWJGL 2 / Carbon / AWT libraries. This setup brings several known problems:
+- Input latency and microstutters from AWT mouse grabbing and Rosetta 2 overhead.
+- Blurry non-integer scaling on Retina displays.
+- Lost mouse grab and focus issues when resizing windows or switching Spaces.
+- Missing sounds due to dead 2011 Mojang resource servers.
+- No native controller support.
 
-This port completely modernizes the underlying runtime while strictly preserving the **100% authentic Minecraft Beta 1.7.3 look, feel, and gameplay mechanics**.
+This project updates the runtime environment to modern 64-bit ARM64 and LWJGL 3 while preserving original Beta 1.7.3 mechanics, terrain generation, and visuals.
 
 ---
 
-## Key Features & Improvements
+## Features
 
-### 🎮 Native Controller Support (Xbox & PlayStation 5)
-- **Zero Configuration / Plug-and-Play**: Built directly on Apple's native `GameController.framework`. Connect your controller via Bluetooth or USB-C and it works immediately.
-- **Supported Controllers**:
-  - **Xbox Series X/S**, **Xbox One**, and **Xbox Elite** controllers.
-  - **PlayStation 5 DualSense** and **DualSense Edge** controllers.
-  - Any MFi / standard GameController-compatible gamepads.
-- **In-Game Controller Settings Menu**: Accessible directly from the main Options screen:
-  - **Stick Sensitivity Slider**: 20% to 200% with smooth analog response curve.
-  - **Stick Deadzone Slider**: 5% to 35% customizable deadzone to prevent drift.
-  - **Invert Look (Y) Toggle**: Canonical camera direction by default (push UP looks UP), with flight-sim invert option.
-  - **Swap Triggers Toggle**: Swap RT (Attack) and LT (Place) if desired.
-  - **Live Connection Status**: Automatically displays connected controller name in green (`Connected: Xbox Controller` / `Connected: PlayStation 5 Controller`).
-  - **Visual Layout Reference**: In-menu button cheat sheet for quick reference.
-- **Full Virtual Cursor Menu Navigation**:
-  - Navigate all game menus, pause screens, Inventory, Chests, Furnaces, and Crafting Tables using either analog stick or the D-Pad.
-  - **Button A** / **RT**: Left Click (select items, click buttons, drag and drop).
-  - **Button X** / **LT**: Right Click (split stacks, place single items).
-  - **Button B**: Back / Cancel (returns from submenus or resumes game).
-  - Seamless dual-input: freely switch between controller and trackpad/mouse at any moment without cursor jumps.
+### Native Controller Support
+- Native integration with Apple's `GameController.framework` over Bluetooth or USB-C (Xbox Series X/S, Xbox One, PS5 DualSense, and standard MFi gamepads).
+- In-game controller settings menu (accessible from Options):
+  - Analog stick sensitivity and deadzone adjustments.
+  - Invert look (Y-axis) option.
+  - Swap triggers (RT / LT).
+  - Connected controller status display.
+- Virtual cursor navigation for all inventories, crafting tables, chests, furnaces, and menus using analog sticks or D-Pad.
+  - Button A / RT: select and drag items.
+  - Button X / LT: split stacks and place single items.
+  - Button B: back or close menu.
 
-### ⚡ Performance & Display
-- **100% Native ARM64 Code**: Compiled directly for Apple Silicon; no Rosetta 2 translation layer.
-- **Retina Display Rendering**: Pixel-perfect native framebuffer rendering for crisp, sharp block textures and UI.
-- **Modern Video Settings & High Refresh Displays**:
-  - **VSync Toggle**: Independent VSync control (ON / OFF).
-  - **Max Framerate Slider**: Adjust limit from 30, 60, 120, 144, 240 FPS up to **Unlimited**.
-  - **Monotonic Frame Pacing**: Rock-solid 60.0 FPS locked pacing without skip-bursting on 180Hz external gaming monitors or 120Hz ProMotion displays.
-- **Deep Engine Performance Optimizations (`v1.2.0`)**:
-  - **Compiled Cloud Display Lists**: Caches Fancy Clouds quad tessellation (6,800 vertices) into a precompiled display list (`glCloudList`), dropping cloud render time from ~1.5ms to <0.02ms.
-  - **Zero-Allocation Chunk Meshing**: Reuses `cachedChunkCache` and `cachedRenderBlocks` during chunk rebuilding, completely eliminating young-gen object allocation thrash.
-  - **1-Chunk MRU Voxel Cache**: Accelerates block and light queries by 95%+ by bypassing hash-table lookup for consecutive column queries.
-  - **1-Cycle Coordinate Bit Shifts**: Replaced slow division math in `MathHelper.bucketInt` and `RenderGlobal` with direct arithmetic bit shifts (`x >> 4`).
-  - **Lossless Multilingual Keyboard Input**: Rewrote LWJGL 3 event synchronization so Ukrainian, Russian, and English characters are never lost during fast typing or key releases.
-- **VBO Acceleration**: Uses OpenGL Vertex Buffer Objects for chunk rendering to reduce CPU-GPU draw overhead.
-- **Garbage Collector Tuning**: Pre-configured with Low-Latency G1GC parameters (`-XX:+UseG1GC -XX:MaxGCPauseMillis=5 -XX:+DisableExplicitGC`) eliminating memory-allocation spikes.
-- **Flicker-Free Pause Menu**: Fixed the classic Beta 1.7.3 bug where chunk saving was executed inside the OpenGL rendering loop, causing "Saving level.." to flash and flicker when opening or returning from settings.
-- **Zero Standing-Still Tick Spikes**: Fixed the vanilla `WorldChunkManager` biome cache hash collision bug (where 98.6% of `SpawnerAnimals` biome lookups missed cache and ran 4,335 Simplex noise evaluations per second) and made `level.dat` disk writes asynchronous, completely eliminating periodic tick spikes.
+### Performance and Display
+- Native ARM64 binary: runs directly without Rosetta 2.
+- Native Retina resolution rendering.
+- VSync toggle and configurable Max Framerate slider (30, 60, 120, 144, 240 FPS or Unlimited).
+- Monotonic frame pacing in `Sync.java` to avoid frame skipping on high refresh rate displays (120Hz ProMotion and 180Hz external panels).
+- Compiled display list caching for fancy clouds (`glCloudList`), reducing tessellation overhead from ~1.5ms to <0.02ms.
+- Allocation-free chunk meshing: reuses internal `ChunkCache` and `RenderBlocks` buffers to reduce GC churn.
+- Single-chunk MRU voxel cache in `World.java` to speed up frequent block and light lookups.
+- Fixed the pause menu level saving flicker bug from vanilla Beta 1.7.3.
+- Resolved animal spawner biome cache hash collisions and moved `level.dat` saving to a background thread to prevent tick stutters.
 
-### 🔦 Dynamic Lighting, Off-Hand & Gameplay QoL (`v1.1.0`)
-- **Smooth Dynamic Lighting (`Dynamic Lights: ON / OFF`)**: Holding a Torch, Glowstone, Jack-o'-Lantern, Lava Bucket, or Redstone Torch in either your main hand or off-hand smoothly illuminates surrounding blocks, caves, and entities in real time without melting ice or snow.
-- **Second Hand / Off-Hand (`F` Key & Controller Support)**:
-  - Dedicated off-hand slot in the player inventory (`GuiInventory`) and left-of-hotbar HUD indicator.
-  - Press `F` in-game (or `D-Pad Left` on controller) to swap items between main hand and off-hand; press `F` (or `Y` / `Triangle` on controller) while hovering over any slot in an inventory/chest to move it directly to the off-hand.
-  - Full first-person and third-person left-hand item rendering and automatic right-click usage/placement (e.g., mine with a pickaxe in your main hand while placing torches or eating food from your off-hand).
-- **Per-World Keep Inventory (`/keepinventory true/false`)**:
-  - Press `T` or `/` in Singleplayer or LAN Multiplayer and run `/keepinventory true` (or `/gamerule keepInventory true`) to preserve all inventory, armor, and off-hand items upon death and respawn. Saved persistently per world in `level.dat`.
-- **Cross-Platform Open to LAN (`Open to LAN` in Pause Menu)**:
-  - Host your Singleplayer world on your local network (`port 25565`, `online-mode=false`) with one click.
-  - Automatically copies your `<LAN_IP>:25565` address to the macOS clipboard and prints it in chat.
-  - **100% Cross-Platform Compatible**: Any official/vanilla Minecraft Beta 1.7.3 client on Windows, Linux, or macOS (Betacraft, Prism Launcher, MultiMC, official launcher) can join directly via IP (Wi-Fi LAN or VPN/Tunnel IP)!
-- **Multilingual In-Game Chat (Ukrainian, Russian & English)**:
-  - Full keyboard input, `Cmd+V` clipboard pasting, and crisp 8x8 pixel-art font rendering for Ukrainian (`Іі, Її, Єє, Ґґ, А-Я, а-я`), Russian (`Ёё, Ъъ, Ыы, Ээ, А-Я, а-я`), and English in chat, signs, and text fields.
+### Dynamic Lighting and Quality of Life
+- Dynamic handheld lighting (`Dynamic Lights: ON / OFF` in Video Settings) for torches, glowstone, Jack-o'-Lanterns, lava buckets, and redstone torches in either hand.
+- Off-hand slot (`F` key or controller):
+  - Dedicated off-hand slot in inventory and HUD indicator.
+  - Press `F` (or D-Pad Left) to swap held items; press `F` while hovering over an item in any container to move it to the off-hand.
+  - Left-hand first-person and third-person rendering, with secondary right-click block placement and food consumption.
+- KeepInventory toggle (`/keepinventory true/false` or `/gamerule keepInventory true/false`), saved per-world in `level.dat`.
+- Open to LAN: host a local server from the pause menu on port 25565 (`online-mode=false`). Supports connections from vanilla Beta 1.7.3 clients on Windows, Linux, and macOS (Prism Launcher, Betacraft, MultiMC).
+- Multilingual chat support for Ukrainian, Russian, and English input and display (`Cmd+V` clipboard pasting, Cyrillic 8x8 font rendering).
 
-### 📦 Self-Contained App & Offline Audio
-- **Drag-and-Drop Installation**: Distributed as a signed standalone macOS `.app` bundle inside a styled `.dmg` installer.
-- **Bundled Sound & Music**: All authentic 2011 C418 music tracks and sound effects are embedded locally—no internet connection or broken server downloads needed.
+### Packaging and Audio
+- Packaged as a signed macOS `.app` bundle and styled `.dmg` installer.
+- Bundled C418 soundtrack and sound effects included directly in the application bundle.
 
 ---
 
 ## Installation
 
-### 1. Download Pre-built DMG (Recommended)
-1. Head to the **[Releases](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)** page.
-2. Download the latest `Minecraft-Beta-1.7.3-macOS-arm64.dmg`.
-3. Open the disk image and drag **Minecraft Beta 1.7.3** into `/Applications`.
-4. If macOS Gatekeeper shows an unsigned developer notification on first launch, run this command in Terminal:
+### Download DMG
+1. Download the latest `Minecraft-Beta-1.7.3-macOS-arm64.dmg` from [Releases](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases).
+2. Open the disk image and drag **Minecraft Beta 1.7.3** into `/Applications`.
+3. If macOS Gatekeeper prevents opening on first launch, clear quarantine attributes in Terminal:
    ```bash
    xattr -cr "/Applications/Minecraft Beta 1.7.3.app"
    ```
@@ -101,100 +76,98 @@ This port completely modernizes the underlying runtime while strictly preserving
 ## Building from Source
 
 ### Prerequisites
-- macOS 11.0+ on Apple Silicon (M1 or newer).
-- JDK 17 (e.g., via Homebrew: `brew install openjdk@17`).
-- Command Line Tools for native GameController bridge compilation (`xcode-select --install`).
+- macOS 11.0 or newer on Apple Silicon.
+- JDK 17 (e.g. `brew install openjdk@17`).
+- Xcode Command Line Tools (`xcode-select --install`).
 
-### Build Instructions
+### Build
 ```bash
-# Clone the repository
 git clone https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon.git
 cd minecraft-beta-1.7.3-apple-silicon
 
-# Build and run directly
+# Build and launch app bundle
 ./gradlew bundleApp
 open "build/apps/Minecraft Beta 1.7.3.app"
 
-# Or generate the styled drag-and-drop DMG installer
+# Or generate DMG installer
 ./gradlew createDmg
 ```
-The output disk image will be placed in `build/distributions/Minecraft-Beta-1.7.3-macOS-arm64.dmg`.
+The resulting `.dmg` will be located in `build/distributions/`.
 
 ---
 
-## Controls Reference
+## Controls
 
 ### Controller Layout (Xbox / PlayStation 5)
 
-| Xbox Button | PS5 Button | Gameplay Action | Menu / Inventory Action |
+| Xbox | PS5 | In-Game Action | Menu / Inventory Action |
 |:---|:---|:---|:---|
-| **Right Trigger (RT)** | **R2** | Attack / Mine Blocks (continuous) | Left Click (Select / Drag) |
-| **Left Trigger (LT)** | **L2** | Use / Place Block | Right Click (Split Stack) |
-| **Right Bumper (RB)** | **R1** | Next Hotbar Slot | — |
-| **Left Bumper (LB)** | **L1** | Previous Hotbar Slot | — |
-| **Left Stick** | **Left Stick** | Analog Movement | Move Virtual Cursor |
-| **Right Stick** | **Right Stick** | Camera Look (Look Around) | Move Virtual Cursor |
-| **Stick Click (LS)** | **L3** | Sneak / Crouch | — |
-| **Stick Click (RS)** | **R3** | Toggle Perspective (F5) | — |
-| **Button A** | **Cross (✕)** | Jump | Left Click (Select / Drag) |
-| **Button B** | **Circle (◯)** | Sneak / Crouch | Back / Close Menu / Resume |
-| **Button X** | **Square (□)** | Open Inventory | Right Click (Place 1 item) |
-| **Button Y** | **Triangle (△)** | Drop Current Item | Swap Hovered Slot with Off-Hand |
-| **D-Pad Left** | **D-Pad Left** | Swap Main Hand / Off-Hand (`F`) | Nudge Virtual Cursor |
-| **D-Pad Right** | **D-Pad Right** | Cycle Hotbar | Nudge Virtual Cursor |
-| **D-Pad Up** | **D-Pad Up** | Toggle Perspective (F5) | Nudge Virtual Cursor |
-| **D-Pad Down** | **D-Pad Down** | Toggle Render Distance (Fog) | Nudge Virtual Cursor |
-| **Start / Menu** | **Options** | Pause Menu | Resume Game |
-| **Back / View** | **Share / Create** | Toggle F3 Debug Screen | — |
+| **RT** | **R2** | Attack / Mine | Left Click (Select / Drag) |
+| **LT** | **L2** | Use / Place Block | Right Click (Split Stack) |
+| **RB** | **R1** | Next Hotbar Slot | - |
+| **LB** | **L1** | Previous Hotbar Slot | - |
+| **Left Stick** | **Left Stick** | Movement | Virtual Cursor |
+| **Right Stick** | **Right Stick** | Look Around | Virtual Cursor |
+| **LS Click** | **L3** | Sneak | - |
+| **RS Click** | **R3** | Toggle Perspective (F5) | - |
+| **A** | **Cross** | Jump | Left Click (Select / Drag) |
+| **B** | **Circle** | Sneak | Back / Close Menu |
+| **X** | **Square** | Open Inventory | Right Click (Place 1) |
+| **Y** | **Triangle** | Drop Item | Swap Slot with Off-Hand |
+| **D-Pad Left** | **D-Pad Left** | Swap Hands (`F`) | Nudge Cursor |
+| **D-Pad Right** | **D-Pad Right** | Cycle Hotbar | Nudge Cursor |
+| **D-Pad Up** | **D-Pad Up** | Toggle Perspective (F5) | Nudge Cursor |
+| **D-Pad Down** | **D-Pad Down** | Toggle Render Distance | Nudge Cursor |
+| **Menu / Start** | **Options** | Pause Menu | Resume Game |
+| **View / Back** | **Share** | Toggle F3 Debug Screen | - |
 
-### Keyboard & Mouse
+### Keyboard and Mouse
 
 | Key | Action |
 |:---|:---|
-| `W`, `A`, `S`, `D` | Move |
+| `W`, `A`, `S`, `D` | Movement |
 | `Space` | Jump |
-| `Left Shift` | Sneak / Crouch |
+| `Left Shift` | Sneak |
 | `Left Click` | Attack / Mine |
 | `Right Click` | Use / Place Block |
 | `E` | Open Inventory |
-| `F` | Swap Main Hand & Off-Hand (in-game or hovered slot in inventory) |
-| `T` or `/` | Open Chat / Command Line (`/keepinventory true/false`, `/seed`, `/time set`) |
+| `F` | Swap Main Hand and Off-Hand |
+| `T` or `/` | Open Chat / Commands |
 | `Q` | Drop Item |
-| `1` – `9` / `Scroll Wheel` | Select Hotbar Slot |
-| `Cmd + F` or `Fn + F11` | Toggle Fullscreen |
-| `Fn + F3` / `F3` | Debug Info & Coordinates |
-| `Fn + F5` / `F5` | Toggle Third-Person View |
-| `Fn + F8` / `F8` | Cinematic Camera Smoothing |
+| `1` - `9` / Scroll | Select Hotbar Slot |
+| `Cmd + F` / `F11` | Toggle Fullscreen |
+| `F3` | Debug Screen |
+| `F5` | Toggle Third-Person View |
+| `F8` | Cinematic Camera Smoothing |
 | `Esc` | Pause Menu |
 
 ---
 
-## File Locations & Game Data
+## File Locations
 
-All player data, worlds, screenshots, and settings are saved in standard macOS application support paths:
-- **Game Directory**: `~/Library/Application Support/minecraft-b1.7.3/`
-  - `saves/`: World saves (compatible with any standard Beta 1.7.3 world format).
+Game data and settings are stored in standard macOS application paths:
+- `~/Library/Application Support/minecraft-b1.7.3/`
+  - `saves/`: World saves.
   - `texturepacks/`: Custom texture packs.
   - `screenshots/`: In-game screenshots (`F2`).
-  - `options.txt`: Controls, video settings, and controller configuration.
+  - `options.txt`: Settings and controller configuration.
 
 ---
 
 ## System Requirements
 
-- **Operating System**: macOS 11.0 (Big Sur) or newer (macOS 12 Monterey, 13 Ventura, 14 Sonoma, 15 Sequoia fully supported).
-- **Architecture**: Apple Silicon ARM64 (M1, M2, M3, M4, M5, Pro, Max, Ultra).
-- **Memory**: Minimum 2 GB RAM (allocated 1 GB heap by default).
+- **OS**: macOS 11.0 (Big Sur) or newer.
+- **Hardware**: Apple Silicon Mac (M1, M2, M3, M4, M5).
+- **Memory**: 2 GB RAM minimum.
 
 ---
 
 ## Donations & Support
 
-If you enjoy playing vintage Beta 1.7.3 natively on your Mac and would like to support maintenance and future improvements:
-
+If you would like to support maintenance of this port:
 
 ---
 
 ## Disclaimer
 
-Minecraft is a trademark of Mojang AB. This project is an independent community preservation effort for modern hardware compatibility and is not endorsed by or affiliated with Mojang Studios or Microsoft.
+Minecraft is a trademark of Mojang AB. This project is an independent community preservation project and is not affiliated with or endorsed by Mojang Studios or Microsoft.

@@ -72,40 +72,33 @@ public class ControllerManager {
 
     private static void loadNativeLibrary() {
         try {
-            // 1. Try system/library path
             System.loadLibrary("gamecontroller");
             nativeLoaded = true;
             return;
-        } catch (Throwable t1) {
-            // fallback
+        } catch (Throwable ignored) {
         }
 
         try {
-            // 2. Try App bundle path
             File appLib = new File("/Applications/Minecraft Beta 1.7.3.app/Contents/Resources/lib/libgamecontroller.dylib");
             if (appLib.exists()) {
                 System.load(appLib.getAbsolutePath());
                 nativeLoaded = true;
                 return;
             }
-        } catch (Throwable t2) {
-            // fallback
+        } catch (Throwable ignored) {
         }
 
         try {
-            // 3. Try build/natives path
             File buildLib = new File("build/natives/libgamecontroller.dylib");
             if (buildLib.exists()) {
                 System.load(buildLib.getAbsolutePath());
                 nativeLoaded = true;
                 return;
             }
-        } catch (Throwable t3) {
-            // fallback
+        } catch (Throwable ignored) {
         }
 
         try {
-            // 4. Extract embedded resource from jar
             InputStream in = ControllerManager.class.getResourceAsStream("/natives/libgamecontroller.dylib");
             if (in != null) {
                 File tempFile = new File("/tmp/libgamecontroller.dylib");

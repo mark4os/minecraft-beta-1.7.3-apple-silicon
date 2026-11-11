@@ -51,7 +51,6 @@ public class Sync {
 			return;
 		}
 
-		// Prevent accumulation of lag if the system froze or dropped frames
 		if (now > nextFrameTime + frameDuration) {
 			nextFrameTime = now;
 		}

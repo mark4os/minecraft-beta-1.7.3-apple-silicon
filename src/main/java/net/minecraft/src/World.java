@@ -361,7 +361,20 @@ public class World implements IBlockAccess {
 		}
 	}
 
+	private Chunk lastChunk;
+	private int lastChunkX = Integer.MIN_VALUE;
+	private int lastChunkZ = Integer.MIN_VALUE;
+
+	public void clearLastChunk() {
+		this.lastChunk = null;
+		this.lastChunkX = Integer.MIN_VALUE;
+		this.lastChunkZ = Integer.MIN_VALUE;
+	}
+
 	private boolean chunkExists(int var1, int var2) {
+		if (var1 == this.lastChunkX && var2 == this.lastChunkZ && this.lastChunk != null) {
+			return true;
+		}
 		return this.chunkProvider.chunkExists(var1, var2);
 	}
 
@@ -370,7 +383,14 @@ public class World implements IBlockAccess {
 	}
 
 	public Chunk getChunkFromChunkCoords(int var1, int var2) {
-		return this.chunkProvider.provideChunk(var1, var2);
+		if (var1 == this.lastChunkX && var2 == this.lastChunkZ && this.lastChunk != null) {
+			return this.lastChunk;
+		}
+		Chunk c = this.chunkProvider.provideChunk(var1, var2);
+		this.lastChunkX = var1;
+		this.lastChunkZ = var2;
+		this.lastChunk = c;
+		return c;
 	}
 
 	public boolean setBlockAndMetadata(int var1, int var2, int var3, int var4, int var5) {

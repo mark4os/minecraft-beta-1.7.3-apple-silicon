@@ -60,6 +60,14 @@ public class RenderGlobal implements IWorldAccess {
 	private RenderList[] allRenderLists = new RenderList[]{new RenderList(), new RenderList(), new RenderList(), new RenderList()};
 	int dummyInt0 = 0;
 	int glDummyList = GLAllocation.generateDisplayLists(1);
+	private int glCloudList = -1;
+	private int lastCloudGridX = Integer.MIN_VALUE;
+	private int lastCloudGridZ = Integer.MIN_VALUE;
+	private float lastCloudColorR = -1.0F;
+	private float lastCloudColorG = -1.0F;
+	private float lastCloudColorB = -1.0F;
+	private float lastCloudHeight = -9999.0F;
+	private boolean lastCloudAnaglyph = false;
 	double prevSortX = -9999.0D;
 	double prevSortY = -9999.0D;
 	double prevSortZ = -9999.0D;
@@ -852,26 +860,36 @@ public class RenderGlobal implements IWorldAccess {
 		float var24 = 1.0F / 1024.0F;
 		GL11.glScalef(var4, 1.0F, var4);
 
-		for(int var25 = 0; var25 < 2; ++var25) {
-			if(var25 == 0) {
-				GL11.glColorMask(false, false, false, false);
-			} else if(this.mc.gameSettings.anaglyph) {
-				if(EntityRenderer.anaglyphField == 0) {
-					GL11.glColorMask(false, true, true, true);
-				} else {
-					GL11.glColorMask(true, false, false, true);
-				}
-			} else {
-				GL11.glColorMask(true, true, true, true);
-			}
+		int curGridX = MathHelper.floor_double(var6);
+		int curGridZ = MathHelper.floor_double(var8);
+		boolean needRecompile = this.glCloudList == -1
+			|| curGridX != this.lastCloudGridX
+			|| curGridZ != this.lastCloudGridZ
+			|| Math.abs(var14 - this.lastCloudColorR) > 0.001F
+			|| Math.abs(var15 - this.lastCloudColorG) > 0.001F
+			|| Math.abs(var16 - this.lastCloudColorB) > 0.001F
+			|| Math.abs(var10 - this.lastCloudHeight) > 0.01F;
 
+		if (this.glCloudList == -1) {
+			this.glCloudList = GLAllocation.generateDisplayLists(1);
+		}
+
+		if (needRecompile) {
+			this.lastCloudGridX = curGridX;
+			this.lastCloudGridZ = curGridZ;
+			this.lastCloudColorR = var14;
+			this.lastCloudColorG = var15;
+			this.lastCloudColorB = var16;
+			this.lastCloudHeight = var10;
+
+			GL11.glNewList(this.glCloudList, GL11.GL_COMPILE);
 			var3.startDrawingQuads();
 			for(int var26 = -var23 + 1; var26 <= var23; ++var26) {
 				for(int var27 = -var23 + 1; var27 <= var23; ++var27) {
 					float var28 = (float)(var26 * var22);
 					float var29 = (float)(var27 * var22);
-					float var30 = var28 - var20;
-					float var31 = var29 - var21;
+					float var30 = var28;
+					float var31 = var29;
 					if(var10 > -var5 - 1.0F) {
 						var3.setColorRGBA_F(var14 * 0.7F, var15 * 0.7F, var16 * 0.7F, 0.8F);
 						var3.setNormal(0.0F, -1.0F, 0.0F);
@@ -939,7 +957,27 @@ public class RenderGlobal implements IWorldAccess {
 				}
 			}
 			var3.draw();
+			GL11.glEndList();
 		}
+
+		GL11.glPushMatrix();
+		GL11.glTranslatef(-var20, 0.0F, -var21);
+		for(int var25 = 0; var25 < 2; ++var25) {
+			if(var25 == 0) {
+				GL11.glColorMask(false, false, false, false);
+			} else if(this.mc.gameSettings.anaglyph) {
+				if(EntityRenderer.anaglyphField == 0) {
+					GL11.glColorMask(false, true, true, true);
+				} else {
+					GL11.glColorMask(true, false, false, true);
+				}
+			} else {
+				GL11.glColorMask(true, true, true, true);
+			}
+
+			GL11.glCallList(this.glCloudList);
+		}
+		GL11.glPopMatrix();
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_BLEND);
@@ -1165,12 +1203,12 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public void func_949_a(int var1, int var2, int var3, int var4, int var5, int var6) {
-		int var7 = MathHelper.bucketInt(var1, 16);
-		int var8 = MathHelper.bucketInt(var2, 16);
-		int var9 = MathHelper.bucketInt(var3, 16);
-		int var10 = MathHelper.bucketInt(var4, 16);
-		int var11 = MathHelper.bucketInt(var5, 16);
-		int var12 = MathHelper.bucketInt(var6, 16);
+		int var7 = var1 >> 4;
+		int var8 = var2 >> 4;
+		int var9 = var3 >> 4;
+		int var10 = var4 >> 4;
+		int var11 = var5 >> 4;
+		int var12 = var6 >> 4;
 
 		for(int var13 = var7; var13 <= var10; ++var13) {
 			int var14 = var13 % this.renderChunksWide;

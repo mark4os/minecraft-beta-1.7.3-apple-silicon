@@ -219,6 +219,7 @@ public class LanServerManager {
 				mc.ingameGUI.addChatMessage("\u00a7eVPN / Tunnel IP: \u00a7b" + vpnIp + ":" + lanPort);
 			}
 			mc.ingameGUI.addChatMessage("\u00a77Any official Beta 1.7.3 client (Win/Mac/Linux) can join via IP.");
+			mc.ingameGUI.addChatMessage("\u00a7cNote: If friends get 'Connection reset', check macOS Firewall (System Settings -> Network -> Firewall).");
 		}
 	}
 

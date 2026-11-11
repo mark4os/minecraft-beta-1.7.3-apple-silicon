@@ -29,7 +29,7 @@ public class GuiChat extends GuiScreen {
 	protected void keyTyped(char var1, int var2) {
 		if(var2 == 1) {
 			this.mc.displayGuiScreen((GuiScreen)null);
-		} else if(var2 == 28) {
+		} else if(var2 == 28 || var2 == Keyboard.KEY_NUMPADENTER) {
 			String var3 = this.message.trim();
 			if(var3.length() > 0) {
 				String var4 = this.message.trim();

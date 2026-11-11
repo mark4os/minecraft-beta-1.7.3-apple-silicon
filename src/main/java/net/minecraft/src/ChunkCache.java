@@ -5,15 +5,19 @@ public class ChunkCache implements IBlockAccess {
 	private int chunkZ;
 	private Chunk[][] chunkArray;
 	private World worldObj;
-	private final int skylightSubtracted;
-	private final float[] lightBrightnessTable;
-	private final boolean useBrightnessCache;
-	private final int cacheId;
+	private int skylightSubtracted;
+	private float[] lightBrightnessTable;
+	private boolean useBrightnessCache;
+	private int cacheId;
 	private static int nextCacheId = 1;
 	private static final float[] brightnessCache = new float[32768];
 	private static final int[] brightnessCacheTag = new int[32768];
 
 	public ChunkCache(World var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+		this.reset(var1, var2, var3, var4, var5, var6, var7);
+	}
+
+	public void reset(World var1, int var2, int var3, int var4, int var5, int var6, int var7) {
 		this.worldObj = var1;
 		this.skylightSubtracted = var1.skylightSubtracted;
 		this.lightBrightnessTable = var1.worldProvider.lightBrightnessTable;
@@ -32,14 +36,17 @@ public class ChunkCache implements IBlockAccess {
 		this.chunkZ = var4 >> 4;
 		int var8 = var5 >> 4;
 		int var9 = var7 >> 4;
-		this.chunkArray = new Chunk[var8 - this.chunkX + 1][var9 - this.chunkZ + 1];
+		int dimX = var8 - this.chunkX + 1;
+		int dimZ = var9 - this.chunkZ + 1;
+		if (this.chunkArray == null || this.chunkArray.length != dimX || this.chunkArray[0].length != dimZ) {
+			this.chunkArray = new Chunk[dimX][dimZ];
+		}
 
 		for(int var10 = this.chunkX; var10 <= var8; ++var10) {
 			for(int var11 = this.chunkZ; var11 <= var9; ++var11) {
 				this.chunkArray[var10 - this.chunkX][var11 - this.chunkZ] = var1.getChunkFromChunkCoords(var10, var11);
 			}
 		}
-
 	}
 
 	public int getBlockId(int var1, int var2, int var3) {

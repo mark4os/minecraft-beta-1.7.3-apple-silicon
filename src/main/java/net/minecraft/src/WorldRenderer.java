@@ -10,6 +10,8 @@ public class WorldRenderer {
 	private int glRenderList = -1;
 	private static Tessellator tessellator = Tessellator.instance;
 	public static int chunksUpdated = 0;
+	private static ChunkCache cachedChunkCache;
+	private static RenderBlocks cachedRenderBlocks;
 	public int posX;
 	public int posY;
 	public int posZ;
@@ -99,8 +101,15 @@ public class WorldRenderer {
 				this.tileEntityRenderers.clear();
 			}
 			byte var8 = 1;
-			ChunkCache var9 = new ChunkCache(this.worldObj, var1 - var8, var2 - var8, var3 - var8, var4 + var8, var5 + var8, var6 + var8);
-			RenderBlocks var10 = new RenderBlocks(var9);
+			if (cachedChunkCache == null) {
+				cachedChunkCache = new ChunkCache(this.worldObj, var1 - var8, var2 - var8, var3 - var8, var4 + var8, var5 + var8, var6 + var8);
+				cachedRenderBlocks = new RenderBlocks(cachedChunkCache);
+			} else {
+				cachedChunkCache.reset(this.worldObj, var1 - var8, var2 - var8, var3 - var8, var4 + var8, var5 + var8, var6 + var8);
+				cachedRenderBlocks.setBlockAccess(cachedChunkCache);
+			}
+			ChunkCache var9 = cachedChunkCache;
+			RenderBlocks var10 = cachedRenderBlocks;
 			int minPass1Y = var5;
 			int maxPass1Y = var2 - 1;
 

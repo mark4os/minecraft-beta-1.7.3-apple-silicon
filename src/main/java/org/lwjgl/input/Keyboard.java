@@ -214,13 +214,17 @@ public class Keyboard {
 			boolean pressed = status == GLFW.GLFW_PRESS || status == GLFW.GLFW_REPEAT;
 			keyEvents[pos] = lwjglKey;
 			keyEventStates[pos] = pressed;
-			if (pressed && pendingChar != 0) {
-				charEvents[pos] = pendingChar;
-				pendingChar = 0;
-				lastPressEventPos = -1;
+			if (pressed) {
+				if (pendingChar != 0) {
+					charEvents[pos] = pendingChar;
+					pendingChar = 0;
+					lastPressEventPos = -1;
+				} else {
+					charEvents[pos] = 0;
+					lastPressEventPos = pos;
+				}
 			} else {
 				charEvents[pos] = 0;
-				lastPressEventPos = pressed ? pos : -1;
 			}
 			if (!pressed && lwjglKey >= 0 && lwjglKey < keyEventChars.length) {
 				keyEventChars[lwjglKey] = 0;
@@ -238,11 +242,16 @@ public class Keyboard {
 		if (lwjglKey >= 0 && lwjglKey < keyEventChars.length) {
 			keyEventChars[lwjglKey] = c;
 		}
-		if (lastPressEventPos >= 0 && keyEventStates[lastPressEventPos] && charEvents[lastPressEventPos] == 0) {
+		if (lastPressEventPos >= 0 && charEvents[lastPressEventPos] == 0) {
 			charEvents[lastPressEventPos] = c;
 			lastPressEventPos = -1;
 		} else {
-			pendingChar = c;
+			int pos = queue.getNextPos();
+			keyEvents[pos] = lwjglKey > 0 ? lwjglKey : 0;
+			keyEventStates[pos] = true;
+			charEvents[pos] = c;
+			nanoTimeEvents[pos] = Sys.getNanoTime();
+			queue.add();
 		}
 	}
 

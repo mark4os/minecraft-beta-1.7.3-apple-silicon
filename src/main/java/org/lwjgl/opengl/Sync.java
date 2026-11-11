@@ -51,21 +51,19 @@ public class Sync {
 			return;
 		}
 
-		long remaining = nextFrameTime - now;
-
-		if (remaining <= 0L) {
-			nextFrameTime = now + frameDuration;
-			return;
+		// Prevent accumulation of lag if the system froze or dropped frames
+		if (now > nextFrameTime + frameDuration) {
+			nextFrameTime = now;
 		}
 
-		// Park kernel thread for bulk of the frame to keep CPU cool and save battery
-		if (remaining > 2_000_000L) {
-			LockSupport.parkNanos(remaining - 1_500_000L);
-		}
-
-		// Microsecond-precise spin-wait with ARM64 YIELD for razor-sharp frame pacing
-		while (nextFrameTime - System.nanoTime() > 0L) {
-			Thread.onSpinWait();
+		while (nextFrameTime > now) {
+			long remaining = nextFrameTime - now;
+			if (remaining > 2_000_000L) {
+				LockSupport.parkNanos(remaining - 1_500_000L);
+			} else {
+				Thread.onSpinWait();
+			}
+			now = System.nanoTime();
 		}
 
 		nextFrameTime += frameDuration;

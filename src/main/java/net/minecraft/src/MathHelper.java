@@ -40,6 +40,9 @@ public class MathHelper {
 	}
 
 	public static int bucketInt(int var0, int var1) {
+		if (var1 == 16) {
+			return var0 >> 4;
+		}
 		return var0 < 0 ? -((-var0 - 1) / var1) - 1 : var0 / var1;
 	}
 

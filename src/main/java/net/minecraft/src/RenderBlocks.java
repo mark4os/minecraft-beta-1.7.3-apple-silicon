@@ -75,6 +75,10 @@ public class RenderBlocks {
 		this.blockAccess = var1;
 	}
 
+	public void setBlockAccess(IBlockAccess var1) {
+		this.blockAccess = var1;
+	}
+
 	public RenderBlocks() {
 	}
 

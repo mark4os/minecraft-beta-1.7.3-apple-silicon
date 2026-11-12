@@ -1,7 +1,7 @@
 # Minecraft Beta 1.7.3 (Apple Silicon)
 
 [![Platform](https://img.shields.io/badge/Platform-macOS%20ARM64-black?logo=apple)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon)
-[![Release](https://img.shields.io/badge/Release-v1.2.0-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
+[![Release](https://img.shields.io/badge/Release-v1.2.1-brightgreen)](https://github.com/mark4os/minecraft-beta-1.7.3-apple-silicon/releases)
 
 A native macOS ARM64 port of Minecraft Beta 1.7.3 running directly on Apple Silicon Macs (M1/M2/M3/M4/M5) with OpenJDK 17 and LWJGL 3 (GLFW).
 
@@ -132,6 +132,7 @@ The resulting `.dmg` will be located in `build/distributions/`.
 | `Right Click` | Use / Place Block |
 | `E` | Open Inventory |
 | `F` | Swap Main Hand and Off-Hand |
+| `R` | Toggle Render Distance (Fog) |
 | `T` or `/` | Open Chat / Commands |
 | `Q` | Drop Item |
 | `1` - `9` / Scroll | Select Hotbar Slot |

@@ -136,6 +136,7 @@ key.drop=Drop
 key.chat=Chat
 key.fog=Toggle Fog
 key.sneak=Sneak
+key.offhand=Swap Hands
 key.playerlist=List players
 
 texturePack.openFolder=Open texture pack folder

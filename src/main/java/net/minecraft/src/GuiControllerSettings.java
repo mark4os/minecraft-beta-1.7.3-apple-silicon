@@ -24,7 +24,6 @@ public class GuiControllerSettings extends GuiScreen {
 		int row1Y = this.height / 6 + 8;
 		int row2Y = this.height / 6 + 32;
 
-		// Row 1: Sensitivity (Slider) & Invert Look Y (Toggle)
 		float sensVal = (this.options.controllerSensitivity - 0.2F) / 1.8F;
 		if (sensVal < 0.0F) sensVal = 0.0F;
 		if (sensVal > 1.0F) sensVal = 1.0F;
@@ -34,7 +33,6 @@ public class GuiControllerSettings extends GuiScreen {
 		this.invertYButton = new GuiSmallButton(1002, rightCol, row1Y, getInvertYString());
 		this.controlList.add(this.invertYButton);
 
-		// Row 2: Deadzone (Slider) & Swap Triggers (Toggle)
 		float deadzoneVal = (this.options.controllerDeadzone - 0.05F) / 0.30F;
 		if (deadzoneVal < 0.0F) deadzoneVal = 0.0F;
 		if (deadzoneVal > 1.0F) deadzoneVal = 1.0F;
@@ -44,7 +42,6 @@ public class GuiControllerSettings extends GuiScreen {
 		this.swapTriggersButton = new GuiSmallButton(1004, rightCol, row2Y, getSwapTriggersString());
 		this.controlList.add(this.swapTriggersButton);
 
-		// Done Button
 		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, tr.translateKey("gui.done")));
 	}
 
@@ -99,7 +96,6 @@ public class GuiControllerSettings extends GuiScreen {
 		this.drawDefaultBackground();
 		this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 14, 16777215);
 
-		// Status string
 		StringTranslate tr = StringTranslate.getInstance();
 		String status;
 		int type = ControllerManager.getControllerType();
@@ -114,16 +110,14 @@ public class GuiControllerSettings extends GuiScreen {
 		}
 		this.drawCenteredString(this.fontRenderer, status, this.width / 2, 26, 16777215);
 
-		// Button Layout Guide
-		int guideY = this.height / 6 + 62;
+		int guideY = this.height / 6 + 60;
 		this.drawCenteredString(this.fontRenderer, "\u00a7e--- Controller Layout ---", this.width / 2, guideY, 16777215);
 
-		int leftCol = this.width / 2 - 150;
-		int rightCol = this.width / 2 + 10;
-		int lineSpacing = 13;
+		int leftCol = this.width / 2 - 155;
+		int rightCol = this.width / 2 + 15;
+		int lineSpacing = 12;
 		int textY = guideY + 14;
 
-		// Left Column
 		String attackKey = this.options.controllerSwapTriggers ? "LT / L2" : "RT / R2";
 		String useKey = this.options.controllerSwapTriggers ? "RT / R2" : "LT / L2";
 
@@ -132,9 +126,8 @@ public class GuiControllerSettings extends GuiScreen {
 		this.drawString(this.fontRenderer, "\u00a7fLB / RB: \u00a77Cycle Hotbar", leftCol, textY + lineSpacing * 2, 16777215);
 		this.drawString(this.fontRenderer, "\u00a7fLeft Stick: \u00a77Move Player", leftCol, textY + lineSpacing * 3, 16777215);
 		this.drawString(this.fontRenderer, "\u00a7fRight Stick: \u00a77Look Around", leftCol, textY + lineSpacing * 4, 16777215);
-		this.drawString(this.fontRenderer, "\u00a7fD-Pad: \u00a77Off-Hand(L) / F5(U) / Fog(D)", leftCol, textY + lineSpacing * 5, 16777215);
+		this.drawString(this.fontRenderer, "\u00a7fD-Pad: \u00a77Hands / F5 / Fog", leftCol, textY + lineSpacing * 5, 16777215);
 
-		// Right Column
 		this.drawString(this.fontRenderer, "\u00a7fA / Cross: \u00a77Jump", rightCol, textY, 16777215);
 		this.drawString(this.fontRenderer, "\u00a7fB / Circle: \u00a77Sneak / Crouch", rightCol, textY + lineSpacing, 16777215);
 		this.drawString(this.fontRenderer, "\u00a7fX / Square: \u00a77Open Inventory", rightCol, textY + lineSpacing * 2, 16777215);

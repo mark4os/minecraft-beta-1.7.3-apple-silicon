@@ -40,9 +40,10 @@ public class GameSettings {
 	public KeyBinding keyBindInventory = new KeyBinding("key.inventory", 18);
 	public KeyBinding keyBindDrop = new KeyBinding("key.drop", 16);
 	public KeyBinding keyBindChat = new KeyBinding("key.chat", 20);
-	public KeyBinding keyBindToggleFog = new KeyBinding("key.fog", 33);
+	public KeyBinding keyBindToggleFog = new KeyBinding("key.fog", 19);
 	public KeyBinding keyBindSneak = new KeyBinding("key.sneak", 42);
-	public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog};
+	public KeyBinding keyBindOffHand = new KeyBinding("key.offhand", 33);
+	public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindOffHand};
 	protected Minecraft mc;
 	private File optionsFile;
 	public int difficulty = 2;
@@ -222,6 +223,7 @@ public class GameSettings {
 
 			BufferedReader var1 = new BufferedReader(new FileReader(this.optionsFile));
 			String var2 = "";
+			boolean hasOffhandKey = false;
 
 			while(true) {
 				var2 = var1.readLine();
@@ -328,11 +330,17 @@ public class GameSettings {
 					for(int var4 = 0; var4 < this.keyBindings.length; ++var4) {
 						if(var3[0].equals("key_" + this.keyBindings[var4].keyDescription)) {
 							this.keyBindings[var4].keyCode = Integer.parseInt(var3[1]);
+							if (this.keyBindings[var4] == this.keyBindOffHand) {
+								hasOffhandKey = true;
+							}
 						}
 					}
 				} catch (Exception var5) {
 					System.out.println("Skipping bad option: " + var2);
 				}
+			}
+			if (!hasOffhandKey && this.keyBindToggleFog.keyCode == 33) {
+				this.keyBindToggleFog.keyCode = 19;
 			}
 			Display.setVSyncEnabled(this.enableVsync);
 		} catch (Exception var6) {

@@ -173,7 +173,7 @@ public abstract class GuiContainer extends GuiScreen {
 	protected void keyTyped(char var1, int var2) {
 		if(var2 == 1 || var2 == this.mc.gameSettings.keyBindInventory.keyCode) {
 			this.mc.thePlayer.closeScreen();
-		} else if(var2 == Keyboard.KEY_F) {
+		} else if(var2 == this.mc.gameSettings.keyBindOffHand.keyCode) {
 			this.swapHoveredWithOffhand();
 		}
 

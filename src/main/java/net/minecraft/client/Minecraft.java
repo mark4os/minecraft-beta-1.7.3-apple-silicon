@@ -1113,8 +1113,12 @@ public abstract class Minecraft implements Runnable {
 													this.thePlayer.dropCurrentItem();
 												}
 
-												if(Keyboard.getEventKey() == Keyboard.KEY_F) {
+												if(Keyboard.getEventKey() == this.gameSettings.keyBindOffHand.keyCode) {
 													this.thePlayer.inventory.swapHands();
+												}
+
+												if(Keyboard.getEventKey() == this.gameSettings.keyBindToggleFog.keyCode) {
+													this.gameSettings.setOptionValue(EnumOptions.RENDER_DISTANCE, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
 												}
 
 												if(Keyboard.getEventKey() == this.gameSettings.keyBindChat.keyCode) {
@@ -1130,10 +1134,6 @@ public abstract class Minecraft implements Runnable {
 												if(Keyboard.getEventKey() == Keyboard.KEY_1 + var6) {
 													this.thePlayer.inventory.currentItem = var6;
 												}
-											}
-
-											if(Keyboard.getEventKey() == this.gameSettings.keyBindToggleFog.keyCode) {
-												this.gameSettings.setOptionValue(EnumOptions.RENDER_DISTANCE, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
 											}
 										}
 									}

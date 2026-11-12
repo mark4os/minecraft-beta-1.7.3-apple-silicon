@@ -61,6 +61,7 @@ public class GuiScreen extends Gui {
 					this.selectedButton = var5;
 					this.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
 					this.actionPerformed(var5);
+					break;
 				}
 			}
 		}

@@ -106,6 +106,7 @@ tasks.register('compileGameControllerNative') {
         def javaHome = System.getProperty("java.home")
         def pb = new ProcessBuilder(
             'clang', '-dynamiclib', '-O3', '-arch', 'arm64',
+            '-install_name', '@rpath/libgamecontroller.dylib',
             '-framework', 'GameController', '-framework', 'Foundation',
             "-I${javaHome}/include",
             "-I${javaHome}/include/darwin",
@@ -155,7 +156,7 @@ tasks.register('bundleApp') {
         }
 
         copy {
-            from file("run/resources")
+            from file("src/main/resources/resources")
             into file("$resDir/resources")
         }
 
@@ -175,9 +176,9 @@ tasks.register('bundleApp') {
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.2.1</string>
+    <string>1.2.2</string>
     <key>CFBundleVersion</key>
-    <string>1.2.1</string>
+    <string>1.2.2</string>
     <key>LSMinimumSystemVersion</key>
     <string>11.0</string>
     <key>NSHighResolutionCapable</key>
@@ -208,6 +209,8 @@ DATA_DIR="\$HOME/Library/Application Support/minecraft-b1.7.3"
 mkdir -p "\$DATA_DIR"
 if [ ! -d "\$DATA_DIR/resources" ]; then
     cp -r "\$RESOURCES/resources" "\$DATA_DIR/"
+else
+    rsync -a --ignore-existing "\$RESOURCES/resources/" "\$DATA_DIR/resources/" 2>/dev/null || true
 fi
 
 exec "\$JAVA_BIN" \\

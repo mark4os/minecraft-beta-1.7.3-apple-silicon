@@ -19,9 +19,6 @@ public class GuiInventory extends GuiContainer {
 
 	protected void drawGuiContainerForegroundLayer() {
 		this.fontRenderer.drawString("Crafting", 86, 16, 4210752);
-		if (this.mc.thePlayer != null && this.mc.thePlayer.inventory.getOffHandItem() == null) {
-			this.fontRenderer.drawString("F", 93, 66, 7368816);
-		}
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
